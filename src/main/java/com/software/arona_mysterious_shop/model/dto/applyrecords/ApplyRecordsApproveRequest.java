@@ -22,8 +22,5 @@ public class ApplyRecordsApproveRequest implements Serializable {
     private Boolean approved;
 
 
-    private String reason;
-
-
     private static final long serialVersionUID = 1L;
 }

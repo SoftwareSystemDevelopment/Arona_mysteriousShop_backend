@@ -5,9 +5,6 @@ import com.software.arona_mysterious_shop.exception.BusinessException;
 import com.software.arona_mysterious_shop.common.ErrorCode;
 import com.software.arona_mysterious_shop.model.entity.User;
 
-/**
- * @author pine
- */
 public final class ThreadLocalUtil {
     private static final ThreadLocal<User> LOGIN_USER = ThreadLocal.withInitial(User::new);
 

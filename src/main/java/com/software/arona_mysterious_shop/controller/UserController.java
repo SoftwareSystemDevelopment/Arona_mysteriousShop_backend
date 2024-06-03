@@ -16,6 +16,8 @@ import com.software.arona_mysterious_shop.service.UserService;
 import com.software.arona_mysterious_shop.utils.ThreadLocalUtil;
 import com.software.arona_mysterious_shop.model.vo.LoginUserVO;
 import com.software.arona_mysterious_shop.model.vo.UserVO;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,14 +35,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 @Slf4j
+@Api("用户接口")
 public class UserController {
 
     @Resource
     private UserService userService;
-
-
-
-    // region 登录相关
 
     /**
      * 用户注册
@@ -49,17 +48,19 @@ public class UserController {
      * @return {@link BaseResponse}<{@link Long}>
      */
     @PostMapping("/register")
+    @ApiOperation(value = "用户注册")
     public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
         if (userRegisterRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         String userAccount = userRegisterRequest.getUserAccount();
+        String userName = userRegisterRequest.getUserName();
         String userPassword = userRegisterRequest.getUserPassword();
         String checkPassword = userRegisterRequest.getCheckPassword();
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        long result = userService.userRegister(userAccount, userPassword, checkPassword);
+        long result = userService.userRegister(userAccount, userName, userPassword, checkPassword);
         return ResultUtils.success(result);
     }
 
@@ -71,6 +72,7 @@ public class UserController {
      * @return {@link BaseResponse}<{@link LoginUserVO}>
      */
     @PostMapping("/login")
+    @ApiOperation(value = "用户登录")
     public BaseResponse<LoginUserVO> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -94,6 +96,7 @@ public class UserController {
      * @return {@link BaseResponse}<{@link LoginUserVO}>
      */
     @PostMapping("/login/wx_mp")
+    @ApiOperation(value = "用户登录（公众号扫码登录，前端轮询请求）")
     public BaseResponse<LoginUserVO> userLoginByWxMp(@RequestBody UserLoginByWxMpRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -119,6 +122,7 @@ public class UserController {
      * @return {@link BaseResponse}<{@link Boolean}>
      */
     @PostMapping("/logout")
+    @ApiOperation(value = "用户退出登录")
     public BaseResponse<Boolean> userLogout(HttpServletRequest request) {
         if (request == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -133,14 +137,11 @@ public class UserController {
      * @return {@link BaseResponse}<{@link LoginUserVO}>
      */
     @GetMapping("/get/login")
+    @ApiOperation(value = "获取当前登录用户")
     public BaseResponse<LoginUserVO> getLoginUser() {
         User user = ThreadLocalUtil.getLoginUser();
         return ResultUtils.success(userService.getLoginUserVO(user));
     }
-
-    // endregion
-
-    // region 增删改查
 
     /**
      * 创建用户
@@ -149,6 +150,7 @@ public class UserController {
      * @return {@link BaseResponse}<{@link Long}>
      */
     @PostMapping("/add")
+    @ApiOperation(value = "添加用户")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Long> addUser(@RequestBody UserAddRequest userAddRequest) {
         if (userAddRequest == null) {
@@ -169,6 +171,7 @@ public class UserController {
      */
     @PostMapping("/delete")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @ApiOperation(value = "删除用户")
     public BaseResponse<Boolean> deleteUser(@RequestBody DeleteRequest deleteRequest) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -184,6 +187,7 @@ public class UserController {
      * @return {@link BaseResponse}<{@link Boolean}>
      */
     @PostMapping("/update")
+    @ApiOperation(value = "更新用户")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
         if (userUpdateRequest == null || userUpdateRequest.getId() == null) {
@@ -203,6 +207,7 @@ public class UserController {
      * @return {@link BaseResponse}<{@link User}>
      */
     @GetMapping("/get")
+    @ApiOperation(value = "获取用户by id")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<User> getUserById(long id) {
         if (id <= 0) {
@@ -220,6 +225,7 @@ public class UserController {
      * @return {@link BaseResponse}<{@link UserVO}>
      */
     @GetMapping("/get/vo")
+    @ApiOperation(value = "获取用户VO by id")
     public BaseResponse<UserVO> getUserVOById(long id) {
         BaseResponse<User> response = getUserById(id);
         User user = response.getData();
@@ -233,6 +239,7 @@ public class UserController {
      * @return {@link BaseResponse}<{@link Page}<{@link User}>>
      */
     @PostMapping("/list/page")
+    @ApiOperation(value = "分页获取用户列表")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<User>> listUserByPage(@RequestBody UserQueryRequest userQueryRequest) {
         long current = userQueryRequest.getCurrent();
@@ -249,13 +256,13 @@ public class UserController {
      * @return {@link BaseResponse}<{@link Page}<{@link UserVO}>>
      */
     @PostMapping("/list/page/vo")
+    @ApiOperation(value = "分页获取用户VO列表")
     public BaseResponse<Page<UserVO>> listUserVOByPage(@RequestBody UserQueryRequest userQueryRequest) {
         if (userQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         long current = userQueryRequest.getCurrent();
         long size = userQueryRequest.getPageSize();
-        // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
         Page<User> userPage = userService.page(new Page<>(current, size),
                 userService.getQueryWrapper(userQueryRequest));
@@ -265,8 +272,6 @@ public class UserController {
         return ResultUtils.success(userVOPage);
     }
 
-    // endregion
-
     /**
      * 更新个人信息
      *
@@ -274,6 +279,7 @@ public class UserController {
      * @return {@link BaseResponse}<{@link Boolean}>
      */
     @PostMapping("/edit")
+    @ApiOperation(value = "更新个人信息")
     public BaseResponse<Boolean> editUser(@RequestBody UserEditRequest userEditRequest) {
         if (userEditRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);

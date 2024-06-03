@@ -7,16 +7,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 产品申请状态枚举
+ * 订单状态枚举
  *
  */
 public enum ApplyStatusEnum {
 
 
-    NOT_APPLIED( "未申请",0),
-    PENDING("审核中",1),
-    APPROVED("通过审核",2),
-    REJECTED( "审核不通过",3);
+    NOT_APPLIED( "未下单",0),
+    PENDING("下单中",1),
+    APPROVED("下单成功",2),
+    REJECTED( "下单失败",3);
 
 
     private final String text;

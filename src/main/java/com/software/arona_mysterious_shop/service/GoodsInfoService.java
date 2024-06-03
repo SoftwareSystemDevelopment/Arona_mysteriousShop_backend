@@ -3,7 +3,7 @@ package com.software.arona_mysterious_shop.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.software.arona_mysterious_shop.model.entity.GoodsInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.software.arona_mysterious_shop.model.vo.goodsInfo.GoodsInfoVO;
+import com.software.arona_mysterious_shop.model.vo.GoodsInfoVO;
 
 /**
 * @author 29967

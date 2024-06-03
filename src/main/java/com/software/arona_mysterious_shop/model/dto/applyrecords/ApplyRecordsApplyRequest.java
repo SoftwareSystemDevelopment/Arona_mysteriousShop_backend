@@ -14,18 +14,12 @@ public class ApplyRecordsApplyRequest implements Serializable {
 
 
     /**
-     * 关联到产品信息表中的 id 字段，表示申请的是哪个产品
+     * 关联到产品信息表中的 id 字段，表示订购的是哪个产品
      */
     private Long goodsId;
 
-
     /**
-     * 申请内容（xxx申请xxx产品一件）
-     */
-    private String content;
-
-    /**
-     * 申请数量
+     * 订购数量
      */
     private Integer applyNums;
 

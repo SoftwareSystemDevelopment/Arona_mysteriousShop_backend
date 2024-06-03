@@ -1,4 +1,4 @@
-package com.software.arona_mysterious_shop.model.vo.goodsInfo;
+package com.software.arona_mysterious_shop.model.vo;
 
 import lombok.Data;
 

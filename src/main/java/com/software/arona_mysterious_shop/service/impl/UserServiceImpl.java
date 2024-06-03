@@ -41,9 +41,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     private static final String SALT = "kakie";
 
-
-
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public long addUser(User user) {
@@ -52,19 +49,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "用户注册失败");
         }
-
-        // 生成开发者信息
         return user.getId();
     }
 
     @Override
-    public long userRegister(String userAccount, String userPassword, String checkPassword) {
+    public long userRegister(String userAccount,String userName, String userPassword, String checkPassword) {
         // 1. 校验
-        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
+        if (StringUtils.isAnyBlank(userAccount,userName, userPassword, checkPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
         if (userAccount.length() < 4) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户账号过短");
+        }
+        if (userName.length() < 4) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户名过短");
         }
         if (userPassword.length() < 8 || checkPassword.length() < 8) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户密码过短");
@@ -78,7 +76,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("userAccount", userAccount);
             long count = this.baseMapper.selectCount(queryWrapper);
-//            long count1 = this.count(queryWrapper);
             if (count > 0) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号重复");
             }
@@ -117,8 +114,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         User user = this.baseMapper.selectOne(queryWrapper);
         // 用户不存在
         if (user == null) {
-//            log.info("user login failed, userAccount cannot match userPassword");
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在或密码错误");
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码错误");
         }
         // 3. 记录用户的登录态
         request.getSession().setAttribute(USER_LOGIN_STATE, user);
@@ -141,33 +137,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (currentUser == null || currentUser.getId() == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
-        // 从数据库查询（追求性能的话可以注释，直接走缓存）
+        // 从数据库查询
         long userId = currentUser.getId();
         currentUser = this.getById(userId);
         if (currentUser == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
-        return currentUser;
-    }
-
-    /**
-     * 获取当前登录用户（允许未登录）
-     *
-     * @return
-     */
-    @Override
-    public User getLoginUserPermitNull() {
-        // 先判断是否已登录
-        User currentUser = null;
-        try {
-            currentUser = ThreadLocalUtil.getLoginUser();
-        } catch (Exception ignored) {
-
-        }
-        if (currentUser == null || currentUser.getId() == null) {
-            return null;
-        }
-
         return currentUser;
     }
 
@@ -190,45 +165,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return user != null && UserRoleEnum.ADMIN.getValue().equals(user.getUserRole());
     }
 
-    @Override
-    public boolean hasVipAuth(User user) {
-        if (user == null) {
-            return false;
-        }
-        String userRole = user.getUserRole();
-        UserRoleEnum userRoleEnum = UserRoleEnum.getEnumByValue(userRole);
-//        Date vipExpireTime = user.getVipExpireTime();
-        // 是管理员，有权限
-        if (UserRoleEnum.ADMIN.equals(userRoleEnum)) {
-            return true;
-        }
-        // 不是 VIP 或超级 VIP
-//        if (!UserConstant.VIP_ROLE_ENUM_LIST.contains(userRoleEnum)) {
-//            return false;
-//        }
-//        // VIP 已过期
-//        if (vipExpireTime == null || vipExpireTime.before(new Date())) {
-//            return false;
-//        }
-        return true;
-    }
-
-
-    @Override
-    public boolean hasInternalAuth(User user) {
-        if (user == null) {
-            return false;
-        }
-        String userRole = user.getUserRole();
-        UserRoleEnum userRoleEnum = UserRoleEnum.getEnumByValue(userRole);
-
-        if (UserRoleEnum.ADMIN.equals(userRoleEnum)) {
-            return true;
-        }
-
-        return UserRoleEnum.INTERNAL.equals(userRoleEnum);
-    }
-
     /**
      * 用户注销
      *
@@ -243,8 +179,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         request.getSession().removeAttribute(USER_LOGIN_STATE);
         return true;
     }
-
-
 
     @Override
     public LoginUserVO getLoginUserVO(User user) {
@@ -297,7 +231,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         queryWrapper.like(StringUtils.isNotBlank(userProfile), "userProfile", userProfile);
         queryWrapper.like(StringUtils.isNotBlank(userName), "userName", userName);
 
-        // MyBatis-plus 自带 columnToSqlSegment 方法进行注入过滤处理，不需要SqlUtils.validSortField(sortField)
         boolean ascValid = ascSortField != null && ascSortField.size() > 0;
         boolean descValid = descSortField != null && descSortField.size() > 0;
         queryWrapper.orderByAsc(ascValid, ascSortField);
@@ -305,8 +238,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         return queryWrapper;
     }
-
-
 }
 
 

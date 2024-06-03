@@ -10,7 +10,7 @@ import com.software.arona_mysterious_shop.exception.ThrowUtils;
 import com.software.arona_mysterious_shop.manager.RuleConfigManager;
 import com.software.arona_mysterious_shop.model.Permission;
 import com.software.arona_mysterious_shop.model.entity.GoodsInfo;
-import com.software.arona_mysterious_shop.model.vo.goodsInfo.GoodsInfoVO;
+import com.software.arona_mysterious_shop.model.vo.GoodsInfoVO;
 import com.software.arona_mysterious_shop.service.GoodsInfoService;
 import com.software.arona_mysterious_shop.mapper.GoodsInfoMapper;
 import org.apache.commons.lang3.StringUtils;

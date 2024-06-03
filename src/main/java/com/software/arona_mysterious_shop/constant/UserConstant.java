@@ -30,9 +30,9 @@ public interface UserConstant {
     String ADMIN_ROLE = "admin";
 
     /**
-     * 内部员工
+     * 供货商
      */
-    String INTERNAL_ROLE = "internal";
+    String INTERNAL_ROLE = "provider";
 
     /**
      * 被封号

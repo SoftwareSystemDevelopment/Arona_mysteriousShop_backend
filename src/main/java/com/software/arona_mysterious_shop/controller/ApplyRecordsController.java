@@ -18,6 +18,8 @@ import com.software.arona_mysterious_shop.service.ApplyRecordsService;
 import com.software.arona_mysterious_shop.service.GoodsInfoService;
 import com.software.arona_mysterious_shop.service.UserService;
 import com.software.arona_mysterious_shop.model.enums.ApplyStatusEnum;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RLock;
@@ -35,12 +37,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * 申请产品接口
+ * 订单接口
  *
  */
 @RestController
 @RequestMapping("/applyRecords")
 @Slf4j
+@Api("订单接口")
 public class ApplyRecordsController {
 
 
@@ -68,6 +71,7 @@ public class ApplyRecordsController {
      * @return {@link BaseResponse}<{@link Long}>
      */
     @PostMapping("/add")
+    @ApiOperation("创建订单")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Long> addApplyRecords(@RequestBody ApplyRecordsAddRequest applyRecordsAddRequest, HttpServletRequest request) {
         if (applyRecordsAddRequest == null) {
@@ -94,6 +98,7 @@ public class ApplyRecordsController {
      * @return {@link BaseResponse}<{@link Boolean}>
      */
     @PostMapping("/delete")
+    @ApiOperation("删除订单")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> deleteApplyRecords(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
@@ -116,6 +121,7 @@ public class ApplyRecordsController {
      * @return {@link BaseResponse}<{@link Boolean}>
      */
     @PostMapping("/update")
+    @ApiOperation("更新订单")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateApplyRecords(@RequestBody ApplyRecordsUpdateRequest applyRecordsUpdateRequest) {
         if (applyRecordsUpdateRequest == null || applyRecordsUpdateRequest.getId() <= 0) {
@@ -142,6 +148,7 @@ public class ApplyRecordsController {
      * @return {@link BaseResponse}<{@link ApplyRecords}>
      */
     @GetMapping("/get")
+    @ApiOperation("获取订单by id")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<ApplyRecords> getApplyRecordsById(long id) {
         if (id <= 0) {
@@ -161,6 +168,7 @@ public class ApplyRecordsController {
      * @return {@link BaseResponse}<{@link List}<{@link ApplyRecords}>>
      */
     @PostMapping("/list")
+    @ApiOperation("获取订单列表")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<List<ApplyRecords>> listApplyRecords(@RequestBody ApplyRecordsQueryRequest applyRecordsQueryRequest) {
         List<ApplyRecords> applyRecordsList = applyRecordsService.list(getQueryWrapper(applyRecordsQueryRequest));
@@ -175,6 +183,7 @@ public class ApplyRecordsController {
      * @return {@link BaseResponse}<{@link Page}<{@link ApplyRecords}>>
      */
     @PostMapping("/list/page")
+    @ApiOperation("分页获取订单列表")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<ApplyRecords>> listApplyRecordsByPage(@RequestBody ApplyRecordsQueryRequest applyRecordsQueryRequest,
                                                                    HttpServletRequest request) {
@@ -189,6 +198,7 @@ public class ApplyRecordsController {
 
 
     @PostMapping("/apply")
+    @ApiOperation("下达订单")
     @Transactional
     public BaseResponse<Long> applyApplyRecords(@RequestBody ApplyRecordsApplyRequest applyRecordsApplyRequest, HttpServletRequest request) {
         if (applyRecordsApplyRequest == null) {
@@ -202,9 +212,6 @@ public class ApplyRecordsController {
         }
         //获取当前登录用户
         User loginUser = userService.getLoginUser(request);
-        if (!userService.hasInternalAuth(loginUser)) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
         ApplyRecords applyRecords = new ApplyRecords();
         //使用redisson获取分布式锁
         String lockKey = "apply_lock" + goodsId;
@@ -235,7 +242,6 @@ public class ApplyRecordsController {
                 applyRecords.setGoodsName(goodsInfo.getName());
                 applyRecords.setApplicantUserName(loginUser.getUserName());
                 applyRecords.setStatus(ApplyStatusEnum.PENDING.getValue());
-//                applyRecords.setApplyNums(nums);
                 applyRecords.setApplicationTime(new Date());
                 boolean result = applyRecordsService.save(applyRecords);
                 if (!result) {
@@ -256,6 +262,7 @@ public class ApplyRecordsController {
 
 
     @PostMapping("/approve")
+    @ApiOperation("商家审核订单")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Long> approveApplyRecords(@RequestBody ApplyRecordsApproveRequest applyRecordsApproveRequest, HttpServletRequest request) {
         if (applyRecordsApproveRequest == null) {
@@ -263,7 +270,6 @@ public class ApplyRecordsController {
         }
         User loginUser = userService.getLoginUser(request);
         long applyRecordsId = applyRecordsApproveRequest.getId();
-        String reason = applyRecordsApproveRequest.getReason();
         //获取申请信息
         ApplyRecords applyRecords = applyRecordsService.getById(applyRecordsId);
 
@@ -279,18 +285,16 @@ public class ApplyRecordsController {
             applyRecords.setStatus(ApplyStatusEnum.REJECTED.getValue());
             GoodsInfo goodsInfo = goodsInfoService.getById(applyRecords.getGoodsId());
             if (goodsInfo != null) {
-//                goodsInfo.setStock(goodsInfo.getStock() + applyRecords.getApplyNums());
                 goodsInfoService.updateById(goodsInfo);
             }
         }
-        applyRecords.setReason(reason);
-        applyRecords.setAdminId(loginUser.getId());
         applyRecordsService.updateById(applyRecords);
         return ResultUtils.success(applyRecords.getId());
     }
 
 
     @GetMapping("getStatus")
+    @ApiOperation("获取订单申请状态")
     @Deprecated
     public BaseResponse<Integer> getStatus(long id, HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
@@ -307,6 +311,7 @@ public class ApplyRecordsController {
 
 
     @PostMapping("getAllStatus")
+    @ApiOperation("获取所有申请状态")
     @Deprecated
     public BaseResponse<Map<Long, Integer>> getAllStatus(@RequestBody ApplyStatusRequest applyStatusRequest, HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
@@ -323,14 +328,12 @@ public class ApplyRecordsController {
     }
 
     /*
-     * 获取内部员工申请记录
+     * 获取供货商申请记录
      */
     @GetMapping("getApplyRecords")
+    @ApiOperation("获取供货商申请记录")
     public BaseResponse<List<ApplyRecords>> getApplyRecords(HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
-        if (!userService.hasInternalAuth(loginUser)) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "不是内部员工");
-        }
         long userId = loginUser.getId();
         QueryWrapper<ApplyRecords> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("applicantId", userId);
@@ -338,8 +341,6 @@ public class ApplyRecordsController {
         return ResultUtils.success(applyRecordsList);
     }
 
-
-    // endregion
 
     /**
      * 获取查询包装类
@@ -358,8 +359,6 @@ public class ApplyRecordsController {
         Long applicantId = applyRecordsQueryRequest.getApplicantId();
         String applicantUserName = applyRecordsQueryRequest.getApplicantUserName();
         Integer status = applyRecordsQueryRequest.getStatus();
-        String content = applyRecordsQueryRequest.getContent();
-        String reason = applyRecordsQueryRequest.getReason();
         List<String> ascSortField = applyRecordsQueryRequest.getAscSortField();
         List<String> descSortField = applyRecordsQueryRequest.getDescSortField();
 
@@ -369,8 +368,6 @@ public class ApplyRecordsController {
         queryWrapper.eq(goodsId != null, "goodsId", goodsId);
         queryWrapper.eq(StringUtils.isNotBlank(goodsName), "goodsName", goodsName);
         queryWrapper.eq(StringUtils.isNotBlank(applicantUserName), "applicantUserName", applicantUserName);
-        queryWrapper.like(StringUtils.isNotBlank(content), "content", content);
-        queryWrapper.eq(StringUtils.isNotBlank(reason), "reason", reason);
         queryWrapper.eq(status != null, "status", status);
         queryWrapper.eq(applicantId != null, "applicantId", applicantId);
 

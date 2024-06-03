@@ -37,11 +37,6 @@ public class UserVO implements Serializable {
     private String userRole;
 
     /**
-     * 会员过期时间
-     */
-    private Date vipExpireTime;
-
-    /**
      * 创建时间
      */
     private Date createTime;

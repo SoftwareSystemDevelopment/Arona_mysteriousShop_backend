@@ -36,11 +36,6 @@ public class GoodsInfoAddRequest implements Serializable {
     /**
      * 产品类型
      */
-//    private List<String> typeList;
-
-    /**
-     * 产品类型
-     */
     private List<String> type;
 
     /**

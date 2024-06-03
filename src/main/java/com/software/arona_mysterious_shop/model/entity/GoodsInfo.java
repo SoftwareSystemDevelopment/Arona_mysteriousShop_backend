@@ -67,7 +67,7 @@ public class GoodsInfo implements Serializable {
     private String permission;
 
     /**
-     * 创建用户 id
+     * 供货商 id
      */
     private Long userId;
 

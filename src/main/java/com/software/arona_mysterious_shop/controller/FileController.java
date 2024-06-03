@@ -13,6 +13,8 @@ import com.software.arona_mysterious_shop.constant.FileConstant;
 import com.software.arona_mysterious_shop.model.dto.file.Base64UploadFileRequest;
 import com.software.arona_mysterious_shop.model.dto.file.UploadFileRequest;
 import com.software.arona_mysterious_shop.model.enums.FileUploadBizEnum;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +33,7 @@ import java.util.Arrays;
 @RestController
 @RequestMapping("/file")
 @Slf4j
+@Api("文件接口")
 public class FileController {
 
     @Resource
@@ -44,6 +47,7 @@ public class FileController {
      * @return {@link BaseResponse}<{@link String}>
      */
     @PostMapping("/upload")
+    @ApiOperation("文件上传")
     public BaseResponse<String> uploadFile(@RequestPart("file") MultipartFile multipartFile,
                                            UploadFileRequest uploadFileRequest) {
         return ResultUtils.success(uploadFileUser(multipartFile, uploadFileRequest, null));
@@ -94,6 +98,7 @@ public class FileController {
      * @return {@link BaseResponse}<{@link String}>
      */
     @PostMapping("/upload/base64")
+    @ApiOperation("base64 格式的文件上传")
     public BaseResponse<String> uploadFileByBase64(@RequestBody Base64UploadFileRequest base64UploadFileRequest) {
         return ResultUtils.success(uploadFileByBase64User(base64UploadFileRequest, null));
     }

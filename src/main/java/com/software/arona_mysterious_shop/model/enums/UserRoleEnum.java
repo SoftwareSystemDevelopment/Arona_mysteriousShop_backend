@@ -13,11 +13,8 @@ import java.util.stream.Collectors;
 public enum UserRoleEnum {
 
     USER("用户", "user"),
-    VIP("vip", "vip"),
-    SVIP("svip", "svip"),
     ADMIN("管理员", "admin"),
-
-    INTERNAL("内部员工", "internal"),
+    INTERNAL("供货商", "provider"),
     BAN("被封号", "ban");
 
     private final String text;

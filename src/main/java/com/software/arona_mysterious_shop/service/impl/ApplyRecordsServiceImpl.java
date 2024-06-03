@@ -24,17 +24,6 @@ public class ApplyRecordsServiceImpl extends ServiceImpl<ApplyRecordsMapper, App
         if (applyRecords == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-
-        String content = applyRecords.getContent();
-
-        // 创建时，参数不能为空
-        if (add) {
-            ThrowUtils.throwIf(StringUtils.isAnyBlank(content), ErrorCode.PARAMS_ERROR);
-        }
-        // 有参数则校验
-        if (StringUtils.isNotBlank(content) && content.length() > 4096) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "申请内容过长");
-        }
     }
 }
 

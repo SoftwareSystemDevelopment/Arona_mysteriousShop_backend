@@ -15,7 +15,7 @@ public class ApplyRecordsAddRequest implements Serializable {
 
 
     /**
-     * 关联到产品信息表中的 id 字段，表示申请的是哪个产品
+     * 关联到产品信息表中的 id 字段，表示订购的是哪个产品
      */
     private Long goodsId;
 
@@ -25,17 +25,12 @@ public class ApplyRecordsAddRequest implements Serializable {
     private String goodsName;
 
     /**
-     * 关联到用户表中的 id 字段，表示申请者的用户ID
+     * 关联到用户表中的 id 字段，表示订购者的用户ID
      */
     private Long applicantId;
 
     /**
-     * 审核人id
-     */
-    private Long adminId;
-
-    /**
-     * 关联到用户表中的 userName 字段，表示申请者的用户名
+     * 关联到用户表中的 userName 字段，表示订购者的用户名
      */
     private String applicantUserName;
 
@@ -45,19 +40,9 @@ public class ApplyRecordsAddRequest implements Serializable {
     private Date applicationTime;
 
     /**
-     * 申请状态（0：未申请，1：审核中，2：通过审核，3：审核不通过）
+     * 订购状态（0：未下单，1：下单中，2：下单成功，3：下单失败）
      */
     private Integer status;
-
-    /**
-     * 申请内容（xxx申请xxx产品一件）
-     */
-    private String content;
-
-    /**
-     * 审核通过或者不通过的理由
-     */
-    private String reason;
 
     private static final long serialVersionUID = 1L;
 }

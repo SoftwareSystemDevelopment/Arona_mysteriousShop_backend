@@ -18,7 +18,9 @@ import com.software.arona_mysterious_shop.model.dto.goodsInfo.GoodsInfoAddReques
 import com.software.arona_mysterious_shop.model.dto.goodsInfo.GoodsInfoQueryRequest;
 import com.software.arona_mysterious_shop.model.dto.goodsInfo.GoodsInfoUpdateRequest;
 import com.software.arona_mysterious_shop.model.enums.GoodsInfoStatusEnum;
-import com.software.arona_mysterious_shop.model.vo.goodsInfo.GoodsInfoVO;
+import com.software.arona_mysterious_shop.model.vo.GoodsInfoVO;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +38,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/goodsInfo")
 @Slf4j
+@Api("产品接口")
 public class GoodsInfoController {
 
 
@@ -45,8 +48,6 @@ public class GoodsInfoController {
     @Resource
     private UserService userService;
 
-    // region 增删改查
-
     /**
      * 创建
      *
@@ -55,6 +56,7 @@ public class GoodsInfoController {
      * @return {@link BaseResponse}<{@link Long}>
      */
     @PostMapping("/add")
+    @ApiOperation(value = "添加产品")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Long> addGoodsInfo(@RequestBody GoodsInfoAddRequest goodsInfoAddRequest, HttpServletRequest request) {
         if (goodsInfoAddRequest == null) {
@@ -83,6 +85,7 @@ public class GoodsInfoController {
      * @return {@link BaseResponse}<{@link Boolean}>
      */
     @PostMapping("/delete")
+    @ApiOperation(value = "删除产品")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> deleteGoodsInfo(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
@@ -105,6 +108,7 @@ public class GoodsInfoController {
      * @return {@link BaseResponse}<{@link Boolean}>
      */
     @PostMapping("/update")
+    @ApiOperation(value = "更新产品")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateGoodsInfo(@RequestBody GoodsInfoUpdateRequest goodsInfoUpdateRequest) {
         if (goodsInfoUpdateRequest == null || goodsInfoUpdateRequest.getId() <= 0) {
@@ -133,6 +137,7 @@ public class GoodsInfoController {
      * @return {@link BaseResponse}<{@link GoodsInfo}>
      */
     @GetMapping("/get")
+    @ApiOperation(value = "获取产品 by id")
     public BaseResponse<GoodsInfo> getGoodsInfoById(long id) {
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -151,6 +156,7 @@ public class GoodsInfoController {
      * @return {@link BaseResponse}<{@link List}<{@link GoodsInfo}>>
      */
     @PostMapping("/list")
+    @ApiOperation(value = "获取产品列表")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<List<GoodsInfo>> listGoodsInfo(@RequestBody GoodsInfoQueryRequest goodsInfoQueryRequest) {
         List<GoodsInfo> goodsInfoList = goodsInfoService.list(getQueryWrapper(goodsInfoQueryRequest));
@@ -165,6 +171,7 @@ public class GoodsInfoController {
      * @return {@link BaseResponse}<{@link Page}<{@link GoodsInfo}>>
      */
     @PostMapping("/list/page")
+    @ApiOperation(value = "分页获取产品列表")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<GoodsInfo>> listGoodsInfoByPage(@RequestBody GoodsInfoQueryRequest goodsInfoQueryRequest,
                                                                        HttpServletRequest request) {
@@ -184,6 +191,7 @@ public class GoodsInfoController {
      * @return {@link BaseResponse}<{@link Page}<{@link GoodsInfoVO}>>
      */
     @PostMapping("/list/page/vo")
+    @ApiOperation(value = "分页获取产品列表（封装类）")
     public BaseResponse<Page<GoodsInfoVO>> listGoodsInfoVOByPage(@RequestBody GoodsInfoQueryRequest goodsInfoQueryRequest) {
         long current = goodsInfoQueryRequest.getCurrent();
         long size = goodsInfoQueryRequest.getPageSize();
@@ -205,9 +213,6 @@ public class GoodsInfoController {
         List<String> typeList = goodsInfoService.listObjs(queryWrapper, obj -> (String) obj);
         return ResultUtils.success(typeList);
     }
-
-
-    // endregion
 
     /**
      * 获取查询包装类

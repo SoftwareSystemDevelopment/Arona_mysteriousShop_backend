@@ -25,11 +25,12 @@ public interface UserService extends IService<User> {
      * 用户注册
      *
      * @param userAccount   用户账户
+     * @param userName 用户名
      * @param userPassword  用户密码
      * @param checkPassword 校验密码
      * @return 新用户 id
      */
-    long userRegister(String userAccount, String userPassword, String checkPassword);
+    long userRegister(String userAccount,String userName,String userPassword, String checkPassword);
 
     /**
      * 用户登录
@@ -52,13 +53,6 @@ public interface UserService extends IService<User> {
     User getLoginUser(HttpServletRequest request);
 
     /**
-     * 获取当前登录用户（允许未登录）
-     *
-     * @return
-     */
-    User getLoginUserPermitNull();
-
-    /**
      * 是否为管理员
      *
      * @param request
@@ -73,22 +67,6 @@ public interface UserService extends IService<User> {
      * @return
      */
     boolean isAdmin(User user);
-
-    /**
-     * 是否有 VIP 权限（管理员也有）
-     *
-     * @param user
-     * @return
-     */
-    boolean hasVipAuth(User user);
-
-    /**
-     * 是否有内部权限（管理员也有）
-     * @param user
-     * @return
-     */
-
-    boolean hasInternalAuth(User user);
 
     /**
      * 用户注销
