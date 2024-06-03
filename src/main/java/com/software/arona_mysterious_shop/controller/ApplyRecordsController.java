@@ -198,7 +198,7 @@ public class ApplyRecordsController {
         long goodsId = applyRecordsApplyRequest.getGoodsId();
         GoodsInfo goodsInfo = goodsInfoService.getById(goodsId);
         if (goodsInfo == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "周边信息不存在");
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "产品信息不存在");
         }
         //获取当前登录用户
         User loginUser = userService.getLoginUser(request);
@@ -212,7 +212,7 @@ public class ApplyRecordsController {
         try {
             if (lock.tryLock(0, -1, TimeUnit.MILLISECONDS)) {
                 {
-                    // 查出周边让库存-nums
+                    // 查出产品让库存-nums
 
                     // 检查库存是否足够
                     if (nums > goodsInfo.getStock()) {
@@ -222,11 +222,11 @@ public class ApplyRecordsController {
                     if (goodsInfo.getStock() <= 0) {
                         throw new BusinessException(ErrorCode.SYSTEM_ERROR, "库存不足");
                     }
-                    // 更新周边信息库存（使用乐观锁）
+                    // 更新产品信息库存（使用乐观锁）
                     goodsInfo.setStock(goodsInfo.getStock() - nums);
                     boolean updateResult = goodsInfoService.updateById(goodsInfo);
                     if (!updateResult) {
-                        throw new BusinessException(ErrorCode.OPERATION_ERROR, "更新周边库存失败");
+                        throw new BusinessException(ErrorCode.OPERATION_ERROR, "更新产品库存失败");
                     }
                 }
                 // 将申请状态改成审核中 并插入数据

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 周边申请状态枚举
+ * 产品申请状态枚举
  *
  */
 public enum ApplyStatusEnum {

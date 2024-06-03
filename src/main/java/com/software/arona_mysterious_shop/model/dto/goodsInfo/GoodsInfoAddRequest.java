@@ -34,12 +34,12 @@ public class GoodsInfoAddRequest implements Serializable {
     private Integer stock;
 
     /**
-     * 周边类型
+     * 产品类型
      */
 //    private List<String> typeList;
 
     /**
-     * 周边类型
+     * 产品类型
      */
     private List<String> type;
 

@@ -35,7 +35,7 @@ public class GoodsInfoVO implements Serializable {
     private Integer stock;
 
     /**
-     * 周边类型
+     * 产品类型
      */
     private String type;
 

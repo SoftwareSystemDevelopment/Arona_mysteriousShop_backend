@@ -45,7 +45,7 @@ public class GoodsInfoServiceImpl extends ServiceImpl<GoodsInfoMapper, GoodsInfo
 
         // 创建时，参数不能为空
         if (add) {
-            ThrowUtils.throwIf(StringUtils.isAnyBlank(name), ErrorCode.PARAMS_ERROR,"周边名称不能为空");
+            ThrowUtils.throwIf(StringUtils.isAnyBlank(name), ErrorCode.PARAMS_ERROR,"产品名称不能为空");
         }
         // 有参数则校验
         ThrowUtils.throwIf(stock == null || stock < 0, ErrorCode.PARAMS_ERROR,"库存不能小于0");

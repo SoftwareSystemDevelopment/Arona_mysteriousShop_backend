@@ -27,7 +27,7 @@ create table if not exists user
 create index idx_userId
     on template_init_db.post (userId);
 
--- 周边表
+-- 产品表
 create table if not exists `goods_info`
 (
     `id`            bigint auto_increment comment '主键' primary key,
@@ -35,7 +35,7 @@ create table if not exists `goods_info`
     `cover`         varchar(1024) comment '图片',
     `price`         int comment '价格（分）',
     `stock`         int comment '库存',
-    `type`          varchar(128)                       null comment '周边类型',
+    `type`          varchar(128)                       null comment '产品类型',
     `replenishLink` varchar(512) comment '进货链接',
     `purchaseLink`  varchar(512) comment '用户购买链接',
     `status`        int      default 0                 not null comment '是否公开浏览，0: 关闭，1: 启用，默认关闭',
@@ -44,7 +44,7 @@ create table if not exists `goods_info`
     `createTime`    datetime default CURRENT_TIMESTAMP not null comment '创建时间',
     `updateTime`    datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
     `isDelete`      tinyint  default 0                 not null comment '是否删除(0-未删, 1-已删)'
-) comment '周边';
+) comment '产品';
 -- 给type字段添加普通索引
 CREATE INDEX idx_type ON goods_info(type);
 
@@ -52,14 +52,14 @@ CREATE INDEX idx_type ON goods_info(type);
 CREATE TABLE IF NOT EXISTS `apply_records`
 (
     `id`                bigint              AUTO_INCREMENT PRIMARY KEY COMMENT '主键，用于唯一标识每条申请记录',
-    `goodsId`      bigint              COMMENT '关联到周边信息表中的 id 字段，表示申请的是哪个周边',
-    `goodsName`    VARCHAR(256)        COMMENT '周边名称',
+    `goodsId`      bigint              COMMENT '关联到产品信息表中的 id 字段，表示申请的是哪个产品',
+    `goodsName`    VARCHAR(256)        COMMENT '产品名称',
     `applicantId`       bigint              COMMENT '关联到用户表中的 id 字段，表示申请者的用户ID',
     `adminId`           bigint              COMMENT '审核人id',
     `applicantUserName` VARCHAR(512)        COMMENT '关联到用户表中的 userName 字段，表示申请者的用户名',
     `applicationTime`   DATETIME            DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '记录申请的时间',
     `status`            int                 COMMENT '申请状态（0：未申请，1：审核中，2：通过审核，3：审核不通过）',
-    `content`           VARCHAR(4096)       COMMENT '申请内容（xxx申请xxx周边一件）',
+    `content`           VARCHAR(4096)       COMMENT '申请内容（xxx申请xxx产品一件）',
     `reason`            VARCHAR(4096)       COMMENT '审核通过或者不通过的理由',
     `isDelete`          TINYINT             default 0 COMMENT '是否删除，0: 未删除，1: 已删除，默认未删除',
     `createTime`        DATETIME            DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '记录创建时间',

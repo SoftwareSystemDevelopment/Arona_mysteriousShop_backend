@@ -14,13 +14,13 @@ public class ApplyRecordsApplyRequest implements Serializable {
 
 
     /**
-     * 关联到周边信息表中的 id 字段，表示申请的是哪个周边
+     * 关联到产品信息表中的 id 字段，表示申请的是哪个产品
      */
     private Long goodsId;
 
 
     /**
-     * 申请内容（xxx申请xxx周边一件）
+     * 申请内容（xxx申请xxx产品一件）
      */
     private String content;
 

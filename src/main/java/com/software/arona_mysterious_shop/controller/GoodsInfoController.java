@@ -190,7 +190,7 @@ public class GoodsInfoController {
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
         QueryWrapper<GoodsInfo> queryWrapper = this.getQueryWrapper(goodsInfoQueryRequest);
-        // 只返回可以浏览的周边
+        // 只返回可以浏览的产品
         queryWrapper.eq("status", GoodsInfoStatusEnum.ENABLED.getValue());
         queryWrapper.orderByDesc("createTime");
         Page<GoodsInfo> goodsInfoPage = goodsInfoService.page(new Page<>(current, size),

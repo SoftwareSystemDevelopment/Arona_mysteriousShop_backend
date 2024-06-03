@@ -19,12 +19,12 @@ public class ApplyRecordsUpdateRequest implements Serializable {
     private Long id;
 
     /**
-     * 关联到周边信息表中的 id 字段，表示申请的是哪个周边
+     * 关联到产品信息表中的 id 字段，表示申请的是哪个产品
      */
     private Long goodsId;
 
     /**
-     * 周边名称
+     * 产品名称
      */
     private String goodsName;
 
@@ -54,7 +54,7 @@ public class ApplyRecordsUpdateRequest implements Serializable {
     private Integer status;
 
     /**
-     * 申请内容（xxx申请xxx周边一件）
+     * 申请内容（xxx申请xxx产品一件）
      */
     private String content;
 
