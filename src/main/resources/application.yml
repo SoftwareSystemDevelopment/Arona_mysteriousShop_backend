@@ -12,7 +12,7 @@ spring:
   # session 配置
   session:
     # todo 取消注释开启分布式 session（须先配置 Redis）
-#     store-type: redis
+    store-type: redis
     # 30 天过期
     timeout: 2592000
   # 数据库配置
@@ -21,7 +21,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/template_init_db?serverTimezone=Asia/Shanghai
     username: root
-    password: 123456
+    password: aqaed.19.03.q
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
