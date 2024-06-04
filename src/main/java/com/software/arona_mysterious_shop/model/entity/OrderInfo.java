@@ -42,6 +42,11 @@ public class OrderInfo implements Serializable {
     private Integer status;
 
     /**
+     * 是否通过审核， 0：不通过， 1： 通过
+     */
+    private Integer isApproved;
+
+    /**
      * 是否删除，0: 未删除，1: 已删除，默认未删除
      */
     private Integer isDelete;

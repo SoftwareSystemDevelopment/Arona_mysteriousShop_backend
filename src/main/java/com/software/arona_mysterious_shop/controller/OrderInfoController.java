@@ -192,7 +192,7 @@ public class OrderInfoController {
         }
         //获取当前登录用户
         User loginUser = userService.getLoginUser(request);
-        ApplyRecords applyRecords = new ApplyRecords();
+        OrderInfo orderInfo = new OrderInfo();
         //使用redisson获取分布式锁
         String lockKey = "apply_lock" + goodsId;
         RLock lock = redissonClient.getLock(lockKey);
@@ -217,13 +217,12 @@ public class OrderInfoController {
                     }
                 }
                 // 将申请状态改成审核中 并插入数据
-                BeanUtils.copyProperties(orderApplyRequest, applyRecords);
-                applyRecords.setApplicantId(loginUser.getId());
-                applyRecords.setGoodsName(goodsInfo.getName());
-                applyRecords.setApplicantUserName(loginUser.getUserName());
-                applyRecords.setStatus(OrderStatusEnum.PENDING.getValue());
-                applyRecords.setApplicationTime(new Date());
-                boolean result = applyRecordsService.save(applyRecords);
+                BeanUtils.copyProperties(orderApplyRequest, orderInfo);
+                orderInfo.setUserId(loginUser.getId());
+                orderInfo.setUserName(loginUser.getUserName());
+                orderInfo.setStatus(OrderStatusEnum.PENDING.getValue());
+                orderInfo.setOrderTime(new Date());
+                boolean result = orderInfoService.save(orderInfo);
                 if (!result) {
                     throw new BusinessException(ErrorCode.OPERATION_ERROR);
                 }
@@ -237,39 +236,34 @@ public class OrderInfoController {
             }
         }
 
-        return ResultUtils.success(applyRecords.getId());
+        return ResultUtils.success(orderInfo.getId());
     }
 
 
     @PostMapping("/approve")
     @ApiOperation("商家审核订单")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Long> approveApplyRecords(@RequestBody ApplyRecordsApproveRequest applyRecordsApproveRequest, HttpServletRequest request) {
-        if (applyRecordsApproveRequest == null) {
+    public BaseResponse<Long> approveApplyRecords(@RequestBody OrderApproveRequest orderApproveRequest, HttpServletRequest request) {
+        if (orderApproveRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User loginUser = userService.getLoginUser(request);
-        long applyRecordsId = applyRecordsApproveRequest.getId();
+        long orderId = orderApproveRequest.getId();
+        int status = orderApproveRequest.getIsApproved();
         //获取申请信息
-        ApplyRecords applyRecords = applyRecordsService.getById(applyRecordsId);
+        OrderInfo orderInfo = orderInfoService.getById(orderId);
 
         // 判断申请记录的当前状态是否为“审核中”
-        if (OrderStatusEnum.PENDING.getValue() != applyRecords.getStatus()) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "申请记录状态无效");
+        if (OrderStatusEnum.PENDING.getValue() != orderInfo.getStatus()) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "订单状态无效");
         }
 
-        if (applyRecordsApproveRequest.getApproved()) {
-            applyRecords.setStatus(OrderStatusEnum.APPROVED.getValue());
-        } else {
-
-            applyRecords.setStatus(OrderStatusEnum.REJECTED.getValue());
-            GoodsInfo goodsInfo = goodsInfoService.getById(applyRecords.getGoodsId());
-            if (goodsInfo != null) {
-                goodsInfoService.updateById(goodsInfo);
-            }
+        if (status == 1) {
+            orderInfo.setStatus(OrderStatusEnum.APPROVED.getValue());
+        } else if(status == 2) {
+            orderInfo.setStatus(OrderStatusEnum.REJECTED.getValue());
         }
-        applyRecordsService.updateById(applyRecords);
-        return ResultUtils.success(applyRecords.getId());
+        orderInfoService.updateById(orderInfo);
+        return ResultUtils.success(orderInfo.getId());
     }
 
 
@@ -280,31 +274,13 @@ public class OrderInfoController {
         User loginUser = userService.getLoginUser(request);
         long userId = loginUser.getId();
 
-        QueryWrapper<ApplyRecords> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<OrderInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("goodsId", id);
-        queryWrapper.eq("applicantId", userId);
-        ApplyRecords applyRecords = applyRecordsService.getOne(queryWrapper);
-        int status = applyRecords.getStatus();
+        queryWrapper.eq("userId", userId);
+        OrderInfo orderInfo = orderInfoService.getOne(queryWrapper);
+        int status = orderInfo.getStatus();
 
         return ResultUtils.success(status);
-    }
-
-
-    @PostMapping("getAllStatus")
-    @ApiOperation("获取所有申请状态")
-    @Deprecated
-    public BaseResponse<Map<Long, Integer>> getAllStatus(@RequestBody OrderStatusRequest orderStatusRequest, HttpServletRequest request) {
-        User loginUser = userService.getLoginUser(request);
-        long userId = loginUser.getId();
-        List<Long> ids = orderStatusRequest.getIds();
-        QueryWrapper<ApplyRecords> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("goodsId", ids);
-        queryWrapper.eq("applicantId", userId);
-        List<ApplyRecords> applyRecordsList = applyRecordsService.list(queryWrapper.select("goodsId", "status"));
-        Map<Long, Integer> statusMap = applyRecordsList.stream()
-                .collect(Collectors.toMap(ApplyRecords::getGoodsId, ApplyRecords::getStatus));
-
-        return ResultUtils.success(statusMap);
     }
 
 
