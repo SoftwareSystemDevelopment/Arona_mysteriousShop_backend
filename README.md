@@ -12,15 +12,9 @@
 
 对外管理：为用户提供商品的浏览和购买渠道，提升用户体验
 
-## 项目特点
-
-1. 前端采用极为先进的SolidJs框架
-2. 整合讯飞星火api，实现后台各种货物的报表分析，整合echarts进行可视化直观展示
-3. 引入redisson
-
 ## 如何运行
 
 1. 更新mvn
-2. 开redis
+2. 配置redis
 3. 在`application.yml`中配置自己的数据库、密码
-4. 项目集成了swagger+knife4j，所有的api可以在http://localhost:8101/api/doc.html#/home看到
+4. 本地地址：http://localhost:8101/api/doc.html#/home
