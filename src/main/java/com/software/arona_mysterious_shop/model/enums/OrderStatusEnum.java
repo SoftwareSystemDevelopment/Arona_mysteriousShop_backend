@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
  * 订单状态枚举
  *
  */
-public enum ApplyStatusEnum {
+public enum OrderStatusEnum {
 
 
     NOT_APPLIED( "未下单",0),
-    PENDING("处理中",1),
+    PENDING("审核中",1),
     APPROVED("下单成功",2),
     REJECTED( "下单失败",3);
 
@@ -23,7 +23,7 @@ public enum ApplyStatusEnum {
 
     private final int value;
 
-    ApplyStatusEnum(String text, int value) {
+    OrderStatusEnum(String text, int value) {
         this.text = text;
         this.value = value;
     }
@@ -41,13 +41,13 @@ public enum ApplyStatusEnum {
      * 根据 value 获取枚举
      *
      * @param value 值
-     * @return {@link ApplyStatusEnum}
+     * @return {@link OrderStatusEnum}
      */
-    public static ApplyStatusEnum getEnumByValue(Integer value) {
+    public static OrderStatusEnum getEnumByValue(Integer value) {
         if (ObjectUtils.isEmpty(value)) {
             return null;
         }
-        for (ApplyStatusEnum productStatusEnum : ApplyStatusEnum.values()) {
+        for (OrderStatusEnum productStatusEnum : OrderStatusEnum.values()) {
             if (productStatusEnum.getValue() == value) {
                 return productStatusEnum;
             }

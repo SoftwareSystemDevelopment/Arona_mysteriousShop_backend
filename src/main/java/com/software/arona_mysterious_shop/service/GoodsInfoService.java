@@ -18,7 +18,6 @@ public interface GoodsInfoService extends IService<GoodsInfo> {
     /**
      * 检查商品信息合法性
      * @param goodsInfo
-     * @param add
      */
     void validGoodsInfo(GoodsInfo goodsInfo, boolean add);
 

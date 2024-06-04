@@ -9,45 +9,35 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * 订单记录表
- * @TableName apply_records
+ * 订单表
+ * @TableName order_info
  */
-@TableName(value ="apply_records")
+@TableName(value ="order_info")
 @Data
-public class ApplyRecords implements Serializable {
+public class OrderInfo implements Serializable {
     /**
-     * 主键，用于唯一标识每条订单记录
+     * 主键，用于唯一标识每条申请记录
      */
     @TableId(type = IdType.AUTO)
     private Long id;
 
     /**
-     * 关联到产品信息表中的 id 字段，表示订购的是哪个产品
+     * 关联到用户表中的 id 字段，表示购买者的用户ID
      */
-    private Long goodsId;
+    private Long userId;
 
     /**
-     * 产品名称
+     * 关联到用户表中的 userName 字段，表示购买者的用户名
      */
-    private String goodsName;
+    private String userName;
 
     /**
-     * 关联到用户表中的 id 字段，表示订购者的用户ID
+     * 订单下达的时间
      */
-    private Long applicantId;
+    private Date orderTime;
 
     /**
-     * 关联到用户表中的 userName 字段，表示订购者的用户名
-     */
-    private String applicantUserName;
-
-    /**
-     * 记录订购的时间
-     */
-    private Date applicationTime;
-
-    /**
-     * 订购状态（0：未下单，1：下单中，2：下单成功，3：下单失败）
+     * 申请状态（0：未申请，1：审核中，2：通过审核，3：审核不通过）
      */
     private Integer status;
 
@@ -65,6 +55,11 @@ public class ApplyRecords implements Serializable {
      * 记录最后更新时间
      */
     private Date updateTime;
+
+    /**
+     * 订单总金额
+     */
+    private Long totalAmount;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

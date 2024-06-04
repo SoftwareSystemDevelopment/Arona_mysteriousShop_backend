@@ -1,17 +1,19 @@
-package com.software.arona_mysterious_shop.model.dto.applyrecords;
+package com.software.arona_mysterious_shop.model.dto.orderinfo;
 
+import com.software.arona_mysterious_shop.common.PageRequest;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 更新请求
+ * 查询请求
  *
- * @TableName report
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class ApplyRecordsUpdateRequest implements Serializable {
+public class OrderQueryRequest extends PageRequest implements Serializable {
 
     /**
      * 主键
@@ -19,29 +21,14 @@ public class ApplyRecordsUpdateRequest implements Serializable {
     private Long id;
 
     /**
-     * 关联到产品信息表中的 id 字段，表示订购的是哪个产品
-     */
-    private Long goodsId;
-
-    /**
-     * 产品名称
-     */
-    private String goodsName;
-
-    /**
      * 关联到用户表中的 id 字段，表示订购者的用户ID
      */
-    private Long applicantId;
+    private Long userId;
 
     /**
      * 关联到用户表中的 userName 字段，表示订购者的用户名
      */
-    private String applicantUserName;
-
-    /**
-     * 记录订购的时间
-     */
-    private Date applicationTime;
+    private String userName;
 
     /**
      * 订购状态（0：未下单，1：下单中，2：下单成功，3：下单失败）

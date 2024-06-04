@@ -1,4 +1,4 @@
-package com.software.arona_mysterious_shop.model.dto.applyrecords;
+package com.software.arona_mysterious_shop.model.dto.orderinfo;
 
 import lombok.Data;
 
@@ -10,7 +10,7 @@ import java.io.Serializable;
  * @TableName report
  */
 @Data
-public class ApplyRecordsApplyRequest implements Serializable {
+public class OrderApplyRequest implements Serializable {
 
 
     /**

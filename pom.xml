@@ -10,7 +10,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.software-system-development</groupId>
-    <artifactId>Arona_mysteriousShop_backend</artifactId>
+    <artifactId>arona-mysterious-shop-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Arona_mysteriousShop_backend</name>
     <properties>

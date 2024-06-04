@@ -1,19 +1,17 @@
-package com.software.arona_mysterious_shop.model.dto.applyrecords;
+package com.software.arona_mysterious_shop.model.dto.orderinfo;
 
-import com.software.arona_mysterious_shop.common.PageRequest;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 查询请求
+ * 更新请求
  *
+ * @TableName report
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class ApplyRecordsQueryRequest extends PageRequest implements Serializable {
+public class OrderUpdateRequest implements Serializable {
 
     /**
      * 主键
@@ -41,7 +39,7 @@ public class ApplyRecordsQueryRequest extends PageRequest implements Serializabl
     private String applicantUserName;
 
     /**
-     * 记录申请的时间
+     * 记录订购的时间
      */
     private Date applicationTime;
 

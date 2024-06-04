@@ -47,16 +47,14 @@ public class GoodsInfoServiceImpl extends ServiceImpl<GoodsInfoMapper, GoodsInfo
         ThrowUtils.throwIf(status != 0 && status != 1, ErrorCode.PARAMS_ERROR,"状态错误");
 
         //名称相关进行检验
-        if(StringUtils.isNotBlank((name))) {
-            //名称不能重复
-            GoodsInfo goodsInfoByName = this.lambdaQuery().eq(GoodsInfo::getName, name).one();
-            if (goodsInfoByName != null && !goodsInfoByName.getId().equals(goodsInfo.getId())) {
-                throw new BusinessException(ErrorCode.PARAMS_ERROR, "产品名称已存在");
-            }
-            //名称长度不能超过256
-            if (name.length() > 256) {
-                throw new BusinessException(ErrorCode.PARAMS_ERROR, "名称过长");
-            }
+        //名称不能重复
+        GoodsInfo goodsInfoByName = this.lambdaQuery().eq(GoodsInfo::getName, name).one();
+        if (goodsInfoByName != null && !goodsInfoByName.getId().equals(goodsInfo.getId())) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "产品名称已存在");
+        }
+        //名称长度不能超过256
+        if (name.length() > 256) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "名称过长");
         }
         //类型相关检验
         Gson gson = new Gson();
