@@ -38,7 +38,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/goodsInfo")
 @Slf4j
-@Api("产品接口")
+@Api(value = "产品接口")
 public class GoodsInfoController {
 
 
@@ -57,7 +57,7 @@ public class GoodsInfoController {
      */
     @PostMapping("/add")
     @ApiOperation(value = "添加产品")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @AuthCheck(mustRole = UserConstant.PROVIDER_ROLE)
     public BaseResponse<Long> addGoodsInfo(@RequestBody GoodsInfoAddRequest goodsInfoAddRequest, HttpServletRequest request) {
         if (goodsInfoAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);

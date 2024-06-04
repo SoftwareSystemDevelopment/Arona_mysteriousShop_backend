@@ -150,7 +150,7 @@ public class UserController {
      * @return {@link BaseResponse}<{@link Long}>
      */
     @PostMapping("/add")
-    @ApiOperation(value = "添加用户")
+    @ApiOperation(value = "管理员添加用户")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Long> addUser(@RequestBody UserAddRequest userAddRequest) {
         if (userAddRequest == null) {
@@ -186,8 +186,8 @@ public class UserController {
      * @param userUpdateRequest 用户更新请求
      * @return {@link BaseResponse}<{@link Boolean}>
      */
-    @PostMapping("/update")
-    @ApiOperation(value = "更新用户")
+    @PostMapping("/update/admin")
+    @ApiOperation(value = "更新用户by 管理员")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
         if (userUpdateRequest == null || userUpdateRequest.getId() == null) {

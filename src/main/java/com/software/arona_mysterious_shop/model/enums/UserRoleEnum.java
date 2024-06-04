@@ -14,7 +14,7 @@ public enum UserRoleEnum {
 
     USER("用户", "user"),
     ADMIN("管理员", "admin"),
-    INTERNAL("供货商", "provider"),
+    PROVIDER("供货商", "provider"),
     BAN("被封号", "ban");
 
     private final String text;

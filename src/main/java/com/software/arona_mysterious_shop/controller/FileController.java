@@ -33,7 +33,7 @@ import java.util.Arrays;
 @RestController
 @RequestMapping("/file")
 @Slf4j
-@Api("文件接口")
+@Api(value = "文件接口")
 public class FileController {
 
     @Resource

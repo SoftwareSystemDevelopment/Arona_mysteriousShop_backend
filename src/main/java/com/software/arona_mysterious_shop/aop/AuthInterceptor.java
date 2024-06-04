@@ -61,6 +61,12 @@ public class AuthInterceptor {
                     throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
                 }
             }
+            //必须有供货商权限
+            if (UserRoleEnum.PROVIDER.equals(mustUserRoleEnum)) {
+                if (!mustRole.equals(userRole)) {
+                    throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+                }
+            }
         }
         // 通过权限校验，放行
         return joinPoint.proceed();

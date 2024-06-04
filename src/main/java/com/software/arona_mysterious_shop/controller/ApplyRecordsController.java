@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/applyRecords")
 @Slf4j
-@Api("订单接口")
+@Api(value = "订单接口")
 public class ApplyRecordsController {
 
 

@@ -45,6 +45,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Transactional(rollbackFor = Exception.class)
     public long addUser(User user) {
         // 创建用户
+        // 默认给一个普通用户角色
+        user.setUserRole(UserRoleEnum.USER.getValue());
         boolean result = this.save(user);
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "用户注册失败");
@@ -154,7 +156,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public boolean isAdmin(HttpServletRequest request) {
-        // 仅管理员可查询
         Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
         User user = (User) userObj;
         return isAdmin(user);

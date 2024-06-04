@@ -17,8 +17,6 @@ public interface UserConstant {
      */
     long SYSTEM_USER_ID = 1L;
 
-    //  region 权限
-
     /**
      * 默认权限
      */
@@ -32,7 +30,7 @@ public interface UserConstant {
     /**
      * 供货商
      */
-    String INTERNAL_ROLE = "provider";
+    String PROVIDER_ROLE = "provider";
 
     /**
      * 被封号
