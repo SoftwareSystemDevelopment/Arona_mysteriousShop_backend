@@ -1,5 +1,6 @@
 package com.software.arona_mysterious_shop.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -16,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -93,6 +95,26 @@ public class GoodsInfoServiceImpl extends ServiceImpl<GoodsInfoMapper, GoodsInfo
         // 转换VO
         GoodsInfoVO goodsInfoVO = new GoodsInfoVO();
         return null;
+    }
+
+    @Override
+    public List<String> getTypes(QueryWrapper<GoodsInfo> queryWrapper) {
+        List<String> typeList = new ArrayList<>();
+        //找types字段不为空的所有记录
+        for (GoodsInfo goodsInfo : this.list(queryWrapper)) {
+            String types = goodsInfo.getTypes();
+            if (StringUtils.isNotBlank(types)) {
+                Gson gson = new Gson();
+                List<String> typesList = gson.fromJson(types, List.class);
+                //如果有重复则不添加
+                for (String type : typesList) {
+                    if (!typeList.contains(type)) {
+                        typeList.add(type);
+                    }
+                }
+            }
+        }
+        return typeList;
     }
 }
 

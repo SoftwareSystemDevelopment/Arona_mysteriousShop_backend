@@ -2,6 +2,7 @@ package com.software.arona_mysterious_shop.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.gson.Gson;
 import com.software.arona_mysterious_shop.annotation.AuthCheck;
 import com.software.arona_mysterious_shop.common.BaseResponse;
 import com.software.arona_mysterious_shop.common.DeleteRequest;
@@ -220,10 +221,11 @@ public class GoodsInfoController {
     }
 
     @GetMapping("/list/type")
+    @ApiOperation("获取产品类型列表")
     public BaseResponse<List<String>> listGoodsInfoType() {
         QueryWrapper<GoodsInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("distinct type");
-        List<String> typeList = goodsInfoService.listObjs(queryWrapper, obj -> (String) obj);
+        queryWrapper.select("types");
+        List<String> typeList = goodsInfoService.getTypes(queryWrapper);
         return ResultUtils.success(typeList);
     }
 
@@ -266,4 +268,5 @@ public class GoodsInfoController {
 
     }
 
+    //TODO 智能推荐算法待实现
 }
