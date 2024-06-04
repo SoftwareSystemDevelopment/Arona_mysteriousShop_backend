@@ -73,7 +73,17 @@ public interface UserService extends IService<User> {
      * @return
      */
     boolean userLogout(HttpServletRequest request);
-    
+
+    /**
+     * 用户更新个人信息
+     * @param id
+     * @param userName
+     * @param userPassword
+     * @param userAvatar
+     * @param userProfile
+     * @return
+     */
+    long userUpdate(Long id, String userName, String userPassword, String userAvatar, String userProfile, HttpServletRequest request);
 
     /**
      * 获取脱敏的已登录用户信息

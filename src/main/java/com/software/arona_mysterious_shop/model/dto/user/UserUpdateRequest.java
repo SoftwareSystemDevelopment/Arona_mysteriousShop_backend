@@ -9,7 +9,7 @@ import java.io.Serializable;
  *
  */
 @Data
-public class UserEditRequest implements Serializable {
+public class UserUpdateRequest implements Serializable {
     /**
      * 用户id
      */

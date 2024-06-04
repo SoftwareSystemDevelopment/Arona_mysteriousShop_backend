@@ -182,6 +182,34 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    public long userUpdate(Long id, String userName, String userPassword, String userAvatar, String userProfile, HttpServletRequest request) {
+        // 1.先判断是否已登录
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        User currentUser = (User) userObj;
+        if (currentUser == null || currentUser.getId() == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        //判断是否有权限修改，必须要是用户自己或者是管理员
+        if (!currentUser.getId().equals(id) && !isAdmin(currentUser)) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "无权限修改");
+        }
+        //修改用户信息
+        User user = new User();
+        user.setId(id);
+        user.setUserName(userName);
+        //密码加密
+        String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
+        user.setUserPassword(encryptPassword);
+        user.setUserAvatar(userAvatar);
+        user.setUserProfile(userProfile);
+        boolean updateResult = this.updateById(user);
+        if (!updateResult) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "修改失败");
+        }
+        return id;
+    }
+
+    @Override
     public LoginUserVO getLoginUserVO(User user) {
         if (user == null) {
             return null;

@@ -87,8 +87,6 @@ public class UserController {
         return ResultUtils.success(loginUserVO);
     }
 
-
-
 //    /**
 //     * 用户登录（公众号扫码登录，前端轮询请求）
 //     *
@@ -114,7 +112,27 @@ public class UserController {
 //        return ResultUtils.success(loginUserVO);
 //    }
 
-
+    /**
+     * 修改用户信息
+     *
+     */
+    @PostMapping("/update")
+    @ApiOperation("修改用户信息")
+    public BaseResponse<Long> userUpdate(@RequestBody UserUpdateRequest userUpdateRequest, HttpServletRequest request) {
+        if (userUpdateRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Long id = userUpdateRequest.getId();
+        String userName = userUpdateRequest.getUserName();
+        String userPassword = userUpdateRequest.getUserPassword();
+        String userAvatar = userUpdateRequest.getUserAvatar();
+        String userProfile = userUpdateRequest.getUserProfile();
+        if (id == null || StringUtils.isAnyBlank(userName, userPassword, userAvatar, userProfile)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        long result = userService.userUpdate(id, userName, userPassword, userAvatar, userProfile, request);
+        return ResultUtils.success(result);
+    }
 
     /**
      * 用户注销
