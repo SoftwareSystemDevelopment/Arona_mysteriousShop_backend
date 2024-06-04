@@ -10,7 +10,7 @@
             <result property="cover" column="cover" jdbcType="VARCHAR"/>
             <result property="price" column="price" jdbcType="INTEGER"/>
             <result property="stock" column="stock" jdbcType="INTEGER"/>
-            <result property="type" column="type" jdbcType="VARCHAR"/>
+            <result property="type" column="types" jdbcType="VARCHAR"/>
             <result property="replenishLink" column="replenishLink" jdbcType="VARCHAR"/>
             <result property="purchaseLink" column="purchaseLink" jdbcType="VARCHAR"/>
             <result property="status" column="status" jdbcType="INTEGER"/>

@@ -55,6 +55,10 @@ public enum GoodsTypeEnum {
         return null;
     }
 
+    public static boolean contains(String type) {
+        return Arrays.stream(values()).anyMatch(item -> item.value.equals(type));
+    }
+
     public String getValue() {
         return value;
     }

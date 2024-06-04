@@ -64,7 +64,15 @@ public class GoodsInfoController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         GoodsInfo goodsInfo = new GoodsInfo();
-        ThrowUtils.throwIf(ObjectUtils.isEmpty(goodsInfoAddRequest.getTypes()), ErrorCode.PARAMS_ERROR, "分类不能为空");
+        String name = goodsInfoAddRequest.getName();
+        String cover = goodsInfoAddRequest.getCover();
+        Integer price = goodsInfoAddRequest.getPrice();
+        Integer stock = goodsInfoAddRequest.getStock();
+        String types = goodsInfoAddRequest.getTypes();
+        Integer status = goodsInfoAddRequest.getStatus();
+        if(StringUtils.isAnyBlank(name, cover, types) || price == null || stock == null || status == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误，有参数为空");
+        }
         BeanUtils.copyProperties(goodsInfoAddRequest, goodsInfo);
         goodsInfoService.validGoodsInfo(goodsInfo, true);
         User loginUser = userService.getLoginUser(request);

@@ -3,10 +3,10 @@ package com.software.arona_mysterious_shop.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.gson.Gson;
 import com.software.arona_mysterious_shop.common.ErrorCode;
 import com.software.arona_mysterious_shop.exception.BusinessException;
 import com.software.arona_mysterious_shop.exception.ThrowUtils;
-import com.software.arona_mysterious_shop.manager.RuleConfigManager;
 import com.software.arona_mysterious_shop.model.entity.GoodsInfo;
 import com.software.arona_mysterious_shop.model.enums.GoodsTypeEnum;
 import com.software.arona_mysterious_shop.model.vo.GoodsInfoVO;
@@ -28,9 +28,6 @@ import java.util.stream.Collectors;
 public class GoodsInfoServiceImpl extends ServiceImpl<GoodsInfoMapper, GoodsInfo>
         implements GoodsInfoService {
 
-    @Resource
-    private RuleConfigManager ruleConfigManager;
-
     @Override
     public void validGoodsInfo(GoodsInfo goodsInfo, boolean add) {
         if (goodsInfo == null) {
@@ -38,20 +35,34 @@ public class GoodsInfoServiceImpl extends ServiceImpl<GoodsInfoMapper, GoodsInfo
         }
 
         String name = goodsInfo.getName();
+        Integer price = goodsInfo.getPrice();
         Integer stock = goodsInfo.getStock();
-        String type = goodsInfo.getType();
+        String types = goodsInfo.getTypes();
+        Integer status = goodsInfo.getStatus();
 
-        // 创建时，参数不能为空
-        if (add) {
-            ThrowUtils.throwIf(StringUtils.isAnyBlank(name), ErrorCode.PARAMS_ERROR,"产品名称不能为空");
+        ThrowUtils.throwIf(stock < 0, ErrorCode.PARAMS_ERROR,"库存不能小于0");
+        ThrowUtils.throwIf(price < 0, ErrorCode.PARAMS_ERROR,"价格不能小于0");
+        ThrowUtils.throwIf(status != 0 && status != 1, ErrorCode.PARAMS_ERROR,"状态错误");
+
+        //名称相关进行检验
+        if(StringUtils.isNotBlank((name))) {
+            //名称不能重复
+            GoodsInfo goodsInfoByName = this.lambdaQuery().eq(GoodsInfo::getName, name).one();
+            if (goodsInfoByName != null && !goodsInfoByName.getId().equals(goodsInfo.getId())) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "产品名称已存在");
+            }
+            //名称长度不能超过256
+            if (name.length() > 256) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "名称过长");
+            }
         }
-        // 有参数则校验
-        ThrowUtils.throwIf(stock == null || stock < 0, ErrorCode.PARAMS_ERROR,"库存不能小于0");
-        if (StringUtils.isNotBlank(name) && name.length() > 256) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "名称过长");
-        }
-        if (StringUtils.isNotBlank(type)) {
-            GoodsTypeEnum.getEnumByValue(type);
+        //类型相关检验
+        Gson gson = new Gson();
+        List<String> typeList = gson.fromJson(types, List.class);
+        for(String type : typeList) {
+            if(!GoodsTypeEnum.contains(type)) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "产品类型错误");
+            }
         }
     }
 

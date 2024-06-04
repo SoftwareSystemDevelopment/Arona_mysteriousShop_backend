@@ -44,7 +44,7 @@ public class GoodsInfo implements Serializable {
     /**
      * 产品类型
      */
-    private String type;
+    private String types;
 
     /**
      * 是否公开浏览，0: 启用，1: 关闭，默认启用

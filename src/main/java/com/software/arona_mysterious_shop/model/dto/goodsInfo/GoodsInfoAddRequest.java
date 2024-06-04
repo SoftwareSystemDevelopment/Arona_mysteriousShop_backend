@@ -43,10 +43,5 @@ public class GoodsInfoAddRequest implements Serializable {
      */
     private Integer status;
 
-    /**
-     * 存储所有权限的 JSON 结构
-     */
-    private String permission;
-
     private static final long serialVersionUID = 1L;
 }
