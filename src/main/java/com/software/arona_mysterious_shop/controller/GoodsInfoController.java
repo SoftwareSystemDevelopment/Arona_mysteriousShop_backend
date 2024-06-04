@@ -2,7 +2,6 @@ package com.software.arona_mysterious_shop.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.gson.Gson;
 import com.software.arona_mysterious_shop.annotation.AuthCheck;
 import com.software.arona_mysterious_shop.common.BaseResponse;
 import com.software.arona_mysterious_shop.common.DeleteRequest;
@@ -39,7 +38,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/goodsInfo")
 @Slf4j
-@Api(value = "产品接口")
+@Api(tags = "产品接口")
 public class GoodsInfoController {
 
 
@@ -89,13 +88,12 @@ public class GoodsInfoController {
      * 删除
      *
      * @param deleteRequest 删除请求
-     * @param request       请求
      * @return {@link BaseResponse}<{@link Boolean}>
      */
     @PostMapping("/delete")
     @ApiOperation(value = "删除产品")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Boolean> deleteGoodsInfo(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
+    @AuthCheck(mustRole = UserConstant.PROVIDER_ROLE)
+    public BaseResponse<Boolean> deleteGoodsInfo(@RequestBody DeleteRequest deleteRequest) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

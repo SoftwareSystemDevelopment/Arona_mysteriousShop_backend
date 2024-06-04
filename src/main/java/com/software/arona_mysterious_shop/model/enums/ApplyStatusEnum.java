@@ -14,7 +14,7 @@ public enum ApplyStatusEnum {
 
 
     NOT_APPLIED( "未下单",0),
-    PENDING("下单中",1),
+    PENDING("处理中",1),
     APPROVED("下单成功",2),
     REJECTED( "下单失败",3);
 
