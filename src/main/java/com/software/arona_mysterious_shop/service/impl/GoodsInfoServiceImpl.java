@@ -58,12 +58,17 @@ public class GoodsInfoServiceImpl extends ServiceImpl<GoodsInfoMapper, GoodsInfo
         }
         //类型相关检验
         Gson gson = new Gson();
-        List<String> typeList = gson.fromJson(types, List.class);
-        for(String type : typeList) {
-            if(!GoodsTypeEnum.contains(type)) {
-                throw new BusinessException(ErrorCode.PARAMS_ERROR, "产品类型错误");
+        try {
+            List<String> typeList = gson.fromJson(types, List.class);
+            for(String type : typeList) {
+                if(!GoodsTypeEnum.contains(type)) {
+                    throw new BusinessException(ErrorCode.PARAMS_ERROR, "产品类型错误");
+                }
             }
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "产品类型错误");
         }
+
     }
 
     @Override

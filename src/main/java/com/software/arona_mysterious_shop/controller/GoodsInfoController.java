@@ -121,15 +121,23 @@ public class GoodsInfoController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         GoodsInfo goodsInfo = new GoodsInfo();
-        ThrowUtils.throwIf(ObjectUtils.isEmpty(goodsInfoUpdateRequest.getTypes()), ErrorCode.PARAMS_ERROR, "分类不能为空");
-        BeanUtils.copyProperties(goodsInfoUpdateRequest, goodsInfo);
+        String name = goodsInfoUpdateRequest.getName();
+        String cover = goodsInfoUpdateRequest.getCover();
+        Integer price = goodsInfoUpdateRequest.getPrice();
+        Integer stock = goodsInfoUpdateRequest.getStock();
+        String types = goodsInfoUpdateRequest.getTypes();
+        Integer status = goodsInfoUpdateRequest.getStatus();
+        if(StringUtils.isAnyBlank(name, cover, types) || price == null || stock == null || status == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误，有参数为空");
+        }
         // 参数校验
+        BeanUtils.copyProperties(goodsInfoUpdateRequest, goodsInfo);
         goodsInfoService.validGoodsInfo(goodsInfo, false);
         long id = goodsInfoUpdateRequest.getId();
         // 判断是否存在
         GoodsInfo oldGoodsInfo = goodsInfoService.getById(id);
         if (oldGoodsInfo == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"未找到对应产品");
         }
         boolean result = goodsInfoService.updateById(goodsInfo);
         return ResultUtils.success(result);
