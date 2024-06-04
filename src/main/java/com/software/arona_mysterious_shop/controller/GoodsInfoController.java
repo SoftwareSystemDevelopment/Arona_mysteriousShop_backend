@@ -2,6 +2,7 @@ package com.software.arona_mysterious_shop.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.gson.Gson;
 import com.software.arona_mysterious_shop.annotation.AuthCheck;
 import com.software.arona_mysterious_shop.common.BaseResponse;
 import com.software.arona_mysterious_shop.common.DeleteRequest;
@@ -63,7 +64,7 @@ public class GoodsInfoController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         GoodsInfo goodsInfo = new GoodsInfo();
-        ThrowUtils.throwIf(ObjectUtils.isEmpty(goodsInfoAddRequest.getType()), ErrorCode.PARAMS_ERROR, "分类不能为空");
+        ThrowUtils.throwIf(ObjectUtils.isEmpty(goodsInfoAddRequest.getTypes()), ErrorCode.PARAMS_ERROR, "分类不能为空");
         BeanUtils.copyProperties(goodsInfoAddRequest, goodsInfo);
         goodsInfoService.validGoodsInfo(goodsInfo, true);
         User loginUser = userService.getLoginUser(request);
@@ -114,7 +115,7 @@ public class GoodsInfoController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         GoodsInfo goodsInfo = new GoodsInfo();
-        ThrowUtils.throwIf(ObjectUtils.isEmpty(goodsInfoUpdateRequest.getType()), ErrorCode.PARAMS_ERROR, "分类不能为空");
+        ThrowUtils.throwIf(ObjectUtils.isEmpty(goodsInfoUpdateRequest.getTypes()), ErrorCode.PARAMS_ERROR, "分类不能为空");
         BeanUtils.copyProperties(goodsInfoUpdateRequest, goodsInfo);
         // 参数校验
         goodsInfoService.validGoodsInfo(goodsInfo, false);
@@ -148,21 +149,21 @@ public class GoodsInfoController {
     }
 
     /**
-     * 获取列表（仅管理员可使用）
+     * 获取列表（仅供货商可使用）
      *
      * @param goodsInfoQueryRequest 产品查询请求
      * @return {@link BaseResponse}<{@link List}<{@link GoodsInfo}>>
      */
     @PostMapping("/list")
     @ApiOperation(value = "获取产品列表")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @AuthCheck(mustRole = UserConstant.PROVIDER_ROLE)
     public BaseResponse<List<GoodsInfo>> listGoodsInfo(@RequestBody GoodsInfoQueryRequest goodsInfoQueryRequest) {
         List<GoodsInfo> goodsInfoList = goodsInfoService.list(getQueryWrapper(goodsInfoQueryRequest));
         return ResultUtils.success(goodsInfoList);
     }
 
     /**
-     * 分页获取列表（仅管理员可使用）
+     * 分页获取列表（仅供货商可使用）
      *
      * @param goodsInfoQueryRequest 产品查询请求
      * @param request                    请求
@@ -170,7 +171,7 @@ public class GoodsInfoController {
      */
     @PostMapping("/list/page")
     @ApiOperation(value = "分页获取产品列表")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @AuthCheck(mustRole = UserConstant.PROVIDER_ROLE)
     public BaseResponse<Page<GoodsInfo>> listGoodsInfoByPage(@RequestBody GoodsInfoQueryRequest goodsInfoQueryRequest,
                                                                        HttpServletRequest request) {
         long current = goodsInfoQueryRequest.getCurrent();
@@ -226,8 +227,7 @@ public class GoodsInfoController {
         String name = goodsInfoQueryRequest.getName();
         Integer price = goodsInfoQueryRequest.getPrice();
         Integer stock = goodsInfoQueryRequest.getStock();
-        List<String> typeList = goodsInfoQueryRequest.getType();
-
+        String types = goodsInfoQueryRequest.getTypes();
         Integer status = goodsInfoQueryRequest.getStatus();
         Long userId = goodsInfoQueryRequest.getUserId();
         List<String> ascSortField = goodsInfoQueryRequest.getAscSortField();
@@ -238,12 +238,7 @@ public class GoodsInfoController {
         queryWrapper.like(StringUtils.isNotBlank(name), "name", name);
         queryWrapper.eq(price != null, "price", price);
         queryWrapper.eq(stock != null, "stock", stock);
-
-        // 取出列表中的第一个元素（只有一个分类）
-        if (ObjectUtils.isNotEmpty(typeList)) {
-            String type = typeList.get(0);
-            queryWrapper.eq(ObjectUtils.isNotEmpty(type), "type", type);
-        }
+        queryWrapper.eq(ObjectUtils.isNotEmpty(types), "type", types);
         queryWrapper.eq(status != null, "status", status);
         queryWrapper.eq(userId != null, "userId", userId);
 

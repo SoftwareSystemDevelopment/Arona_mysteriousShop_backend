@@ -41,7 +41,7 @@ public class GoodsInfoUpdateRequest implements Serializable {
     /**
      * 产品类型
      */
-    private List<String> type;
+    private String types;
 
     /**
      * 是否公开浏览，0: 关闭，1: 启用，默认关闭

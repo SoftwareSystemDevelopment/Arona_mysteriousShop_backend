@@ -39,7 +39,7 @@ public class GoodsInfoQueryRequest extends PageRequest implements Serializable {
     /**
      * 产品类型
      */
-    private List<String> type;
+    private String types;
 
 
     /**

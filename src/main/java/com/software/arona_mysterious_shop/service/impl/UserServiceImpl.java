@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import java.util.ArrayList;
@@ -41,6 +42,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     private static final String SALT = "kakie";
 
+    @Resource
+    UserMapper userMapper;
+
     @Override
     public long userRegister(String userAccount,String userName, String userPassword, String checkPassword, String userRole) {
         // 1. 校验
@@ -60,7 +64,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (!userPassword.equals(checkPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "两次输入的密码不一致");
         }
-        if(!userRole.equals(UserRoleEnum.USER.getValue()) || !userRole.equals(UserRoleEnum.PROVIDER.getValue())){
+        if(!(userRole.equals(UserRoleEnum.USER.getValue()) || userRole.equals(UserRoleEnum.PROVIDER.getValue()))){
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户类型错误");
         }
         synchronized (userAccount.intern()) {

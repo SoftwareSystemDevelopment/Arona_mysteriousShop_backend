@@ -58,7 +58,7 @@ public class UserController {
         String userPassword = userRegisterRequest.getUserPassword();
         String checkPassword = userRegisterRequest.getCheckPassword();
         String userRole = userRegisterRequest.getUserRole();
-        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
+        if (StringUtils.isAnyBlank(userAccount, userName, userPassword, checkPassword, userRole)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         long result = userService.userRegister(userAccount, userName, userPassword, checkPassword,userRole);
@@ -89,30 +89,30 @@ public class UserController {
 
 
 
-    /**
-     * 用户登录（公众号扫码登录，前端轮询请求）
-     *
-     * @param userLoginRequest 用户登录请求
-     * @param request          请求
-     * @return {@link BaseResponse}<{@link LoginUserVO}>
-     */
-    @PostMapping("/login/wx_mp")
-    @ApiOperation(value = "用户登录（公众号扫码登录，前端轮询请求）")
-    public BaseResponse<LoginUserVO> userLoginByWxMp(@RequestBody UserLoginByWxMpRequest userLoginRequest, HttpServletRequest request) {
-        if (userLoginRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        String scene = userLoginRequest.getScene();
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("scene", scene);
-        User user = userService.getOne(queryWrapper);
-        if (user != null) {
-            log.info("user login succeed, id = {}", user.getId());
-            request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);
-        }
-        LoginUserVO loginUserVO = userService.getLoginUserVO(user);
-        return ResultUtils.success(loginUserVO);
-    }
+//    /**
+//     * 用户登录（公众号扫码登录，前端轮询请求）
+//     *
+//     * @param userLoginRequest 用户登录请求
+//     * @param request          请求
+//     * @return {@link BaseResponse}<{@link LoginUserVO}>
+//     */
+//    @PostMapping("/login/wx_mp")
+//    @ApiOperation(value = "用户登录（公众号扫码登录，前端轮询请求）")
+//    public BaseResponse<LoginUserVO> userLoginByWxMp(@RequestBody UserLoginByWxMpRequest userLoginRequest, HttpServletRequest request) {
+//        if (userLoginRequest == null) {
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+//        }
+//        String scene = userLoginRequest.getScene();
+//        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("scene", scene);
+//        User user = userService.getOne(queryWrapper);
+//        if (user != null) {
+//            log.info("user login succeed, id = {}", user.getId());
+//            request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);
+//        }
+//        LoginUserVO loginUserVO = userService.getLoginUserVO(user);
+//        return ResultUtils.success(loginUserVO);
+//    }
 
 
 
@@ -145,26 +145,6 @@ public class UserController {
     }
 
     /**
-     * 创建用户
-     *
-     * @param userAddRequest 用户添加请求
-     * @return {@link BaseResponse}<{@link Long}>
-     */
-    @PostMapping("/add")
-    @ApiOperation(value = "管理员添加用户")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Long> addUser(@RequestBody UserAddRequest userAddRequest) {
-        if (userAddRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        User user = new User();
-        BeanUtils.copyProperties(userAddRequest, user);
-        boolean result = userService.save(user);
-        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
-        return ResultUtils.success(user.getId());
-    }
-
-    /**
      * 删除用户
      *
      * @param deleteRequest 删除请求
@@ -181,25 +161,6 @@ public class UserController {
         return ResultUtils.success(b);
     }
 
-    /**
-     * 更新用户
-     *
-     * @param userUpdateRequest 用户更新请求
-     * @return {@link BaseResponse}<{@link Boolean}>
-     */
-    @PostMapping("/update/admin")
-    @ApiOperation(value = "更新用户信息by 管理员")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Boolean> updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
-        if (userUpdateRequest == null || userUpdateRequest.getId() == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        User user = new User();
-        BeanUtils.copyProperties(userUpdateRequest, user);
-        boolean result = userService.updateById(user);
-        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
-        return ResultUtils.success(true);
-    }
 
     /**
      * 根据 id 获取用户（仅管理员）
@@ -273,24 +234,5 @@ public class UserController {
         return ResultUtils.success(userVOPage);
     }
 
-    /**
-     * 更新个人信息
-     *
-     * @param userEditRequest 用户编辑请求
-     * @return {@link BaseResponse}<{@link Boolean}>
-     */
-    @PostMapping("/edit")
-    @ApiOperation(value = "更新个人信息")
-    public BaseResponse<Boolean> editUser(@RequestBody UserEditRequest userEditRequest) {
-        if (userEditRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        User loginUser = ThreadLocalUtil.getLoginUser();
-        User user = new User();
-        BeanUtils.copyProperties(userEditRequest, user);
-        user.setId(loginUser.getId());
-        boolean result = userService.updateById(user);
-        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
-        return ResultUtils.success(true);
-    }
+
 }

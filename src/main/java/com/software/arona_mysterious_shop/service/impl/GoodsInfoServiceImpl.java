@@ -76,8 +76,8 @@ public class GoodsInfoServiceImpl extends ServiceImpl<GoodsInfoMapper, GoodsInfo
         }
         // 转换VO
         GoodsInfoVO goodsInfoVO = new GoodsInfoVO();
-
-
+        return null;
+    }
 }
 
 

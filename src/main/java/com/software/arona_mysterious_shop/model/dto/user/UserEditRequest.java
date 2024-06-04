@@ -10,6 +10,10 @@ import java.io.Serializable;
  */
 @Data
 public class UserEditRequest implements Serializable {
+    /**
+     * 用户id
+     */
+    private Long id;
 
     /**
      * 用户昵称
