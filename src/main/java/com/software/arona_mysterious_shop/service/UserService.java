@@ -18,9 +18,6 @@ import java.util.List;
 */
 public interface UserService extends IService<User> {
 
-    @Transactional(rollbackFor = Exception.class)
-    long addUser(User user);
-
     /**
      * 用户注册
      *
@@ -28,9 +25,10 @@ public interface UserService extends IService<User> {
      * @param userName 用户名
      * @param userPassword  用户密码
      * @param checkPassword 校验密码
+     * @param userRole 用户类型：user/provider
      * @return 新用户 id
      */
-    long userRegister(String userAccount,String userName,String userPassword, String checkPassword);
+    long userRegister(String userAccount,String userName,String userPassword, String checkPassword, String userRole);
 
     /**
      * 用户登录

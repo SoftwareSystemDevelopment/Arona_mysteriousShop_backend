@@ -47,24 +47,9 @@ public class GoodsInfo implements Serializable {
     private String type;
 
     /**
-     * 进货链接
-     */
-    private String replenishLink;
-
-    /**
-     * 用户购买链接
-     */
-    private String purchaseLink;
-
-    /**
-     * 是否公开浏览，0: 关闭，1: 启用，默认关闭
+     * 是否公开浏览，0: 启用，1: 关闭，默认启用
      */
     private Integer status;
-
-    /**
-     * 存储所有权限的 JSON 结构
-     */
-    private String permission;
 
     /**
      * 供货商 id

@@ -42,20 +42,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private static final String SALT = "kakie";
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public long addUser(User user) {
-        // 创建用户
-        // 默认给一个普通用户角色
-        user.setUserRole(UserRoleEnum.USER.getValue());
-        boolean result = this.save(user);
-        if (!result) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, "用户注册失败");
-        }
-        return user.getId();
-    }
-
-    @Override
-    public long userRegister(String userAccount,String userName, String userPassword, String checkPassword) {
+    public long userRegister(String userAccount,String userName, String userPassword, String checkPassword, String userRole) {
         // 1. 校验
         if (StringUtils.isAnyBlank(userAccount,userName, userPassword, checkPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
@@ -73,6 +60,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (!userPassword.equals(checkPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "两次输入的密码不一致");
         }
+        if(!userRole.equals(UserRoleEnum.USER.getValue()) || !userRole.equals(UserRoleEnum.PROVIDER.getValue())){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户类型错误");
+        }
         synchronized (userAccount.intern()) {
             // 账户不能重复
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -85,8 +75,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
             // 3. 插入数据
             User user = new User();
+            String userProfile = "这个人很懒，什么都没有写";
+            String userAvatar = "https://img.icons8.com/color/48/000000/user-male.png";
             user.setUserAccount(userAccount);
+            user.setUserName(userName);
             user.setUserPassword(encryptPassword);
+            user.setUserRole(userRole);
+            user.setUserProfile(userProfile);
+            user.setUserAvatar(userAvatar);
             boolean saveResult = this.save(user);
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");

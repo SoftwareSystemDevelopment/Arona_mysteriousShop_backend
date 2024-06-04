@@ -39,11 +39,6 @@ public class GoodsInfoVO implements Serializable {
      */
     private String type;
 
-    /**
-     * 用户购买链接
-     */
-    private String purchaseLink;
-
 
     private static final long serialVersionUID = 1L;
 }

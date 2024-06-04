@@ -57,10 +57,11 @@ public class UserController {
         String userName = userRegisterRequest.getUserName();
         String userPassword = userRegisterRequest.getUserPassword();
         String checkPassword = userRegisterRequest.getCheckPassword();
+        String userRole = userRegisterRequest.getUserRole();
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        long result = userService.userRegister(userAccount, userName, userPassword, checkPassword);
+        long result = userService.userRegister(userAccount, userName, userPassword, checkPassword,userRole);
         return ResultUtils.success(result);
     }
 
@@ -187,7 +188,7 @@ public class UserController {
      * @return {@link BaseResponse}<{@link Boolean}>
      */
     @PostMapping("/update/admin")
-    @ApiOperation(value = "更新用户by 管理员")
+    @ApiOperation(value = "更新用户信息by 管理员")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
         if (userUpdateRequest == null || userUpdateRequest.getId() == null) {
@@ -207,7 +208,7 @@ public class UserController {
      * @return {@link BaseResponse}<{@link User}>
      */
     @GetMapping("/get")
-    @ApiOperation(value = "获取用户by id")
+    @ApiOperation(value = "获取用户by id（仅管理员）")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<User> getUserById(long id) {
         if (id <= 0) {
@@ -239,7 +240,7 @@ public class UserController {
      * @return {@link BaseResponse}<{@link Page}<{@link User}>>
      */
     @PostMapping("/list/page")
-    @ApiOperation(value = "分页获取用户列表")
+    @ApiOperation(value = "分页获取用户列表（仅管理员）")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<User>> listUserByPage(@RequestBody UserQueryRequest userQueryRequest) {
         long current = userQueryRequest.getCurrent();

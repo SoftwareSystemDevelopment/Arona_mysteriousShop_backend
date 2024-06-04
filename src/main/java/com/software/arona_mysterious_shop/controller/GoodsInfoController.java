@@ -64,7 +64,6 @@ public class GoodsInfoController {
         }
         GoodsInfo goodsInfo = new GoodsInfo();
         ThrowUtils.throwIf(ObjectUtils.isEmpty(goodsInfoAddRequest.getType()), ErrorCode.PARAMS_ERROR, "分类不能为空");
-        goodsInfo.setType(goodsInfoAddRequest.getType().get(0));
         BeanUtils.copyProperties(goodsInfoAddRequest, goodsInfo);
         goodsInfoService.validGoodsInfo(goodsInfo, true);
         User loginUser = userService.getLoginUser(request);
@@ -102,21 +101,20 @@ public class GoodsInfoController {
     }
 
     /**
-     * 更新（仅管理员）
+     * 更新（供货商）
      *
      * @param goodsInfoUpdateRequest 产品更新请求
      * @return {@link BaseResponse}<{@link Boolean}>
      */
     @PostMapping("/update")
     @ApiOperation(value = "更新产品")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @AuthCheck(mustRole = UserConstant.PROVIDER_ROLE)
     public BaseResponse<Boolean> updateGoodsInfo(@RequestBody GoodsInfoUpdateRequest goodsInfoUpdateRequest) {
         if (goodsInfoUpdateRequest == null || goodsInfoUpdateRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         GoodsInfo goodsInfo = new GoodsInfo();
         ThrowUtils.throwIf(ObjectUtils.isEmpty(goodsInfoUpdateRequest.getType()), ErrorCode.PARAMS_ERROR, "分类不能为空");
-        goodsInfo.setType(goodsInfoUpdateRequest.getType().get(0));
         BeanUtils.copyProperties(goodsInfoUpdateRequest, goodsInfo);
         // 参数校验
         goodsInfoService.validGoodsInfo(goodsInfo, false);
