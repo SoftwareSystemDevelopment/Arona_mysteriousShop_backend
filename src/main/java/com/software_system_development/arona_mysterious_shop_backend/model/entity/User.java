@@ -34,11 +34,6 @@ public class User implements Serializable {
     private String userPassword;
 
     /**
-     * 用户地址id
-     */
-    private String userAddress;
-
-    /**
      * 用户头像
      */
     private String userAvatar;

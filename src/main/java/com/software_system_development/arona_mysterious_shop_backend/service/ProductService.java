@@ -1,6 +1,7 @@
 package com.software_system_development.arona_mysterious_shop_backend.service;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductAddRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductDeleteRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductQueryRequest;
@@ -67,6 +68,13 @@ public interface ProductService extends IService<Product> {
      * @return
      */
     Wrapper<Product> getQueryWrapper(ProductQueryRequest productQueryRequest);
+
+    /**
+     * 模糊查询商品信息
+     * @param productQueryRequest
+     * @return
+     */
+    Page<ProductVO> listProductsByPage(ProductQueryRequest productQueryRequest);
 
     /**
      * 校验商品信息合法性

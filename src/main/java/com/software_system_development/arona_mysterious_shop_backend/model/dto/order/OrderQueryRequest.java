@@ -1,11 +1,10 @@
-package com.software_system_development.arona_mysterious_shop_backend.model.dto.orderinfo;
+package com.software_system_development.arona_mysterious_shop_backend.model.dto.order;
 
 import com.software_system_development.arona_mysterious_shop_backend.common.PageRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 查询请求

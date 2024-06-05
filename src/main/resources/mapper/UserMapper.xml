@@ -5,19 +5,18 @@
 <mapper namespace="com.software_system_development.arona_mysterious_shop_backend.mapper.UserMapper">
 
     <resultMap id="BaseResultMap" type="com.software_system_development.arona_mysterious_shop_backend.model.entity.User">
-            <id property="userid" column="userId" jdbcType="BIGINT"/>
-            <result property="username" column="userName" jdbcType="VARCHAR"/>
-            <result property="useraccount" column="userAccount" jdbcType="VARCHAR"/>
-            <result property="userpassword" column="userPassword" jdbcType="VARCHAR"/>
-            <result property="useraddress" column="userAddress" jdbcType="CHAR"/>
-            <result property="useravatar" column="userAvatar" jdbcType="VARCHAR"/>
-            <result property="userrole" column="userRole" jdbcType="VARCHAR"/>
-            <result property="isdelete" column="isDelete" jdbcType="TINYINT"/>
+            <id property="userId" column="userId" jdbcType="BIGINT"/>
+            <result property="userName" column="userName" jdbcType="VARCHAR"/>
+            <result property="userAccount" column="userAccount" jdbcType="VARCHAR"/>
+            <result property="userPassword" column="userPassword" jdbcType="VARCHAR"/>
+            <result property="userAvatar" column="userAvatar" jdbcType="VARCHAR"/>
+            <result property="userRole" column="userRole" jdbcType="VARCHAR"/>
+            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         userId,userName,userAccount,
-        userPassword,userAddress,userAvatar,
+        userPassword,userAvatar,
         userRole,isDelete
     </sql>
 </mapper>

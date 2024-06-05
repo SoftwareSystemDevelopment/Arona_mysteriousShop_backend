@@ -41,11 +41,6 @@ public class Review implements Serializable {
      */
     private Integer reviewproductid;
 
-    /**
-     * 评论对应订单项ID
-     */
-    private Integer revieworderitemid;
-
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

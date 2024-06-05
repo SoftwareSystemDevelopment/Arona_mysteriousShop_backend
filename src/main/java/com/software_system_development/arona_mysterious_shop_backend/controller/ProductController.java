@@ -1,5 +1,6 @@
 package com.software_system_development.arona_mysterious_shop_backend.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.software_system_development.arona_mysterious_shop_backend.annotation.AuthCheck;
 import com.software_system_development.arona_mysterious_shop_backend.common.BaseResponse;
@@ -25,6 +26,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -124,20 +126,48 @@ public class ProductController {
     }
 
     /**
-     * 分页获取商品列表（仅供货商）
+     * 分页获取供应商商品列表
      *
      * @param productQueryRequest 商品查询请求
      * @return {@link BaseResponse}<{@link Page}<{@link Product}>>
      */
     @GetMapping("/list/page")
-    @Operation(summary= "分页获取全部商品列表")
+    @Operation(summary = "分页获取供应商商品列表")
     @AuthCheck(mustRole = UserConstant.PROVIDER_ROLE)
-    public BaseResponse<Page<Product>> listProductByPage(@RequestBody ProductQueryRequest productQueryRequest) {
-        long current = productQueryRequest.getCurrent();
-        long size = productQueryRequest.getPageSize();
-        Page<Product> productPage = productService.page(new Page<>(current, size),
-                productService.getQueryWrapper(productQueryRequest));
+    public BaseResponse<Page<Product>> listProductByPage(@RequestParam(value = "current", defaultValue = "1") long current,
+                                                         @RequestParam(value = "pageSize", defaultValue = "10") long size,
+                                                         ProductQueryRequest productQueryRequest,
+                                                         HttpServletRequest request) {
+        // 获取当前登录的供应商ID
+        Long providerId = ThreadLocalUtil.getLoginUser().getUserId();
+        if (providerId == null || providerId <= 0) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "无法获取当前用户信息");
+        }
+        // 构建供应商商品查询条件
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("providerId", providerId);
+        Page<Product> productPage = productService.page(new Page<>(current, size), queryWrapper);
         return ResultUtils.success(productPage);
+    }
+
+
+    /**
+     * 根据商品名称模糊搜索商品
+     * @param productName
+     * @return
+     */
+    @GetMapping("/search")
+    @Operation(summary = "模糊搜索")
+    public ResponseEntity<Page<ProductVO>> listProductByPage(@RequestParam String productName,
+                                                             @RequestParam(defaultValue = "1") long current,
+                                                             @RequestParam(defaultValue = "10") long size) {
+        ProductQueryRequest productQueryRequest = new ProductQueryRequest();
+        productQueryRequest.setCurrent(current);
+        productQueryRequest.setPageSize(size);
+        productQueryRequest.setProductName(productName);
+
+        Page<ProductVO> productPage = productService.listProductsByPage(productQueryRequest);
+        return ResponseEntity.ok(productPage);
     }
 }
 

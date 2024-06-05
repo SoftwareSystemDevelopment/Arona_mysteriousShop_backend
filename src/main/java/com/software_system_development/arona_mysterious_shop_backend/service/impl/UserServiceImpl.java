@@ -228,14 +228,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
         }
         Long userId = userQueryRequest.getUserId();
-        String userAccount = userQueryRequest.getUserAccount();
-        String userName = userQueryRequest.getUserName();
-        String userRole = userQueryRequest.getUserRole();
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(userId != null, "userId", userId);
-        queryWrapper.eq(StringUtils.isNotBlank(userAccount), "userAccount", userAccount);
-        queryWrapper.eq(StringUtils.isNotBlank(userRole), "userRole", userRole);
-        queryWrapper.like(StringUtils.isNotBlank(userName), "userName", userName);
         queryWrapper.orderByAsc("userId");
         return queryWrapper;
     }

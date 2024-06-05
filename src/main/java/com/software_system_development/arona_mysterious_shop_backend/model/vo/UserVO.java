@@ -35,10 +35,5 @@ public class UserVO implements Serializable {
      */
     private String userRole;
 
-    /**
-     * 用户地址
-     */
-    private String userAddress;
-
     private static final long serialVersionUID = 1L;
 }

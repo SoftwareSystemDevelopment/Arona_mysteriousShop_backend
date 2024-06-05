@@ -1,9 +1,8 @@
-package com.software_system_development.arona_mysterious_shop_backend.model.dto.orderinfo;
+package com.software_system_development.arona_mysterious_shop_backend.model.dto.order;
 
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 创建请求

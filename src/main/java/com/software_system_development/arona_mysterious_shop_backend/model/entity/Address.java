@@ -17,13 +17,18 @@ public class Address implements Serializable {
     /**
      * 地区ID
      */
-    @TableId
-    private String addressareaid;
+    @TableId(type = IdType.AUTO)
+    private Integer addressAreaId;
 
     /**
      * 地址名称
      */
-    private String addressname;
+    private String addressName;
+
+    /**
+     * 对应用户id
+     */
+    private Long userId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
