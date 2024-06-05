@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public enum GoodsTypeEnum {
+public enum CategoryEnum {
     REPORT("报告", "report"),
 
     EXP_ORB("强化石", "exp_orb"),
@@ -23,7 +23,7 @@ public enum GoodsTypeEnum {
 
     private final String value;
 
-    GoodsTypeEnum(String text, String value) {
+    CategoryEnum(String text, String value) {
         this.text = text;
         this.value = value;
     }
@@ -41,13 +41,13 @@ public enum GoodsTypeEnum {
      * 根据 value 获取枚举
      *
      * @param value 值
-     * @return {@link GoodsTypeEnum}
+     * @return {@link CategoryEnum}
      */
-    public static GoodsTypeEnum getEnumByValue(String value) {
+    public static CategoryEnum getEnumByValue(String value) {
         if (ObjectUtils.isEmpty(value)) {
             return null;
         }
-        for (GoodsTypeEnum anEnum : GoodsTypeEnum.values()) {
+        for (CategoryEnum anEnum : CategoryEnum.values()) {
             if (anEnum.value.equals(value)) {
                 return anEnum;
             }
