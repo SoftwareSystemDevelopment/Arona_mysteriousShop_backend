@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.software_system_development.arona_mysterious_shop_backend.mapper.PropertyvalueMapper">
+
+    <resultMap id="BaseResultMap" type="com.software_system_development.arona_mysterious_shop_backend.model.entity.Propertyvalue">
+            <id property="propertyvalueid" column="propertyValueId" jdbcType="INTEGER"/>
+            <result property="propertyvaluevalue" column="propertyValueValue" jdbcType="VARCHAR"/>
+            <result property="propertyvaluepropertyid" column="propertyValuePropertyId" jdbcType="INTEGER"/>
+            <result property="propertyvalueproductid" column="propertyValueProductId" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        propertyValueId,propertyValueValue,propertyValuePropertyId,
+        propertyValueProductId
+    </sql>
+</mapper>

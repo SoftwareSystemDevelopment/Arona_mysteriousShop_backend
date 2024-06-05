@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.software_system_development.arona_mysterious_shop_backend.mapper.AdminMapper">
+
+    <resultMap id="BaseResultMap" type="com.software_system_development.arona_mysterious_shop_backend.model.entity.Admin">
+            <id property="adminid" column="adminId" jdbcType="INTEGER"/>
+            <result property="adminname" column="adminName" jdbcType="VARCHAR"/>
+            <result property="adminaccount" column="adminAccount" jdbcType="VARCHAR"/>
+            <result property="adminpassword" column="adminPassword" jdbcType="VARCHAR"/>
+            <result property="adminavatar" column="adminAvatar" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        adminId,adminName,adminAccount,
+        adminPassword,adminAvatar
+    </sql>
+</mapper>

@@ -1,48 +1,47 @@
-# 公共配置文件
+# ??????
 spring:
   application:
-    name: springboot-init
-  # 默认 dev 环境
+    name: ????????
+  # ?? dev ??
   profiles:
     active: local
-  # 支持 swagger3
+  # ?? swagger3
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-  # session 配置
+  # session ??
   session:
-    # todo 取消注释开启分布式 session（须先配置 Redis）
+    # todo ????????? session????? Redis?
     store-type: redis
-    # 30 天过期
+    # 30 ???
     timeout: 2592000
-  # 数据库配置
-  # todo 需替换配置
+  # ?????
+  # todo ?????
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/template_init_db?serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/arona_shop?serverTimezone=Asia/Shanghai
     username: root
     password: aqaed.19.03.q
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
-  # Redis 配置
-  # todo 需替换配置，然后取消注释
+  # Redis ??
+  # todo ????????????
   redis:
     database: 1
     host: localhost
     port: 6379
-    timeout: 5000
-  # 文件上传
+  # ????
   servlet:
     multipart:
-      # 大小限制
+      # ????
       max-file-size: 10MB
 server:
   address: 0.0.0.0
   port: 8101
   servlet:
     context-path: /api
-    # cookie 30 天过期
+    # cookie 30 ???
     session:
       cookie:
         max-age: 2592000
@@ -52,13 +51,30 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
-      logic-delete-field: isDelete # 全局逻辑删除的实体字段名
-      logic-delete-value: 1 # 逻辑已删除值（默认为 1）
-      logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）
-# 腾讯云
+      logic-delete-field: isDelete # ????????????
+      logic-delete-value: 1 # ?????????? 1?
+      logic-not-delete-value: 0 # ?????????? 0?
+# ???
 tencent:
   cos:
     accessKey: xxx
     secretKey: xxx
     region: xxx
     bucket: xxx
+#springdoc????
+springdoc:
+  swagger-ui:
+    #???swagger?????????http?127.0.0.1:8080/swagger-ui.html???????swagger??
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs    #swagger??????
+    enabled: true   #????????
+  group-configs:
+    - group: 'com.software_system_development.arona_mysterious_shop_backend'
+      paths-to-match: '/**'
+      packages-to-scan: com.software_system_development.arona_mysterious_shop_backend    #??????:?????????
+#knife4j???? ?????
+knife4j:
+  enable: true    #??knife4j?????@EnableKnife4j??
+  setting:
+    language: zh_cn   #??
