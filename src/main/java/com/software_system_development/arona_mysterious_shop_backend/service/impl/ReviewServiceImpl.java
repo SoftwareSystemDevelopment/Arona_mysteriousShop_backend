@@ -39,14 +39,14 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
 
         Review review = new Review();
         BeanUtils.copyProperties(reviewAddRequest, review);
-        review.setReviewcreatedate(new Date());
+        review.setReviewCreateDate(new Date());
 
         boolean saveResult = this.save(review);
         if (!saveResult) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "添加评论失败");
         }
 
-        return review.getReviewid();
+        return review.getReviewId();
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
         String userRole = loginUser.getUserRole();
 
         // 验证用户权限
-        if (!review.getReviewuserid().equals(loginUser.getUserId()) && !UserRoleEnum.ADMIN.getValue().equals(userRole)) {
+        if (!UserRoleEnum.ADMIN.getValue().equals(userRole)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "无权限删除");
         }
 
@@ -83,10 +83,8 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
         if (productId == null || productId <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
         }
-
         QueryWrapper<Review> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("reviewproductid", productId);
-
+            queryWrapper.eq("reviewProductId", productId);
         List<Review> reviewList = this.list(queryWrapper);
         if (reviewList == null || reviewList.isEmpty()) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "未找到评论");

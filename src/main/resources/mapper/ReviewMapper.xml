@@ -5,16 +5,16 @@
 <mapper namespace="com.software_system_development.arona_mysterious_shop_backend.mapper.ReviewMapper">
 
     <resultMap id="BaseResultMap" type="com.software_system_development.arona_mysterious_shop_backend.model.entity.Review">
-            <id property="reviewid" column="reviewId" jdbcType="INTEGER"/>
-            <result property="reviewcontent" column="reviewContent" jdbcType="VARCHAR"/>
-            <result property="reviewcreatedate" column="reviewCreateDate" jdbcType="TIMESTAMP"/>
-            <result property="reviewuserid" column="reviewUserId" jdbcType="INTEGER"/>
-            <result property="reviewproductid" column="reviewProductId" jdbcType="INTEGER"/>
-            <result property="revieworderitemid" column="reviewOrderItemId" jdbcType="INTEGER"/>
+            <id property="reviewId" column="reviewId" jdbcType="INTEGER"/>
+            <result property="reviewContent" column="reviewContent" jdbcType="VARCHAR"/>
+            <result property="reviewCreateDate" column="reviewCreateDate" jdbcType="TIMESTAMP"/>
+            <result property="reviewUserId" column="reviewUserId" jdbcType="INTEGER"/>
+            <result property="reviewProductId" column="reviewProductId" jdbcType="INTEGER"/>
+            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         reviewId,reviewContent,reviewCreateDate,
-        reviewUserId,reviewProductId,reviewOrderItemId
+        reviewUserId,reviewProductId,isDelete
     </sql>
 </mapper>
