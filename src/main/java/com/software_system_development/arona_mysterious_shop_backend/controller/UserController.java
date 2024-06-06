@@ -165,7 +165,7 @@ public class UserController {
      */
     @GetMapping("/search/vo")
     @Operation(summary = "综合查询用户VO信息")
-    public BaseResponse<UserVO> searchUserVO(@RequestParam(required = false) Integer userId,
+    public BaseResponse<List<UserVO>> searchUserVO(@RequestParam(required = false) Integer userId,
                                              @RequestParam(required = false) String userAccount,
                                              @RequestParam(required = false) String userName,
                                              @RequestParam(required = false) String userRole) {
@@ -174,7 +174,7 @@ public class UserController {
         if (users == null || users.isEmpty()) {
             return ResultUtils.success(null);
         }
-        return ResultUtils.success(userService.getUserVO(users.get(0)));
+        return ResultUtils.success(userService.getUserVO(users));
     }
 
 
