@@ -20,17 +20,4 @@ public class PageRequest {
      * 页面大小
      */
     private long pageSize = 10;
-
-    /**
-     * 升序排序字段
-     */
-    private List<String> ascSortField;
-
-    /**
-     * 降序排序字段
-     */
-    private List<String> descSortField;
-
-
-
 }

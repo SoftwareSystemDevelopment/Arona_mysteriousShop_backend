@@ -127,7 +127,6 @@ public class UserController {
         return ResultUtils.success(b);
     }
 
-
     /**
      * 根据 id 获取用户（仅管理员）
      *
@@ -163,17 +162,20 @@ public class UserController {
     /**
      * 分页获取用户列表（仅管理员）
      *
-     * @param current           当前页数
-     * @param size              每页显示数量
      * @param userQueryRequest 用户查询请求
      * @return {@link BaseResponse}<{@link Page}<{@link User}>>
      */
-    @GetMapping("/list/page")
+    @PostMapping("/list/page")
     @Operation(summary = "分页获取用户全部信息列表（仅管理员）")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Page<User>> listUserByPage(@RequestParam(value = "current", defaultValue = "1") long current,
-                                                   @RequestParam(value = "pageSize", defaultValue = "10") long size,
-                                                   UserQueryRequest userQueryRequest) {
+    public BaseResponse<Page<User>> listUserByPage(@RequestBody UserQueryRequest userQueryRequest) {
+        if (userQueryRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
+        }
+
+        long current = userQueryRequest.getCurrent();
+        long size = userQueryRequest.getPageSize();
+
         Page<User> userPage = userService.page(new Page<>(current, size),
                 userService.getQueryWrapper(userQueryRequest));
         return ResultUtils.success(userPage);
@@ -182,20 +184,21 @@ public class UserController {
     /**
      * 分页获取用户封装列表
      *
-     * @param current           当前页数
-     * @param size              每页显示数量
      * @param userQueryRequest 用户查询请求
      * @return {@link BaseResponse}<{@link Page}<{@link UserVO}>>
      */
-    @GetMapping("/list/page/vo")
+    @PostMapping("/list/page/vo")
     @Operation(summary = "分页获取用户VO列表")
-    public BaseResponse<Page<UserVO>> listUserVOByPage(@RequestParam(value = "current", defaultValue = "1") long current,
-                                                       @RequestParam(value = "pageSize", defaultValue = "10") long size,
-                                                       UserQueryRequest userQueryRequest) {
+    public BaseResponse<Page<UserVO>> listUserVOByPage(@RequestBody UserQueryRequest userQueryRequest) {
         if (userQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+
+        long current = userQueryRequest.getCurrent();
+        long size = userQueryRequest.getPageSize();
+
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+
         Page<User> userPage = userService.page(new Page<>(current, size),
                 userService.getQueryWrapper(userQueryRequest));
         Page<UserVO> userVOPage = new Page<>(current, size, userPage.getTotal());
@@ -203,5 +206,6 @@ public class UserController {
         userVOPage.setRecords(userVO);
         return ResultUtils.success(userVOPage);
     }
+
 
 }

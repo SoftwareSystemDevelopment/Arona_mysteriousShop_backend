@@ -180,6 +180,30 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return true;
     }
 
+    @Override
+    public User getUser(HttpServletRequest request) {
+        // 先判断是否已登录
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        User currentUser = (User) userObj;
+        if (currentUser == null || currentUser.getUserId() == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        return currentUser;
+    }
+
+    @Override
+    public User getUser(User user) {
+        return user;
+    }
+
+
+    @Override
+    public List<User> getUser(List<User> userList) {
+        if (CollectionUtils.isEmpty(userList)) {
+            return new ArrayList<>();
+        }
+        return userList.stream().map(this::getUser).collect(Collectors.toList());
+    }
 
     @Override
     public UserVO getUserVO(HttpServletRequest request) {
@@ -227,12 +251,39 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (userQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
         }
-        Long userId = userQueryRequest.getUserId();
+
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(userId != null, "userId", userId);
+        boolean hasQueryCondition = false;
+
+        // 添加用户账号的查询条件
+        if (userQueryRequest.getUserAccount() != null && !userQueryRequest.getUserAccount().isEmpty()) {
+            queryWrapper.eq("userAccount", userQueryRequest.getUserAccount());
+            hasQueryCondition = true;
+        }
+
+        // 添加用户名的模糊查询条件
+        if (userQueryRequest.getUserName() != null && !userQueryRequest.getUserName().isEmpty()) {
+            queryWrapper.like("userName", userQueryRequest.getUserName());
+            hasQueryCondition = true;
+        }
+
+        // 添加用户角色的查询条件
+        if (userQueryRequest.getUserRole() != null && !userQueryRequest.getUserRole().isEmpty()) {
+            queryWrapper.eq("userRole", userQueryRequest.getUserRole());
+            hasQueryCondition = true;
+        }
+
+        // 检查是否至少有一个查询条件
+        if (!hasQueryCondition) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "至少需要一个查询条件");
+        }
+
+        // 添加排序条件
         queryWrapper.orderByAsc("userId");
+
         return queryWrapper;
     }
+
 }
 
 

@@ -128,16 +128,13 @@ public class ProductController {
     /**
      * 分页获取供应商商品列表
      *
-     * @param productQueryRequest 商品查询请求
      * @return {@link BaseResponse}<{@link Page}<{@link Product}>>
      */
     @GetMapping("/list/page")
     @Operation(summary = "分页获取供应商商品列表")
     @AuthCheck(mustRole = UserConstant.PROVIDER_ROLE)
     public BaseResponse<Page<Product>> listProductByPage(@RequestParam(value = "current", defaultValue = "1") long current,
-                                                         @RequestParam(value = "pageSize", defaultValue = "10") long size,
-                                                         ProductQueryRequest productQueryRequest,
-                                                         HttpServletRequest request) {
+                                                         @RequestParam(value = "pageSize", defaultValue = "10") long size) {
         // 获取当前登录的供应商ID
         Long providerId = ThreadLocalUtil.getLoginUser().getUserId();
         if (providerId == null || providerId <= 0) {
