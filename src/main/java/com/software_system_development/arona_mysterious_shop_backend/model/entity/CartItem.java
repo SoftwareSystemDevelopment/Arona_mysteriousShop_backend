@@ -5,50 +5,52 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
 import lombok.Data;
 
 /**
  * 
- * @TableName user
+ * @TableName cart_item
  */
-@TableName(value ="user")
+@TableName(value ="cart_item")
 @Data
-public class User implements Serializable {
+public class CartItem implements Serializable {
     /**
-     * 用户ID
+     * 购物车项id
      */
     @TableId(type = IdType.AUTO)
-    private Integer userId;
+    private Integer cartItemId;
 
     /**
-     * 用户名
+     * 购物车id
      */
-    private String userName;
+    private Integer cartId;
 
     /**
-     * 用户账号
+     * 商品id
      */
-    private String userAccount;
+    private Integer productId;
 
     /**
-     * 用户密码
+     * 数量
      */
-    private String userPassword;
+    private Integer quantity;
 
     /**
-     * 用户头像
+     * 价格
      */
-    private String userAvatar;
+    private BigDecimal price;
 
     /**
-     * 用户角色 user/admin/provider
+     * 创建时间
      */
-    private String userRole;
+    private Date creatTime;
 
     /**
-     * 是否删除 0-正常 1-删除
+     * 更新时间
      */
-    private Integer isDelete;
+    private Date updateTime;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

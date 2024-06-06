@@ -23,7 +23,7 @@ public interface UserService extends IService<User> {
      * @param userRegisterRequest 用户注册请求
      * @return 新用户 id
      */
-    long userRegister(UserRegisterRequest userRegisterRequest);
+    int userRegister(UserRegisterRequest userRegisterRequest);
 
     /**
      * 用户登录
@@ -36,7 +36,7 @@ public interface UserService extends IService<User> {
     /**
      * 用户修改信息
      */
-    Long userUpdate(UserUpdateRequest userUpdateRequest, HttpServletRequest request);
+    int userUpdate(UserUpdateRequest userUpdateRequest, HttpServletRequest request);
 
     /**
      * 用户注销

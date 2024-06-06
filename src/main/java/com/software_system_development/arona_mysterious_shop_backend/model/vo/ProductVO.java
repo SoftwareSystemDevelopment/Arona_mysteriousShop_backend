@@ -42,7 +42,7 @@ public class ProductVO implements Serializable {
     /**
      * 供货商ID
      */
-    private Long providerId;
+    private Integer providerId;
 
     /**
      * 商品创建时间

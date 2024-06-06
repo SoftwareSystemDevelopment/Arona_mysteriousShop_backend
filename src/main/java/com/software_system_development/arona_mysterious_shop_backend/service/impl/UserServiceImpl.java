@@ -48,7 +48,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 
     @Override
-    public long userRegister(UserRegisterRequest userRegisterRequest) {
+    public int userRegister(UserRegisterRequest userRegisterRequest) {
         String userAccount = userRegisterRequest.getUserAccount();
         String userPassword = userRegisterRequest.getUserPassword();
         String userName = userRegisterRequest.getUserName();
@@ -138,9 +138,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public Long userUpdate(UserUpdateRequest userUpdateRequest, HttpServletRequest request) {
+    public int userUpdate(UserUpdateRequest userUpdateRequest, HttpServletRequest request) {
         UserVO currentUser = getUserVO(request);
-        Long userId = userUpdateRequest.getUserId();
+        Integer userId = userUpdateRequest.getUserId();
         String userAvatar = userUpdateRequest.getUserAvatar();
         String userPassword = userUpdateRequest.getUserPassword();
         String userName = userUpdateRequest.getUserName();
@@ -253,29 +253,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
 
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        boolean hasQueryCondition = false;
 
         // 添加用户账号的查询条件
         if (userQueryRequest.getUserAccount() != null && !userQueryRequest.getUserAccount().isEmpty()) {
             queryWrapper.eq("userAccount", userQueryRequest.getUserAccount());
-            hasQueryCondition = true;
         }
 
         // 添加用户名的模糊查询条件
         if (userQueryRequest.getUserName() != null && !userQueryRequest.getUserName().isEmpty()) {
             queryWrapper.like("userName", userQueryRequest.getUserName());
-            hasQueryCondition = true;
         }
 
         // 添加用户角色的查询条件
         if (userQueryRequest.getUserRole() != null && !userQueryRequest.getUserRole().isEmpty()) {
             queryWrapper.eq("userRole", userQueryRequest.getUserRole());
-            hasQueryCondition = true;
-        }
-
-        // 检查是否至少有一个查询条件
-        if (!hasQueryCondition) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "至少需要一个查询条件");
         }
 
         // 添加排序条件

@@ -2,8 +2,8 @@ package com.software_system_development.arona_mysterious_shop_backend.service;
 
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.review.ReviewAddRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.review.ReviewDeleteRequest;
-import com.software_system_development.arona_mysterious_shop_backend.model.entity.Review;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.Review;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.List;
 */
 public interface ReviewService extends IService<Review> {
 
-    long addReview(ReviewAddRequest reviewAddRequest);
+    int addReview(ReviewAddRequest reviewAddRequest);
 
     boolean deleteReview(ReviewDeleteRequest reviewDeleteRequest, HttpServletRequest request);
 

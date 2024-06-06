@@ -16,7 +16,6 @@ public class FileUtil {
      * 判断文件是否存在
      *
      * @param file
-     * @DateTime 2018-10-28 晚上20：07
      */
     public static boolean judeFileExists(File file) {
         boolean flag = false;

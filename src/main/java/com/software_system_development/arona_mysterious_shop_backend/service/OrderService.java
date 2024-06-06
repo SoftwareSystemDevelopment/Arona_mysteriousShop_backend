@@ -1,7 +1,12 @@
 package com.software_system_development.arona_mysterious_shop_backend.service;
 
-import com.software_system_development.arona_mysterious_shop_backend.model.entity.Order;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderAddRequest;
+import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderUpdateRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.Order;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
 * @author 29967
@@ -9,5 +14,15 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2024-06-05 12:28:45
 */
 public interface OrderService extends IService<Order> {
+    int addOrder(OrderAddRequest orderAddRequest, HttpServletRequest request);
 
+    int updateOrder(OrderUpdateRequest orderUpdateRequest, HttpServletRequest request);
+
+    boolean removeOrder(int orderId, HttpServletRequest request);
+
+    Order getOrder(int orderId, HttpServletRequest request);
+
+    Page<Order> listOrdersByPage(Page<Order> page, QueryWrapper<Order> queryWrapper, HttpServletRequest request);
+
+    void placeOrder(int orderId, HttpServletRequest request);
 }

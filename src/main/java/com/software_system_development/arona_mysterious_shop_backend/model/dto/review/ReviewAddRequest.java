@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class ReviewAddRequest {
     private String reviewContent;
-    private Long reviewUserId;
+    private Integer reviewUserId;
     private Integer reviewProductId;
 }

@@ -5,7 +5,7 @@
 <mapper namespace="com.software_system_development.arona_mysterious_shop_backend.mapper.UserMapper">
 
     <resultMap id="BaseResultMap" type="com.software_system_development.arona_mysterious_shop_backend.model.entity.User">
-            <id property="userId" column="userId" jdbcType="BIGINT"/>
+            <id property="userId" column="userId" jdbcType="INTEGER"/>
             <result property="userName" column="userName" jdbcType="VARCHAR"/>
             <result property="userAccount" column="userAccount" jdbcType="VARCHAR"/>
             <result property="userPassword" column="userPassword" jdbcType="VARCHAR"/>
@@ -16,7 +16,7 @@
 
     <sql id="Base_Column_List">
         userId,userName,userAccount,
-        userPassword,userAvatar,
-        userRole,isDelete
+        userPassword,userAvatar,userRole,
+        isDelete
     </sql>
 </mapper>

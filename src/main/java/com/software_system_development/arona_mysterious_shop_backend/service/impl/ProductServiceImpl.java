@@ -1,8 +1,6 @@
 package com.software_system_development.arona_mysterious_shop_backend.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.software_system_development.arona_mysterious_shop_backend.common.ErrorCode;
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
@@ -25,8 +23,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
 * @author 29967
@@ -71,7 +69,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         BigDecimal productPrice = productUpdateRequest.getProductPrice();
         Integer stock = productUpdateRequest.getStock();
         Integer productIsEnabled = productUpdateRequest.getProductIsEnabled();
-        Long providerId = productUpdateRequest.getProviderId();
+        Integer providerId = productUpdateRequest.getProviderId();
         if (productId == null || StringUtils.isAnyBlank(productName, productCategoryName) || productPrice == null || stock == null || productIsEnabled == null || providerId == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
@@ -92,7 +90,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
 
     @Override
     public boolean removeProduct(ProductDeleteRequest deleteRequest, HttpServletRequest request) {
-        Long providerId = deleteRequest.getProviderId();
+        Integer providerId = deleteRequest.getProviderId();
         UserVO loginUser = userService.getUserVO(request);
         if(!loginUser.getUserId().equals(providerId)) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "无修改权限");
@@ -124,44 +122,50 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         return productVO;
     }
 
+    public List<ProductVO> getProductVO(List<Product> productList) {
+        return productList.stream().map(product -> {
+            ProductVO productVO = new ProductVO();
+            BeanUtils.copyProperties(product, productVO);
+            return productVO;
+        }).collect(Collectors.toList());
+    }
+
+
 
     @Override
-    public Wrapper<Product> getQueryWrapper(ProductQueryRequest productQueryRequest) {
+    public QueryWrapper<Product> getQueryWrapper(ProductQueryRequest productQueryRequest) {
         if (productQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
         }
-        Integer productId = productQueryRequest.getProductId();
+
         QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(productId != null, "productId", productId);
+
+        // 添加产品名称的查询条件
+        if (!StringUtils.isEmpty(productQueryRequest.getProductName())) {
+            queryWrapper.like("productName", productQueryRequest.getProductName());
+        }
+
+        // 添加产品所属分类的查询条件
+        if (!StringUtils.isEmpty(productQueryRequest.getProductCategoryName())) {
+            queryWrapper.eq("productCategoryName", productQueryRequest.getProductCategoryName());
+        }
+
+        // 添加供货商ID的查询条件
+        if (productQueryRequest.getProviderId() != null) {
+            queryWrapper.eq("providerId", productQueryRequest.getProviderId());
+        }
+
+        // 添加产品价格区间查询条件
+        if (productQueryRequest.getMinPrice() != null && productQueryRequest.getMaxPrice() != null) {
+            queryWrapper.between("productPrice", productQueryRequest.getMinPrice(), productQueryRequest.getMaxPrice());
+        }
+
+        // 添加排序条件
         queryWrapper.orderByAsc("productId");
+
         return queryWrapper;
     }
 
-    @Override
-    public Page<ProductVO> listProductsByPage(ProductQueryRequest productQueryRequest) {
-        long current = productQueryRequest.getCurrent();
-        long size = productQueryRequest.getPageSize();
-        // 构建查询条件
-        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        // 添加其他条件，如商品名称模糊搜索
-        if (StringUtils.isNotBlank(productQueryRequest.getProductName())) {
-            queryWrapper.like("productName", productQueryRequest.getProductName());
-        }
-        Page<Product> productPage = page(new Page<>(current, size), queryWrapper);
-        // 转换为VO列表
-        List<Product> productList = productPage.getRecords();
-        List<ProductVO> productVOList = new ArrayList<>();
-        for (Product product : productList) {
-            ProductVO productVO = new ProductVO();
-            BeanUtils.copyProperties(product, productVO);
-            productVOList.add(productVO);
-        }
-        // 构建VO分页对象
-        Page<ProductVO> productVOPage = new Page<>();
-        BeanUtils.copyProperties(productPage, productVOPage);
-        productVOPage.setRecords(productVOList);
-        return productVOPage;
-    }
 
 
     @Override

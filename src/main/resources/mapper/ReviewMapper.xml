@@ -8,7 +8,7 @@
             <id property="reviewId" column="reviewId" jdbcType="INTEGER"/>
             <result property="reviewContent" column="reviewContent" jdbcType="VARCHAR"/>
             <result property="reviewCreateDate" column="reviewCreateDate" jdbcType="TIMESTAMP"/>
-            <result property="reviewUserId" column="reviewUserId" jdbcType="BIGINT"/>
+            <result property="reviewUserId" column="reviewUserId" jdbcType="INTEGER"/>
             <result property="reviewProductId" column="reviewProductId" jdbcType="INTEGER"/>
             <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
     </resultMap>

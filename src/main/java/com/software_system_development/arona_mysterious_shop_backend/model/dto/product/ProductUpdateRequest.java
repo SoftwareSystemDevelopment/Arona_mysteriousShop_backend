@@ -46,7 +46,7 @@ public class ProductUpdateRequest implements Serializable {
     /**
      * 供货商ID
      */
-    private Long providerId;
+    private Integer providerId;
 
     private static final long serialVersionUID = 1L;
 }

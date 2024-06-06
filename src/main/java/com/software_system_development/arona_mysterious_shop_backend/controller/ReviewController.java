@@ -35,15 +35,15 @@ public class ReviewController {
      * 增加评论
      *
      * @param reviewAddRequest 评论添加请求
-     * @return {@link BaseResponse}<{@link Long}>
+     * @return {@link BaseResponse}<{@link Integer}>
      */
     @PostMapping("/add")
     @Operation(summary = "增加评论")
-    public BaseResponse<Long> addReview(@RequestBody ReviewAddRequest reviewAddRequest) {
+    public BaseResponse<Integer> addReview(@RequestBody ReviewAddRequest reviewAddRequest) {
         if (reviewAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        long result = reviewService.addReview(reviewAddRequest);
+        int result = reviewService.addReview(reviewAddRequest);
         return ResultUtils.success(result);
     }
 
@@ -56,7 +56,7 @@ public class ReviewController {
     @PostMapping("/delete")
     @Operation(summary = "删除评论")
     public BaseResponse<Boolean> deleteReview(@RequestBody ReviewDeleteRequest reviewDeleteRequest, HttpServletRequest request) {
-        if (reviewDeleteRequest == null || reviewDeleteRequest.getReviewId() == null) {
+        if (reviewDeleteRequest == null || reviewDeleteRequest.getReviewId() == null || reviewDeleteRequest.getReviewUserId() == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
         }
         boolean result = reviewService.deleteReview(reviewDeleteRequest, request);

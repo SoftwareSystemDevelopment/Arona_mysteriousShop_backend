@@ -39,15 +39,15 @@ public class UserController {
      * 用户注册
      *
      * @param userRegisterRequest 用户注册请求
-     * @return {@link BaseResponse}<{@link Long}>
+     * @return {@link BaseResponse}<{@link Integer}>
      */
     @PostMapping("/register")
     @Operation(summary = "用户注册")
-    public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
+    public BaseResponse<Integer> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
         if (userRegisterRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        long result = userService.userRegister(userRegisterRequest);
+        int result = userService.userRegister(userRegisterRequest);
         return ResultUtils.success(result);
     }
 
@@ -74,11 +74,11 @@ public class UserController {
      */
     @PostMapping("/update")
     @Operation(summary = "修改用户信息")
-    public BaseResponse<Long> userUpdate(@RequestBody UserUpdateRequest userUpdateRequest, HttpServletRequest request) {
+    public BaseResponse<Integer> userUpdate(@RequestBody UserUpdateRequest userUpdateRequest, HttpServletRequest request) {
         if (userUpdateRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        long result = userService.userUpdate(userUpdateRequest, request);
+        int result = userService.userUpdate(userUpdateRequest, request);
         return ResultUtils.success(result);
     }
 
@@ -136,7 +136,7 @@ public class UserController {
     @GetMapping("/get")
     @Operation(summary = "获取用户全部信息by id（仅管理员）")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<User> getUserById(long id) {
+    public BaseResponse<User> getUserById(int id) {
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -153,7 +153,7 @@ public class UserController {
      */
     @GetMapping("/get/vo")
     @Operation(summary = "获取用户VO by id")
-    public BaseResponse<UserVO> getUserVOById(long id) {
+    public BaseResponse<UserVO> getUserVOById(int id) {
         BaseResponse<User> response = getUserById(id);
         User user = response.getData();
         return ResultUtils.success(userService.getUserVO(user));

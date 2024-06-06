@@ -5,4 +5,5 @@ import lombok.Data;
 @Data
 public class ReviewDeleteRequest {
     private Integer reviewId;
+    private Integer reviewUserId;
 }

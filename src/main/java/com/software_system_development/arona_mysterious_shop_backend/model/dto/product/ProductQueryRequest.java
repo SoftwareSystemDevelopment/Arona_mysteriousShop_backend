@@ -19,11 +19,6 @@ import java.util.Date;
 public class ProductQueryRequest extends PageRequest implements Serializable {
 
     /**
-     * 商品ID
-     */
-    private Integer productId;
-
-    /**
      * 商品名称
      */
     private String productName;
@@ -34,14 +29,19 @@ public class ProductQueryRequest extends PageRequest implements Serializable {
     private String productCategoryName;
 
     /**
-     * 商品是否启用 0-启用 1-未启用
+     * 最低价格
      */
-    private Integer productIsEnabled;
+    private BigDecimal minPrice;
+
+    /**
+     * 最高价格
+     */
+    private BigDecimal maxPrice;
 
     /**
      * 供货商ID
      */
-    private Long providerId;
+    private Integer providerId;
 
 
     private static final long serialVersionUID = 1L;

@@ -17,7 +17,7 @@ public class Address implements Serializable {
     /**
      * 地区ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId
     private Integer addressAreaId;
 
     /**
@@ -26,9 +26,14 @@ public class Address implements Serializable {
     private String addressName;
 
     /**
-     * 对应用户id
+     * 创建地址的用户id
      */
-    private Long userId;
+    private Integer addressUserId;
+
+    /**
+     * 是否删除
+     */
+    private Integer isDelete;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

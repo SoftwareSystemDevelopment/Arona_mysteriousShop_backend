@@ -20,7 +20,7 @@ public interface UserConstant {
     /**
      * 默认权限
      */
-    String DEFAULT_ROLE = "user";
+    String USER_ROLE = "user";
 
     /**
      * 管理员权限

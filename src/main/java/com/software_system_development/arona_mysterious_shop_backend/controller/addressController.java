@@ -1,11 +1,25 @@
 package com.software_system_development.arona_mysterious_shop_backend.controller;
 
+import com.software_system_development.arona_mysterious_shop_backend.common.BaseResponse;
+import com.software_system_development.arona_mysterious_shop_backend.common.ErrorCode;
+import com.software_system_development.arona_mysterious_shop_backend.common.ResultUtils;
+import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
+import com.software_system_development.arona_mysterious_shop_backend.model.dto.address.AddressAddRequest;
+import com.software_system_development.arona_mysterious_shop_backend.model.dto.address.AddressDeleteRequest;
+import com.software_system_development.arona_mysterious_shop_backend.model.dto.address.AddressQueryRequest;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.Address;
 import com.software_system_development.arona_mysterious_shop_backend.service.AddressService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/address")
@@ -14,4 +28,52 @@ import org.springframework.web.bind.annotation.RestController;
 public class addressController {
     @Resource
     AddressService addressService;
+
+    /**
+     * 增加地址
+     *
+     * @param addressAddRequest 地址添加请求
+     * @return {@link BaseResponse}<{@link Integer}>
+     */
+    @PostMapping("/add")
+    @Operation(summary = "增加地址")
+    public BaseResponse<Integer> addAddress(@RequestBody AddressAddRequest addressAddRequest) {
+        if (addressAddRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        int result = addressService.addAddress(addressAddRequest);
+        return ResultUtils.success(result);
+    }
+
+    /**
+     * 删除地址
+     *
+     * @param addressDeleteRequest 地址删除请求
+     * @return {@link BaseResponse}<{@link Boolean}>
+     */
+    @PostMapping("/delete")
+    @Operation(summary = "删除地址")
+    public BaseResponse<Boolean> deleteAddress(@RequestBody AddressDeleteRequest addressDeleteRequest, HttpServletRequest request) {
+        if (addressDeleteRequest == null || addressDeleteRequest.getAddressAreaId() == null || addressDeleteRequest.getUserId() == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
+        }
+        boolean result = addressService.deleteAddress(addressDeleteRequest, request);
+        return ResultUtils.success(result);
+    }
+
+    /**
+     * 查询某用户下的所有地址
+     *
+     * @param addressQueryRequest 地址查询请求
+     * @return {@link BaseResponse}<{@link List}<{@link Address}>>
+     */
+    @PostMapping("/list")
+    @Operation(summary = "查询某用户下的所有地址")
+    public BaseResponse<List<Address>> listReviews(@RequestBody AddressQueryRequest addressQueryRequest) {
+        if (addressQueryRequest == null || addressQueryRequest.getUserId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        List<Address> addressList = addressService.getAddressByUserId(addressQueryRequest.getUserId());
+        return ResultUtils.success(addressList);
+    }
 }

@@ -2,7 +2,6 @@ package com.software_system_development.arona_mysterious_shop_backend.utils;
 
 import com.software_system_development.arona_mysterious_shop_backend.common.ErrorCode;
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
-import com.software_system_development.arona_mysterious_shop_backend.model.entity.User;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
 
 public final class ThreadLocalUtil {

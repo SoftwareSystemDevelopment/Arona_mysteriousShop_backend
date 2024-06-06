@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.software_system_development.arona_mysterious_shop_backend.common.ErrorCode;
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
+import com.software_system_development.arona_mysterious_shop_backend.mapper.ReviewMapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.review.ReviewAddRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.review.ReviewDeleteRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
@@ -12,7 +13,6 @@ import com.software_system_development.arona_mysterious_shop_backend.model.enums
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.ProductService;
 import com.software_system_development.arona_mysterious_shop_backend.service.ReviewService;
-import com.software_system_development.arona_mysterious_shop_backend.mapper.ReviewMapper;
 import com.software_system_development.arona_mysterious_shop_backend.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +36,7 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
     ProductService productService;
 
     @Override
-    public long addReview(ReviewAddRequest reviewAddRequest) {
+    public int addReview(ReviewAddRequest reviewAddRequest) {
         if (reviewAddRequest == null || reviewAddRequest.getReviewContent() == null || reviewAddRequest.getReviewUserId() == null || reviewAddRequest.getReviewProductId() == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
@@ -80,7 +80,7 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
         String userRole = loginUser.getUserRole();
 
         // 验证用户权限
-        if (!UserRoleEnum.ADMIN.getValue().equals(userRole)) {
+        if (!UserRoleEnum.ADMIN.getValue().equals(userRole) && !reviewDeleteRequest.getReviewUserId().equals(loginUser.getUserId())) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "无权限删除");
         }
 

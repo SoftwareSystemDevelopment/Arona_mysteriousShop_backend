@@ -12,5 +12,5 @@ public class ProductDeleteRequest {
     /**
      * 供货商ID
      */
-    private Long providerId;
+    private Integer providerId;
 }

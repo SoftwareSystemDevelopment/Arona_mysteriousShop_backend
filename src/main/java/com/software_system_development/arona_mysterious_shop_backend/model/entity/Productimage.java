@@ -18,27 +18,22 @@ public class Productimage implements Serializable {
      * 商品图片ID
      */
     @TableId(type = IdType.AUTO)
-    private Integer productimageid;
-
-    /**
-     * 商品图片类型 0-封面 1-详情 2-轮播
-     */
-    private Integer productimagetype;
+    private Integer productImageId;
 
     /**
      * 商品图片地址
      */
-    private String productimagesrc;
+    private String productImageSrc;
 
     /**
      * 图片对应商品ID
      */
-    private Integer productimageproductid;
+    private Integer productImageProductId;
 
     /**
      * 图片存储位置
      */
-    private String productimagestore;
+    private String productImageStore;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

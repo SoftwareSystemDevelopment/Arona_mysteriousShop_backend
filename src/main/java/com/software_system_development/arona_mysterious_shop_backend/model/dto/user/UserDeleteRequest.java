@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class UserDeleteRequest implements Serializable {
 
-    private Long userId;
+    private Integer userId;
 
     private static final long serialVersionUID = 1L;
 }

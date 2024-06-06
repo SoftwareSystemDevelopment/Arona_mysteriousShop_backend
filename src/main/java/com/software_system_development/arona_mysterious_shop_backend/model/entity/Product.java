@@ -1,12 +1,12 @@
 package com.software_system_development.arona_mysterious_shop_backend.model.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
-
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-
-import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.Data;
 
 /**
@@ -38,7 +38,7 @@ public class Product implements Serializable {
     private Date productCreateDate;
 
     /**
-     * 商品所属分类
+     * 商品所属分类名称
      */
     private String productCategoryName;
 
@@ -48,20 +48,24 @@ public class Product implements Serializable {
     private Integer productIsEnabled;
 
     /**
-     * 商品库存
+     * 库存
      */
     private Integer stock;
 
     /**
-     * 供货商ID
-     */
-    private Long providerId;
-
-    /**
      * 是否删除
      */
-    @TableLogic
     private Integer isDelete;
+
+    /**
+     * 供应商Id
+     */
+    private Integer providerId;
+
+    /**
+     * 商品描述
+     */
+    private String productDescription;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

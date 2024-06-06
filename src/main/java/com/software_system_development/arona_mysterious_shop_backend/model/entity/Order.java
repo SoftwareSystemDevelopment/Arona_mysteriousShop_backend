@@ -19,57 +19,57 @@ public class Order implements Serializable {
      * 订单ID
      */
     @TableId(type = IdType.AUTO)
-    private Integer orderid;
+    private Integer orderId;
 
     /**
      * 订单编号
      */
-    private String ordercode;
+    private String orderCode;
 
     /**
      * 订单对应地址ID
      */
-    private String orderaddress;
-
-    /**
-     * 订单详细地址
-     */
-    private String orderdetailaddress;
+    private Integer orderAddress;
 
     /**
      * 收件人
      */
-    private String orderreceiver;
+    private String orderReceiver;
 
     /**
      * 收件人手机号
      */
-    private String ordermobile;
+    private String orderMobile;
 
     /**
      * 支付时间
      */
-    private Date orderpaydate;
+    private Date orderPayDate;
 
     /**
      * 发货时间
      */
-    private Date orderdeliverydate;
+    private Date orderDeliveryDate;
 
     /**
      * 确认收货时间
      */
-    private Date orderconfirmdate;
+    private Date orderConfirmDate;
 
     /**
      * 订单状态 0-待支付 1-待发货 2-待收货 3-已收货 4-已取消
      */
-    private Integer orderstatus;
+    private Integer orderStatus;
 
     /**
      * 订单对应用户ID
      */
-    private Integer orderuserid;
+    private Integer orderUserId;
+
+    /**
+     * 是否删除
+     */
+    private Integer isDelete;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
