@@ -6,9 +6,11 @@ import com.software_system_development.arona_mysterious_shop_backend.common.Erro
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.review.ReviewAddRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.review.ReviewDeleteRequest;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Review;
 import com.software_system_development.arona_mysterious_shop_backend.model.enums.UserRoleEnum;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
+import com.software_system_development.arona_mysterious_shop_backend.service.ProductService;
 import com.software_system_development.arona_mysterious_shop_backend.service.ReviewService;
 import com.software_system_development.arona_mysterious_shop_backend.mapper.ReviewMapper;
 import com.software_system_development.arona_mysterious_shop_backend.service.UserService;
@@ -30,11 +32,24 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
 
     @Resource
     UserService userService;
+    @Resource
+    ProductService productService;
 
     @Override
     public long addReview(ReviewAddRequest reviewAddRequest) {
         if (reviewAddRequest == null || reviewAddRequest.getReviewContent() == null || reviewAddRequest.getReviewUserId() == null || reviewAddRequest.getReviewProductId() == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
+        }
+
+        // 检查 reviewUserId 是否存在
+        if (userService.getById(reviewAddRequest.getReviewUserId()) == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "指定的用户ID不存在");
+        }
+
+        // 检查 reviewProductId 是否存在
+        Product product = productService.getById(reviewAddRequest.getReviewProductId());
+        if (product == null || product.getIsDelete() == 1) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "指定的商品ID不存在或已被删除");
         }
 
         Review review = new Review();

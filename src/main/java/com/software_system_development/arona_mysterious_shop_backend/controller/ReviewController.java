@@ -69,7 +69,7 @@ public class ReviewController {
      * @param reviewQueryRequest 评论查询请求
      * @return {@link BaseResponse}<{@link List}<{@link Review}>>
      */
-    @GetMapping("/list")
+    @PostMapping("/list")
     @Operation(summary = "查询某商品下的所有评论")
     public BaseResponse<List<Review>> listReviews(@RequestBody ReviewQueryRequest reviewQueryRequest) {
         if (reviewQueryRequest == null || reviewQueryRequest.getProductId() <= 0) {
