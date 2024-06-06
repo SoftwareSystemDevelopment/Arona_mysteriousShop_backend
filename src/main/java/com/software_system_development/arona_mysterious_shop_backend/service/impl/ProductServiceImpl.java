@@ -8,7 +8,6 @@ import com.software_system_development.arona_mysterious_shop_backend.exception.T
 import com.software_system_development.arona_mysterious_shop_backend.mapper.ProductMapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductAddRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductDeleteRequest;
-import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductQueryRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
 import com.software_system_development.arona_mysterious_shop_backend.model.enums.CategoryEnum;
@@ -23,6 +22,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,13 +45,19 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         String productCategoryName = productAddRequest.getProductCategoryName();
         BigDecimal productPrice = productAddRequest.getProductPrice();
         Integer stock = productAddRequest.getStock();
-
         Integer productIsEnabled = productAddRequest.getProductIsEnabled();
-        if (StringUtils.isAnyBlank(productName, productCategoryName) || productPrice == null || stock == null || productIsEnabled == null) {
+        Integer providerId = userService.getUserVO(request).getUserId();
+        Date productCreateDate = new Date();
+        Date productUpdateDate = new Date();
+
+        if (StringUtils.isAnyBlank(productName, productCategoryName) || productPrice == null || stock == null || productIsEnabled == null || providerId == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
         Product product = new Product();
         BeanUtils.copyProperties(productAddRequest, product);
+        product.setProviderId(providerId);
+        product.setProductCreateDate(productCreateDate);
+        product.setProductUpdateDate(productUpdateDate);
         isValid(product, true);
         UserVO loginUser = userService.getUserVO(request);
         product.setProviderId(loginUser.getUserId());
@@ -70,6 +77,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         Integer stock = productUpdateRequest.getStock();
         Integer productIsEnabled = productUpdateRequest.getProductIsEnabled();
         Integer providerId = productUpdateRequest.getProviderId();
+        Date productUpdateDate = new Date();
+
         if (productId == null || StringUtils.isAnyBlank(productName, productCategoryName) || productPrice == null || stock == null || productIsEnabled == null || providerId == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
@@ -80,6 +89,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         }
         Product product = new Product();
         BeanUtils.copyProperties(productUpdateRequest, product);
+        product.setProductUpdateDate(productUpdateDate);
         isValid(product, false);
         boolean result = updateById(product);
         if (!result) {
@@ -99,28 +109,70 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
     }
 
     @Override
-    public Product getProduct(int id, HttpServletRequest request) {
-        UserVO loginUser = userService.getUserVO(request);
-        Product product = this.getById(id);
-        if (product == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "商品不存在");
+    public List<Product> getByProductName(String productName) {
+        if (StringUtils.isBlank(productName)) {
+            return Collections.emptyList();
         }
-        if (!loginUser.getUserId().equals(product.getProviderId())) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, "无查看权限");
-        }
-        return product;
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("productName", productName);
+        return this.list(queryWrapper);
     }
 
     @Override
-    public ProductVO getProductVO(int id) {
-        Product product = this.getById(id);
-        if (product == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "商品不存在");
+    public List<Product> getByProductCategoryName(String productCategoryName) {
+        if (StringUtils.isBlank(productCategoryName)) {
+            return Collections.emptyList();
         }
-        ProductVO productVO = new ProductVO();
-        BeanUtils.copyProperties(product, productVO);
-        return productVO;
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("productCategoryName", productCategoryName);
+        return this.list(queryWrapper);
     }
+
+    @Override
+    public List<Product> getByProductPriceRange(BigDecimal minPrice, BigDecimal maxPrice) {
+        if (minPrice.compareTo(maxPrice) > 0) {
+            return Collections.emptyList();
+        }
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        queryWrapper.between("productPrice", minPrice, maxPrice);
+        return this.list(queryWrapper);
+    }
+
+    @Override
+    public List<Product> getByMinProductPrice(BigDecimal minPrice) {
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        queryWrapper.ge("productPrice", minPrice);
+        return this.list(queryWrapper);
+    }
+
+    @Override
+    public List<Product> getByMaxProductPrice(BigDecimal maxPrice) {
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        queryWrapper.le("productPrice", maxPrice);
+        return this.list(queryWrapper);
+    }
+
+
+    @Override
+    public List<Product> getByProviderId(Integer providerId) {
+        if (providerId == null) {
+            return Collections.emptyList();
+        }
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("providerId", providerId);
+        return this.list(queryWrapper);
+    }
+
+    @Override
+    public List<Product> getByDescription(String description) {
+        if (StringUtils.isBlank(description)) {
+            return Collections.emptyList();
+        }
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("productDescription", description);
+        return this.list(queryWrapper);
+    }
+
 
     public List<ProductVO> getProductVO(List<Product> productList) {
         return productList.stream().map(product -> {
@@ -129,44 +181,6 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
             return productVO;
         }).collect(Collectors.toList());
     }
-
-
-
-    @Override
-    public QueryWrapper<Product> getQueryWrapper(ProductQueryRequest productQueryRequest) {
-        if (productQueryRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
-        }
-
-        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-
-        // 添加产品名称的查询条件
-        if (!StringUtils.isEmpty(productQueryRequest.getProductName())) {
-            queryWrapper.like("productName", productQueryRequest.getProductName());
-        }
-
-        // 添加产品所属分类的查询条件
-        if (!StringUtils.isEmpty(productQueryRequest.getProductCategoryName())) {
-            queryWrapper.eq("productCategoryName", productQueryRequest.getProductCategoryName());
-        }
-
-        // 添加供货商ID的查询条件
-        if (productQueryRequest.getProviderId() != null) {
-            queryWrapper.eq("providerId", productQueryRequest.getProviderId());
-        }
-
-        // 添加产品价格区间查询条件
-        if (productQueryRequest.getMinPrice() != null && productQueryRequest.getMaxPrice() != null) {
-            queryWrapper.between("productPrice", productQueryRequest.getMinPrice(), productQueryRequest.getMaxPrice());
-        }
-
-        // 添加排序条件
-        queryWrapper.orderByAsc("productId");
-
-        return queryWrapper;
-    }
-
-
 
     @Override
     public void isValid(Product product, boolean add) {
@@ -184,11 +198,6 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         ThrowUtils.throwIf(price.intValue() < 0, ErrorCode.PARAMS_ERROR,"价格不能小于0");
         ThrowUtils.throwIf(productIsEnabled != 0 && productIsEnabled != 1, ErrorCode.PARAMS_ERROR,"商品状态错误");
         ThrowUtils.throwIf(!CategoryEnum.contains(productCategoryName), ErrorCode.PARAMS_ERROR,"商品类型错误");
-
-        Product productByName = this.lambdaQuery().eq(Product::getProductName, name).one();
-        if (productByName != null && !productByName.getProductId().equals(product.getProductId())) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "产品名称已存在");
-        }
         if (name.length() > 256) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "名称过长");
         }

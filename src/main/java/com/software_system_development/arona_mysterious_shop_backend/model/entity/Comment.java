@@ -10,36 +10,36 @@ import lombok.Data;
 
 /**
  * 
- * @TableName review
+ * @TableName comment
  */
-@TableName(value ="review")
+@TableName(value ="comment")
 @Data
-public class Review implements Serializable {
+public class Comment implements Serializable {
     /**
      * 评论ID
      */
     @TableId(type = IdType.AUTO)
-    private Integer reviewId;
+    private Integer commentId;
 
     /**
      * 评论内容
      */
-    private String reviewContent;
+    private String commentContent;
 
     /**
      * 评论创建时间
      */
-    private Date reviewCreateDate;
+    private Date commentCreateDate;
 
     /**
      * 评论对应用户ID
      */
-    private Integer reviewUserId;
+    private Integer commentUserId;
 
     /**
      * 评论对应商品ID
      */
-    private Integer reviewProductId;
+    private Integer commentProductId;
 
     /**
      * 是否删除

@@ -1,15 +1,14 @@
 package com.software_system_development.arona_mysterious_shop_backend.service;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductAddRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductDeleteRequest;
-import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductQueryRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductUpdateRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.ProductVO;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -44,28 +43,19 @@ public interface ProductService extends IService<Product> {
     boolean removeProduct(ProductDeleteRequest deleteRequest, HttpServletRequest request);
 
     /**
-     *  获取商品信息
-     * @param id
-     * @param request
+     * 根据条件查询商品列表
+     * @param productName
      * @return
      */
-    Product getProduct(int id, HttpServletRequest request);
-
-    /**
-     * 获取商品信息VO
-     * @param id
-     * @return
-     */
-    ProductVO getProductVO(int id);
+    List<Product> getByProductName(String productName);
+    List<Product> getByProductCategoryName(String productCategoryName);
+    List<Product> getByProductPriceRange(BigDecimal minPrice, BigDecimal maxPrice);
+    List<Product> getByMinProductPrice(BigDecimal minPrice);
+    List<Product> getByMaxProductPrice(BigDecimal maxPrice);
+    List<Product> getByProviderId(Integer providerId);
+    List<Product> getByDescription(String description);
 
     List<ProductVO> getProductVO(List<Product> productList);
-
-    /**
-     * 获取查询条件包装器
-     * @param productQueryRequest
-     * @return
-     */
-    Wrapper<Product> getQueryWrapper(ProductQueryRequest productQueryRequest);
 
     /**
      * 校验商品信息合法性
@@ -73,4 +63,6 @@ public interface ProductService extends IService<Product> {
      * @param add
      */
     void isValid(Product product, boolean add);
+
+
 }

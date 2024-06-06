@@ -69,7 +69,7 @@ public class addressController {
      */
     @PostMapping("/list")
     @Operation(summary = "查询某用户下的所有地址")
-    public BaseResponse<List<Address>> listReviews(@RequestBody AddressQueryRequest addressQueryRequest) {
+    public BaseResponse<List<Address>> listComments(@RequestBody AddressQueryRequest addressQueryRequest) {
         if (addressQueryRequest == null || addressQueryRequest.getUserId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

@@ -45,9 +45,9 @@ public class ProductVO implements Serializable {
     private Integer providerId;
 
     /**
-     * 商品创建时间
+     * 商品描述
      */
-    private Date productCreateDate;
+    private String productDescription;
 
     private static final long serialVersionUID = 1L;
 }

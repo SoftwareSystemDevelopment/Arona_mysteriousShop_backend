@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.software_system_development.arona_mysterious_shop_backend.mapper.CommentMapper">
+
+    <resultMap id="BaseResultMap" type="com.software_system_development.arona_mysterious_shop_backend.model.entity.Comment">
+            <id property="commentId" column="commentId" jdbcType="INTEGER"/>
+            <result property="commentContent" column="commentContent" jdbcType="VARCHAR"/>
+            <result property="commentCreateDate" column="commentCreateDate" jdbcType="TIMESTAMP"/>
+            <result property="commentUserId" column="commentUserId" jdbcType="INTEGER"/>
+            <result property="commentProductId" column="commentProductId" jdbcType="INTEGER"/>
+            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        commentId,commentContent,commentCreateDate,
+        commentUserId,commentProductId,isDelete
+    </sql>
+</mapper>

@@ -16,12 +16,14 @@ import com.software_system_development.arona_mysterious_shop_backend.model.vo.Us
 import com.software_system_development.arona_mysterious_shop_backend.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,6 +55,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String userPassword = userRegisterRequest.getUserPassword();
         String userName = userRegisterRequest.getUserName();
         String userRole = userRegisterRequest.getUserRole();
+        Date userCreateDate = new Date();
+        Date userUpdateDate = new Date();
         // 1. 校验
         if (StringUtils.isAnyBlank(userAccount,userName, userPassword, userRole)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
@@ -91,6 +95,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             user.setUserName(userName);
             user.setUserPassword(encryptPassword);
             user.setUserRole(userRole);
+            user.setUserCreateDate(userCreateDate);
+            user.setUserUpdateDate(userUpdateDate);
             boolean saveResult = this.save(user);
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");
@@ -144,6 +150,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String userAvatar = userUpdateRequest.getUserAvatar();
         String userPassword = userUpdateRequest.getUserPassword();
         String userName = userUpdateRequest.getUserName();
+        Date userUpdateDate = new Date();
         if (StringUtils.isAnyBlank(userAvatar, userPassword, userName) || userId == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
@@ -158,6 +165,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setUserName(userName);
         user.setUserAvatar(userAvatar);
         user.setUserPassword(encryptPassword);
+        user.setUserCreateDate(userUpdateDate);
         boolean updateResult = this.updateById(user);
         if (!updateResult) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "修改失败");

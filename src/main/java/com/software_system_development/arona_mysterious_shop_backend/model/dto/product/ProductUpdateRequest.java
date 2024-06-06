@@ -48,5 +48,10 @@ public class ProductUpdateRequest implements Serializable {
      */
     private Integer providerId;
 
+    /**
+     * 商品描述
+     */
+    private String productDescription;
+
     private static final long serialVersionUID = 1L;
 }

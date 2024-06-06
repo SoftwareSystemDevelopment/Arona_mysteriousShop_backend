@@ -33,11 +33,6 @@ public class Product implements Serializable {
     private BigDecimal productPrice;
 
     /**
-     * 商品创建时间
-     */
-    private Date productCreateDate;
-
-    /**
      * 商品所属分类名称
      */
     private String productCategoryName;
@@ -66,6 +61,16 @@ public class Product implements Serializable {
      * 商品描述
      */
     private String productDescription;
+
+    /**
+     * 商品创建时间
+     */
+    private Date productCreateDate;
+
+    /**
+     * 商品更新时间
+     */
+    private Date productUpdateDate;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

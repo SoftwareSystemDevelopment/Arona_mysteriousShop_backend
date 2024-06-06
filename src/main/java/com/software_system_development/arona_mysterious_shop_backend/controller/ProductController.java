@@ -1,13 +1,10 @@
 package com.software_system_development.arona_mysterious_shop_backend.controller;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.software_system_development.arona_mysterious_shop_backend.annotation.AuthCheck;
 import com.software_system_development.arona_mysterious_shop_backend.common.BaseResponse;
 import com.software_system_development.arona_mysterious_shop_backend.exception.ThrowUtils;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductAddRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductDeleteRequest;
-import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductQueryRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.common.ErrorCode;
 import com.software_system_development.arona_mysterious_shop_backend.common.ResultUtils;
@@ -15,7 +12,9 @@ import com.software_system_development.arona_mysterious_shop_backend.constant.Us
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.ProductVO;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.ProductService;
+import com.software_system_development.arona_mysterious_shop_backend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -23,7 +22,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用户接口
@@ -37,6 +39,9 @@ public class ProductController {
 
     @Resource
     private ProductService productService;
+
+    @Resource
+    private UserService userService;
 
     /**
      * 增加商品
@@ -87,84 +92,124 @@ public class ProductController {
         return ResultUtils.success(b);
     }
 
-
     /**
-     * 根据 id  获取商品类
-     *
-     * @param id 编号
-     * @return {@link BaseResponse}<{@link Product}>
+     *  综合查询商品信息
+     * @param productName
+     * @param productCategoryName
+     * @param minPrice
+     * @param maxPrice
+     * @param request
+     * @return
      */
-    @GetMapping("/get")
-    @Operation(summary = "获取商品信息by id")
+    @GetMapping("/search")
+    @Operation(summary = "综合查询商品信息")
     @AuthCheck(mustRole = UserConstant.PROVIDER_ROLE)
-    public BaseResponse<Product> getProductById(int id, HttpServletRequest request) {
-        if (id <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+    public List<Product> searchProduct(@RequestParam(required = false) String productName,
+                                       @RequestParam(required = false) String productCategoryName,
+                                       @RequestParam(required = false) BigDecimal minPrice,
+                                       @RequestParam(required = false) BigDecimal maxPrice,
+                                       @RequestParam(required = false) String description,
+                                       HttpServletRequest request) {
+        // 获取当前用户的Id
+        UserVO currentUser = userService.getUserVO(request);
+        Integer currentUserProviderId = currentUser.getUserId();
+
+        // 执行查询操作
+        List<Product> products = Collections.emptyList();
+        if (productName != null) {
+            products = productService.getByProductName(productName);
+        } else if (productCategoryName != null) {
+            products = productService.getByProductCategoryName(productCategoryName);
+        } else if (minPrice != null) {
+            if (maxPrice != null) {
+                // 查询区间 [minPrice, maxPrice] 的商品
+                products = productService.getByProductPriceRange(minPrice, maxPrice);
+            } else {
+                // 查询大于等于 minPrice 的商品
+                products = productService.getByMinProductPrice(minPrice);
+            }
+        } else if (maxPrice != null) {
+            // 查询小于等于 maxPrice 的商品
+            products = productService.getByMaxProductPrice(maxPrice);
+        } else if (description != null) {
+            products = productService.getByDescription(description);
         }
-        Product product = productService.getProduct(id, request);
-        return ResultUtils.success(product);
+        // 过滤掉不属于当前用户供应商的商品
+        products = products.stream()
+                .filter(product -> product.getProviderId().equals(currentUserProviderId))
+                .collect(Collectors.toList());
+        // 检查是否为空并返回结果
+        ThrowUtils.throwIf(products.isEmpty(), ErrorCode.NOT_FOUND_ERROR);
+        return products;
     }
 
-    /**
-     * 根据id获取商品封装类
-     * @param id
-     */
-    @GetMapping("/get/vo")
-    @Operation(summary = "获取商品VOby id")
-    public BaseResponse<ProductVO> getProductVOById(int id) {
-        if (id <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        ProductVO productVO = productService.getProductVO(id);
-        return ResultUtils.success(productVO);
-    }
 
     /**
-     * 分页获取供货商的产品列表（仅供货商）
-     *
-     * @param productQueryRequest 产品查询请求
-     * @return {@link BaseResponse}<{@link Page}<{@link Product}>>
+     *  综合查询商品信息（VO）
+     * @param productName
+     * @param productCategoryName
+     * @param minPrice
+     * @param maxPrice
+     * @return
      */
-    @PostMapping("/list/product")
-    @Operation(summary = "分页获取供货商的产品列表（仅供货商）")
+    @GetMapping("/search/vo")
+    @Operation(summary = "综合查询商品信息（VO）")
+    public List<ProductVO> searchProductVO(@RequestParam(required = false) String productName,
+                                           @RequestParam(required = false) String productCategoryName,
+                                           @RequestParam(required = false) BigDecimal minPrice,
+                                           @RequestParam(required = false) BigDecimal maxPrice,
+                                           @RequestParam(required = false) String description) {
+        // 执行查询操作
+        List<Product> products;
+        if (productName != null) {
+            products = productService.getByProductName(productName);
+        } else if (productCategoryName != null) {
+            products = productService.getByProductCategoryName(productCategoryName);
+        } else if (minPrice != null) {
+            if (maxPrice != null) {
+                // 查询闭区间 [minPrice, maxPrice] 的商品
+                products = productService.getByProductPriceRange(minPrice, maxPrice);
+            } else {
+                // 查询大于等于 minPrice 的商品
+                products = productService.getByMinProductPrice(minPrice);
+            }
+        } else if (maxPrice != null) {
+            // 查询小于等于 maxPrice 的商品
+            products = productService.getByMaxProductPrice(maxPrice);
+        } else if (description != null) {
+            products = productService.getByDescription(description);
+        } else {
+            products = productService.list();
+        }
+        // 转换为 ProductVO
+        List<ProductVO> productVOList = productService.getProductVO(products);
+        // 检查是否为空并返回结果
+        ThrowUtils.throwIf(productVOList.isEmpty(), ErrorCode.NOT_FOUND_ERROR);
+        return productVOList;
+    }
+
+
+    @GetMapping("/list/product")
+    @Operation(summary = "获取供货商的产品列表（仅供货商）")
     @AuthCheck(mustRole = UserConstant.PROVIDER_ROLE)
-    public BaseResponse<Page<Product>> listProductsByProvider(@RequestBody ProductQueryRequest productQueryRequest) {
-        if (productQueryRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
-        }
-
-        long current = productQueryRequest.getCurrent();
-        long size = productQueryRequest.getPageSize();
-
-        Page<Product> productPage = productService.page(new Page<>(current, size),
-                productService.getQueryWrapper(productQueryRequest));
-        return ResultUtils.success(productPage);
+    public BaseResponse<List<Product>> listProductsByProvider(HttpServletRequest request) {
+        // 获取当前用户的供货商ID
+        UserVO loginUser = userService.getUserVO(request);
+        int providerId = loginUser.getUserId();
+        // 根据供货商ID查询产品列表
+        List<Product> productList = productService.getByProviderId(providerId);
+        return ResultUtils.success(productList);
     }
 
-    /**
-     * 分页获取产品封装列表
-     *
-     * @param productQueryRequest 产品查询请求
-     * @return {@link BaseResponse}<{@link Page}<{@link ProductVO}>>
-     */
-    @PostMapping("/list/vo")
-    @Operation(summary = "分页获取产品VO列表")
-    public BaseResponse<Page<ProductVO>> listProductVOByPage(@RequestBody ProductQueryRequest productQueryRequest) {
-        if (productQueryRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-
-        long current = productQueryRequest.getCurrent();
-        long size = productQueryRequest.getPageSize();
-
-        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-
-        IPage<Product> productPage = productService.page(new Page<>(current, size),
-                productService.getQueryWrapper(productQueryRequest));
-        List<ProductVO> productVOList = productService.getProductVO(productPage.getRecords());
-        Page<ProductVO> productVOPage = new Page<>(current, size, productPage.getTotal());
-        productVOPage.setRecords(productVOList);
-        return ResultUtils.success(productVOPage);
+    @GetMapping("/list/vo")
+    @Operation(summary = "获取产品VO列表")
+    public BaseResponse<List<ProductVO>> listProductVO() {
+        // 查询全部产品列表
+        List<Product> productList = productService.list();
+        // 将产品列表转换为产品封装列表
+        List<ProductVO> productVOList = productService.getProductVO(productList);
+        return ResultUtils.success(productVOList);
     }
+
 }
 

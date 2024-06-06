@@ -38,6 +38,10 @@ public class ProductAddRequest implements Serializable {
      */
     private Integer productIsEnabled;
 
+    /**
+     * 商品描述
+     */
+    private String productDescription;
 
     private static final long serialVersionUID = 1L;
 }

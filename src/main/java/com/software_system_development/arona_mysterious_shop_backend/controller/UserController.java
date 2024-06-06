@@ -148,7 +148,6 @@ public class UserController {
         } else if (userRole != null) {
             users = userService.getByUserRole(userRole);
         }
-
         // 返回结果
         ThrowUtils.throwIf(users.isEmpty(), ErrorCode.NOT_FOUND_ERROR);
         return ResultUtils.success(users);
