@@ -102,17 +102,17 @@ public class UserController {
     /**
      * 删除用户
      *
-     * @param deleteRequest 删除请求
+     * @param userId 用户ID
      * @return {@link BaseResponse}<{@link Boolean}>
      */
-    @PostMapping("/delete")
+    @DeleteMapping("/delete/{userId}")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     @Operation(summary = "删除用户")
-    public BaseResponse<Boolean> deleteUser(@RequestBody UserDeleteRequest deleteRequest) {
-        if (deleteRequest == null || deleteRequest.getUserId() <= 0) {
+    public BaseResponse<Boolean> deleteUser(@PathVariable long userId) {
+        if (userId <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        boolean b = userService.removeById(deleteRequest.getUserId());
+        boolean b = userService.removeById(userId);
         return ResultUtils.success(b);
     }
 
@@ -154,7 +154,6 @@ public class UserController {
         return ResultUtils.success(users);
     }
 
-
     /**
      * 综合查询用户VO信息
      * @param userId
@@ -176,7 +175,6 @@ public class UserController {
         }
         return ResultUtils.success(userService.getUserVO(users));
     }
-
 
     /**
      * 获取用户列表（分页展示）
