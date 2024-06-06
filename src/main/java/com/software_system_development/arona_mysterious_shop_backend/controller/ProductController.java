@@ -4,7 +4,6 @@ import com.software_system_development.arona_mysterious_shop_backend.annotation.
 import com.software_system_development.arona_mysterious_shop_backend.common.BaseResponse;
 import com.software_system_development.arona_mysterious_shop_backend.exception.ThrowUtils;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductAddRequest;
-import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductDeleteRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.common.ErrorCode;
 import com.software_system_development.arona_mysterious_shop_backend.common.ResultUtils;
@@ -78,19 +77,21 @@ public class ProductController {
     /**
      * 删除商品
      *
-     * @param deleteRequest 删除请求
+     * @param productId 商品ID
+     * @param request HttpServletRequest
      * @return {@link BaseResponse}<{@link Boolean}>
      */
-    @PostMapping("/delete")
+    @DeleteMapping("/delete/{productId}")
     @AuthCheck(mustRole = UserConstant.PROVIDER_ROLE)
     @Operation(summary = "删除商品")
-    public BaseResponse<Boolean> deleteProduct(@RequestBody ProductDeleteRequest deleteRequest, HttpServletRequest request) {
-        if (deleteRequest == null || deleteRequest.getProductId() <= 0) {
+    public BaseResponse<Boolean> deleteProduct(@PathVariable Integer productId, HttpServletRequest request) {
+        if (productId == null || productId <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        boolean b = productService.removeProduct(deleteRequest, request);
-        return ResultUtils.success(b);
+        boolean result = productService.removeProduct(productId, request);
+        return ResultUtils.success(result);
     }
+
 
     /**
      *  综合查询商品信息

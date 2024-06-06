@@ -7,7 +7,6 @@ import com.software_system_development.arona_mysterious_shop_backend.exception.B
 import com.software_system_development.arona_mysterious_shop_backend.exception.ThrowUtils;
 import com.software_system_development.arona_mysterious_shop_backend.mapper.ProductMapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductAddRequest;
-import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductDeleteRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
 import com.software_system_development.arona_mysterious_shop_backend.model.enums.CategoryEnum;
@@ -99,14 +98,22 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
     }
 
     @Override
-    public boolean removeProduct(ProductDeleteRequest deleteRequest, HttpServletRequest request) {
-        Integer providerId = deleteRequest.getProviderId();
+    public boolean removeProduct(Integer productId, HttpServletRequest request) {
+        // 获取当前登录用户信息
         UserVO loginUser = userService.getUserVO(request);
-        if(!loginUser.getUserId().equals(providerId)) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, "无修改权限");
+        // 根据商品ID查询商品信息
+        Product product = this.getById(productId);
+        if (product == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "商品不存在");
         }
-        return removeById(deleteRequest.getProductId());
+        // 检查当前登录用户是否为商品的供应商
+        if (!loginUser.getUserId().equals(product.getProviderId())) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "无删除权限");
+        }
+        // 删除商品
+        return this.removeById(productId);
     }
+
 
     @Override
     public List<Product> getByProductName(String productName) {
