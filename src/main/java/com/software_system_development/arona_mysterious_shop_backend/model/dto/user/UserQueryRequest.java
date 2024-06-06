@@ -15,6 +15,11 @@ import java.io.Serializable;
 public class UserQueryRequest extends PageRequest implements Serializable {
 
     /**
+     * 用户id
+     */
+    private Integer userId;
+
+    /**
      * 用户账号
      */
     private String userAccount;

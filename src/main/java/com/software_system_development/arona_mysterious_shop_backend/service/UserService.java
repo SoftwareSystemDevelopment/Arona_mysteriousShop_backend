@@ -1,9 +1,7 @@
 package com.software_system_development.arona_mysterious_shop_backend.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserLoginRequest;
-import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserQueryRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserRegisterRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.User;
@@ -46,6 +44,13 @@ public interface UserService extends IService<User> {
     boolean userLogout(HttpServletRequest request);
 
     /**
+     * 根据条件查询用户
+     */
+    User getByUserAccount(String userAccount);
+    List<User> getByUserName(String userName);
+    List<User> getByUserRole(String userRole);
+
+    /**
      *  获取用户信息
      * @return
      */
@@ -64,20 +69,9 @@ public interface UserService extends IService<User> {
     List<UserVO> getUserVO(List<User> userList);
 
     /**
-     * 是否为管理员
-     *
-     * @param request
+     *  用户鉴权
+     * @param user
      * @return
      */
-    boolean isAdmin(HttpServletRequest request);
-
     boolean isAdmin(UserVO user);
-
-    /**
-     * 根据条件进行查询
-     *
-     * @param userQueryRequest 查询条件
-     * @return
-     */
-    QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
 }

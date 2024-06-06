@@ -20,6 +20,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -99,18 +100,6 @@ public class UserController {
     }
 
     /**
-     * 获取当前登录用户
-     *
-     * @return {@link BaseResponse}<{@link User}>
-     */
-    @GetMapping("/get/current")
-    @Operation(summary = "获取当前用户")
-    public BaseResponse<UserVO> getLoginUser() {
-        UserVO user = ThreadLocalUtil.getLoginUser();
-        return ResultUtils.success(user);
-    }
-
-    /**
      * 删除用户
      *
      * @param deleteRequest 删除请求
@@ -128,84 +117,98 @@ public class UserController {
     }
 
     /**
-     * 根据 id 获取用户（仅管理员）
-     *
-     * @param id 编号
-     * @return {@link BaseResponse}<{@link User}>
+     * 综合查询用户信息
+     * @param userId
+     * @param userAccount
+     * @param userName
+     * @param userRole
+     * @return
      */
-    @GetMapping("/get")
-    @Operation(summary = "获取用户全部信息by id（仅管理员）")
+    @GetMapping("/search")
+    @Operation(summary = "综合查询用户信息")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<User> getUserById(int id) {
-        if (id <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+    public BaseResponse<List<User>> searchUser(@RequestParam(required = false) Integer userId,
+                                               @RequestParam(required = false) String userAccount,
+                                               @RequestParam(required = false) String userName,
+                                               @RequestParam(required = false) String userRole) {
+        // 执行查询操作
+        List<User> users = Collections.emptyList();
+        if (userId != null) {
+            User user = userService.getById(userId);
+            if (user != null) {
+                users = Collections.singletonList(user);
+            }
+        } else if (userAccount != null) {
+            User user = userService.getByUserAccount(userAccount);
+            if (user != null) {
+                users = Collections.singletonList(user);
+            }
+        } else if (userName != null) {
+            users = userService.getByUserName(userName);
+        } else if (userRole != null) {
+            users = userService.getByUserRole(userRole);
         }
-        User user = userService.getById(id);
-        ThrowUtils.throwIf(user == null, ErrorCode.NOT_FOUND_ERROR);
-        return ResultUtils.success(user);
+
+        // 返回结果
+        ThrowUtils.throwIf(users.isEmpty(), ErrorCode.NOT_FOUND_ERROR);
+        return ResultUtils.success(users);
     }
 
-    /**
-     * 根据 id 获取包装类
-     *
-     * @param id 编号
-     * @return {@link BaseResponse}<{@link UserVO}>
-     */
-    @GetMapping("/get/vo")
-    @Operation(summary = "获取用户VO by id")
-    public BaseResponse<UserVO> getUserVOById(int id) {
-        BaseResponse<User> response = getUserById(id);
-        User user = response.getData();
-        return ResultUtils.success(userService.getUserVO(user));
-    }
 
     /**
-     * 分页获取用户列表（仅管理员）
-     *
-     * @param userQueryRequest 用户查询请求
-     * @return {@link BaseResponse}<{@link Page}<{@link User}>>
+     * 综合查询用户VO信息
+     * @param userId
+     * @param userAccount
+     * @param userName
+     * @param userRole
+     * @return
      */
-    @PostMapping("/list/page")
-    @Operation(summary = "分页获取用户全部信息列表（仅管理员）")
+    @GetMapping("/search/vo")
+    @Operation(summary = "综合查询用户VO信息")
+    public BaseResponse<UserVO> searchUserVO(@RequestParam(required = false) Integer userId,
+                                             @RequestParam(required = false) String userAccount,
+                                             @RequestParam(required = false) String userName,
+                                             @RequestParam(required = false) String userRole) {
+        BaseResponse<List<User>> response = searchUser(userId, userAccount, userName, userRole);
+        List<User> users = response.getData();
+        if (users == null || users.isEmpty()) {
+            return ResultUtils.success(null);
+        }
+        return ResultUtils.success(userService.getUserVO(users.get(0)));
+    }
+
+
+    /**
+     * 获取用户列表（分页展示）
+     *
+     * @param current 当前页数
+     * @param size    每页大小
+     * @return {@link BaseResponse}<{@link List}<{@link User}>>
+     */
+    @GetMapping("/list")
+    @Operation(summary = "获取用户列表（分页展示）")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Page<User>> listUserByPage(@RequestBody UserQueryRequest userQueryRequest) {
-        if (userQueryRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
-        }
-
-        long current = userQueryRequest.getCurrent();
-        long size = userQueryRequest.getPageSize();
-
-        Page<User> userPage = userService.page(new Page<>(current, size),
-                userService.getQueryWrapper(userQueryRequest));
-        return ResultUtils.success(userPage);
+    public BaseResponse<List<User>> listUsers(
+            @RequestParam(defaultValue = "1") long current,
+            @RequestParam(defaultValue = "10") long size) {
+        Page<User> userPage = userService.page(new Page<>(current, size));
+        return ResultUtils.success(userPage.getRecords());
     }
 
     /**
-     * 分页获取用户封装列表
+     * 获取用户VO列表（分页展示）
      *
-     * @param userQueryRequest 用户查询请求
-     * @return {@link BaseResponse}<{@link Page}<{@link UserVO}>>
+     * @param current 当前页数
+     * @param size    每页大小
+     * @return {@link BaseResponse}<{@link List}<{@link UserVO}>>
      */
-    @PostMapping("/list/page/vo")
-    @Operation(summary = "分页获取用户VO列表")
-    public BaseResponse<Page<UserVO>> listUserVOByPage(@RequestBody UserQueryRequest userQueryRequest) {
-        if (userQueryRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-
-        long current = userQueryRequest.getCurrent();
-        long size = userQueryRequest.getPageSize();
-
-        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-
-        Page<User> userPage = userService.page(new Page<>(current, size),
-                userService.getQueryWrapper(userQueryRequest));
-        Page<UserVO> userVOPage = new Page<>(current, size, userPage.getTotal());
-        List<UserVO> userVO = userService.getUserVO(userPage.getRecords());
-        userVOPage.setRecords(userVO);
-        return ResultUtils.success(userVOPage);
+    @GetMapping("/list/vo")
+    @Operation(summary = "获取用户VO列表（分页展示）")
+    public BaseResponse<List<UserVO>> listUserVOs(
+            @RequestParam(defaultValue = "1") long current,
+            @RequestParam(defaultValue = "10") long size) {
+        Page<User> userPage = userService.page(new Page<>(current, size));
+        List<UserVO> userVOList = userService.getUserVO(userPage.getRecords());
+        return ResultUtils.success(userVOList);
     }
-
-
 }

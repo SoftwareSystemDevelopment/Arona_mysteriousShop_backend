@@ -1,5 +1,6 @@
 package com.software_system_development.arona_mysterious_shop_backend.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -7,7 +8,6 @@ import com.software_system_development.arona_mysterious_shop_backend.common.Erro
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
 import com.software_system_development.arona_mysterious_shop_backend.mapper.UserMapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserLoginRequest;
-import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserQueryRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserRegisterRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.User;
@@ -181,6 +181,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    public User getByUserAccount(String userAccount) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userAccount", userAccount);
+        return getOne(queryWrapper);
+    }
+
+    @Override
+    public List<User> getByUserName(String userName) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("userName", userName);
+        return list(queryWrapper);
+    }
+
+    @Override
+    public List<User> getByUserRole(String userRole) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userRole", userRole);
+        return list(queryWrapper);
+    }
+
+    @Override
     public User getUser(HttpServletRequest request) {
         // 先判断是否已登录
         Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
@@ -236,45 +257,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public boolean isAdmin(HttpServletRequest request) {
-        UserVO user = getUserVO(request);
-        return isAdmin(user);
-    }
-
-    @Override
     public boolean isAdmin(UserVO user) {
         return user != null && UserRoleEnum.ADMIN.getValue().equals(user.getUserRole());
     }
-
-    @Override
-    public QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest) {
-        if (userQueryRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
-        }
-
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-
-        // 添加用户账号的查询条件
-        if (userQueryRequest.getUserAccount() != null && !userQueryRequest.getUserAccount().isEmpty()) {
-            queryWrapper.eq("userAccount", userQueryRequest.getUserAccount());
-        }
-
-        // 添加用户名的模糊查询条件
-        if (userQueryRequest.getUserName() != null && !userQueryRequest.getUserName().isEmpty()) {
-            queryWrapper.like("userName", userQueryRequest.getUserName());
-        }
-
-        // 添加用户角色的查询条件
-        if (userQueryRequest.getUserRole() != null && !userQueryRequest.getUserRole().isEmpty()) {
-            queryWrapper.eq("userRole", userQueryRequest.getUserRole());
-        }
-
-        // 添加排序条件
-        queryWrapper.orderByAsc("userId");
-
-        return queryWrapper;
-    }
-
 }
 
 
