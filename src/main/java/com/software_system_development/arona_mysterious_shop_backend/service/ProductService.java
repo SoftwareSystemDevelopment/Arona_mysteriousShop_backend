@@ -62,5 +62,10 @@ public interface ProductService extends IService<Product> {
      */
     void isValid(Product product, boolean add);
 
+    /**
+     *  获取商品的价格
+     */
+    BigDecimal getProductPrice(Integer productId);
+
 
 }

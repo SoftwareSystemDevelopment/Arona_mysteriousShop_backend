@@ -40,17 +40,6 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements Ca
     }
 
     @Override
-    public boolean update(Cart cart, List<CartProduct> cartProducts) {
-        // 更新购物车中的商品信息
-        cartProductMapper.delete(new QueryWrapper<CartProduct>().eq("cartId", cart.getCartId()));
-        for (CartProduct cartProduct : cartProducts) {
-            cartProduct.setCartId(cart.getCartId());
-            cartProductMapper.insert(cartProduct);
-        }
-        return true;
-    }
-
-    @Override
     public List<CartProduct> getCartProducts(int cartId) {
         QueryWrapper<CartProduct> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("cartId", cartId);

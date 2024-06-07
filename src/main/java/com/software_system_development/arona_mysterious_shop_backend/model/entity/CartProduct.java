@@ -16,12 +16,6 @@ import lombok.Data;
 @Data
 public class CartProduct implements Serializable {
     /**
-     * 购物车项ID
-     */
-    @TableId(type = IdType.AUTO)
-    private Integer cartProductId;
-
-    /**
      * 购物车ID
      */
     private Integer cartId;

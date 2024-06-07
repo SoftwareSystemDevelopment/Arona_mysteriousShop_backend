@@ -7,6 +7,7 @@ import com.software_system_development.arona_mysterious_shop_backend.model.entit
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.User;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.CartService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +28,8 @@ public class CartController {
     @Resource
     CartService cartService;
 
-    @GetMapping("/")
+    @GetMapping("")
+    @Operation(summary = "获取当前用户的购物车信息")
     public Cart getCart(HttpServletRequest request) {
         Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
         UserVO currentUser = (UserVO) userObj;
@@ -35,7 +37,8 @@ public class CartController {
         return cartService.getById(cartId);
     }
 
-    @GetMapping("/{cartId}/items")
+    @GetMapping("/items")
+    @Operation(summary = "获取当前用户的购物车中的所有购物车项信息")
     public List<CartProduct> getCartProducts(@PathVariable int cartId) {
         return cartService.getCartProducts(cartId);
     }

@@ -209,6 +209,16 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "名称过长");
         }
     }
+
+    @Override
+    public BigDecimal getProductPrice(Integer productId) {
+
+        Product product = this.getById(productId);
+        if (product == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "商品不存在");
+        }
+        return product.getProductPrice();
+    }
 }
 
 

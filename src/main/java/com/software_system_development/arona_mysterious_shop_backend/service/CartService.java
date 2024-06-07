@@ -22,14 +22,6 @@ public interface CartService extends IService<Cart> {
     boolean save(Cart cart);
 
     /**
-     * 更新购物车
-     * @param cart 购物车对象
-     * @param cartProducts 购物车商品列表
-     * @return 更新后的购物车的ID
-     */
-    boolean update(Cart cart, List<CartProduct> cartProducts);
-
-    /**
      * 获取购物车中的商品列表
      * @param cartId 购物车ID
      * @return 购物车中的商品列表
