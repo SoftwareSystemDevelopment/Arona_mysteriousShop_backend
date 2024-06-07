@@ -1,6 +1,6 @@
-package generator.service;
+package com.software_system_development.arona_mysterious_shop_backend.service;
 
-import generator.domain.Shop;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.Shop;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
