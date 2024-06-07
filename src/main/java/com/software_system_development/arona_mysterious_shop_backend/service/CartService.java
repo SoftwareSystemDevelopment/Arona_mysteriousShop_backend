@@ -1,5 +1,7 @@
 package com.software_system_development.arona_mysterious_shop_backend.service;
 
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.Cart;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.CartItem;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**

@@ -14,7 +14,7 @@ import lombok.Data;
  */
 @TableName(value ="orders")
 @Data
-public class Orders implements Serializable {
+public class Order implements Serializable {
     /**
      * 订单ID
      */

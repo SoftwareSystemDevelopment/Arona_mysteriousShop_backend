@@ -2,6 +2,7 @@ package com.software_system_development.arona_mysterious_shop_backend.controller
 
 import com.software_system_development.arona_mysterious_shop_backend.common.BaseResponse;
 import com.software_system_development.arona_mysterious_shop_backend.common.ResultUtils;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.CartItem;
 import com.software_system_development.arona_mysterious_shop_backend.service.CartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

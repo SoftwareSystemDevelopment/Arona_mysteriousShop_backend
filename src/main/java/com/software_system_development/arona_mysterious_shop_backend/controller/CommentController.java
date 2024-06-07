@@ -5,6 +5,7 @@ import com.software_system_development.arona_mysterious_shop_backend.common.Erro
 import com.software_system_development.arona_mysterious_shop_backend.common.ResultUtils;
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.comment.CommentAddRequest;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.Comment;
 import com.software_system_development.arona_mysterious_shop_backend.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

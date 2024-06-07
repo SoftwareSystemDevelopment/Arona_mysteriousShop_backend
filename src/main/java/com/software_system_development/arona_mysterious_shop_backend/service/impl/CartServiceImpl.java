@@ -1,6 +1,10 @@
 package com.software_system_development.arona_mysterious_shop_backend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.software_system_development.arona_mysterious_shop_backend.mapper.CartItemMapper;
+import com.software_system_development.arona_mysterious_shop_backend.mapper.CartMapper;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.Cart;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.CartItem;
 import com.software_system_development.arona_mysterious_shop_backend.service.CartService;
 import com.software_system_development.arona_mysterious_shop_backend.service.UserService;
 import jakarta.annotation.Resource;

@@ -1,6 +1,6 @@
 package com.software_system_development.arona_mysterious_shop_backend.mapper;
 
-import com.software_system_development.arona_mysterious_shop_backend.model.entity.Orders;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.Order;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @createDate 2024-06-07 16:09:43
 * @Entity com.software_system_development.arona_mysterious_shop_backend.model.entity.Orders
 */
-public interface OrdersMapper extends BaseMapper<Orders> {
+public interface OrderMapper extends BaseMapper<Order> {
 
 }
 
