@@ -9,8 +9,10 @@ import com.software_system_development.arona_mysterious_shop_backend.exception.B
 import com.software_system_development.arona_mysterious_shop_backend.mapper.OrderMapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderAddRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderUpdateRequest;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.CartItem;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Order;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
+import com.software_system_development.arona_mysterious_shop_backend.service.CartService;
 import com.software_system_development.arona_mysterious_shop_backend.service.OrderService;
 import com.software_system_development.arona_mysterious_shop_backend.service.UserService;
 import jakarta.annotation.Resource;
@@ -19,12 +21,16 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    CartService cartService;
 
     @Override
     public int addOrder(OrderAddRequest orderAddRequest, HttpServletRequest request) {
@@ -108,5 +114,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
         }
+    }
+
+    @Override
+    public List<CartItem> getCartItems(int cartId) {
+        // 这里调用购物车服务获取购物车中的所有产品信息
+        return cartService.getCartItems(cartId);
     }
 }

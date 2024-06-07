@@ -5,8 +5,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderAddRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderUpdateRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.CartItem;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Order;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.List;
 
 /**
 * @author 29967
@@ -25,4 +28,12 @@ public interface OrderService extends IService<Order> {
     Page<Order> listOrdersByPage(Page<Order> page, QueryWrapper<Order> queryWrapper, HttpServletRequest request);
 
     void placeOrder(int orderId, HttpServletRequest request);
+
+    /**
+     * 获取购物车中的所有产品信息
+     *
+     * @param cartId 购物车ID
+     * @return 购物车中的所有产品信息列表
+     */
+    List<CartItem> getCartItems(int cartId);
 }

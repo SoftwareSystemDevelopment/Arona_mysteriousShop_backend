@@ -10,14 +10,22 @@ import com.software_system_development.arona_mysterious_shop_backend.constant.Us
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderAddRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderUpdateRequest;
-import com.software_system_development.arona_mysterious_shop_backend.model.entity.Order;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.*;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.OrderVO;
+import com.software_system_development.arona_mysterious_shop_backend.service.AddressService;
+import com.software_system_development.arona_mysterious_shop_backend.service.CartService;
 import com.software_system_development.arona_mysterious_shop_backend.service.OrderService;
+import com.software_system_development.arona_mysterious_shop_backend.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/order")
@@ -27,6 +35,12 @@ public class OrderController {
 
     @Resource
     private OrderService orderService;
+
+    @Resource
+    private ProductService productService;
+
+    @Resource
+    private AddressService addressService;
 
     @PostMapping("/add")
     @Operation(summary = "新增订单")
@@ -82,11 +96,57 @@ public class OrderController {
     @PostMapping("/place")
     @Operation(summary = "下订单")
     @AuthCheck(mustRole = UserConstant.USER_ROLE)
-    public BaseResponse<Void> placeOrder(@RequestParam int orderId, HttpServletRequest request) {
+    public BaseResponse<OrderVO> placeOrder(@RequestParam int orderId, HttpServletRequest request) {
         if (orderId <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         orderService.placeOrder(orderId, request);
-        return ResultUtils.success(null);
+
+        // 获取订单基本信息
+        Order order = orderService.getOrder(orderId, request);
+        String orderCode = order.getOrderCode();
+        Integer orderAddressId = order.getOrderAddress();
+        String orderReceiver = order.getOrderReceiver();
+        String orderMobile = order.getOrderMobile();
+        Date orderPayDate = order.getOrderPayDate();
+        int orderStatus = order.getOrderStatus();
+
+        // 根据地址ID获取地址信息
+        Address address = addressService.getById(orderAddressId);
+        String orderAddress = address.getAddressName();
+
+        // 获取购物车中的所有产品信息
+        int cartId = order.getOrderCartId();
+        List<CartItem> cartItems = orderService.getCartItems(cartId);
+
+        // 构造订单商品信息列表
+        List<OrderItemInfo> orderItems = new ArrayList<>();
+        for (CartItem cartItem : cartItems) {
+            // 根据商品ID获取商品名称
+            Product product = productService.getById(cartItem.getProductId());
+            String productName = product.getProductName();
+
+            OrderItemInfo orderItemInfo = new OrderItemInfo (
+                    cartItem.getProductId(),
+                    productName,
+                    cartItem.getPrice(),
+                    cartItem.getQuantity()
+            );
+            orderItems.add(orderItemInfo);
+        }
+
+        // 构造订单完整信息并返回给前端
+        OrderVO orderVo = new OrderVO (
+                orderCode,
+                orderAddress,
+                orderReceiver,
+                orderMobile,
+                orderPayDate,
+                orderStatus,
+                orderItems
+        );
+        return ResultUtils.success(orderVo);
     }
+
+
 }

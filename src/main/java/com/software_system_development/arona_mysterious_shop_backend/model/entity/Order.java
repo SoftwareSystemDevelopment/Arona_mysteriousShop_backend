@@ -67,6 +67,11 @@ public class Order implements Serializable {
     private Integer orderUserId;
 
     /**
+     * 订单对应购物车ID
+     */
+    private Integer orderCartId;
+
+    /**
      * 是否删除
      */
     private Integer isDelete;
