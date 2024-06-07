@@ -9,10 +9,8 @@ import com.software_system_development.arona_mysterious_shop_backend.common.Erro
 import com.software_system_development.arona_mysterious_shop_backend.common.ResultUtils;
 import com.software_system_development.arona_mysterious_shop_backend.constant.UserConstant;
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
-import com.software_system_development.arona_mysterious_shop_backend.model.entity.User;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.UserService;
-import com.software_system_development.arona_mysterious_shop_backend.utils.ThreadLocalUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;

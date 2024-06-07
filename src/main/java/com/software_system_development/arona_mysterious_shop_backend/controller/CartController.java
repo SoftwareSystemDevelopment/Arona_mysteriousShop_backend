@@ -2,45 +2,47 @@ package com.software_system_development.arona_mysterious_shop_backend.controller
 
 import com.software_system_development.arona_mysterious_shop_backend.common.BaseResponse;
 import com.software_system_development.arona_mysterious_shop_backend.common.ResultUtils;
-import com.software_system_development.arona_mysterious_shop_backend.model.entity.CartItem;
 import com.software_system_development.arona_mysterious_shop_backend.service.CartService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
 @RequestMapping("/cart")
+@Tag(name = "购物车接口")
 public class CartController {
 
     @Resource
     private CartService cartService;
 
-    @PostMapping("/user/{userId}/add-item")
-    @Operation(summary = "Add item to cart")
-    public BaseResponse<CartItem> addCartItem(@PathVariable int userId, @RequestBody CartItem cartItem) {
-        CartItem addedCartItem = cartService.addCartItem(userId, cartItem);
+    @PostMapping("/user/add-item")
+    @Operation(summary = "向购物车中添加商品")
+    public BaseResponse<CartItem> addCartItem(@RequestBody CartItem cartItem, HttpServletRequest request) {
+        CartItem addedCartItem = cartService.addCartItem(request, cartItem);
         return ResultUtils.success(addedCartItem);
     }
 
-    @DeleteMapping("/user/{userId}/remove-item/{productId}")
-    @Operation(summary = "Remove item from cart")
-    public BaseResponse<Boolean> removeCartItem(@PathVariable int userId, @PathVariable int productId) {
-        boolean result = cartService.removeCartItem(userId, productId);
+    @DeleteMapping("/user/remove-item/{productId}")
+    @Operation(summary = "从购物车中移除商品")
+    public BaseResponse<Boolean> removeCartItem(@PathVariable int productId, HttpServletRequest request) {
+        boolean result = cartService.removeCartItem(request, productId);
         return ResultUtils.success(result);
     }
 
-    @PutMapping("/user/{userId}/update-item")
-    @Operation(summary = "Update item quantity in cart")
-    public BaseResponse<Boolean> updateCartItemQuantity(@PathVariable int userId, @RequestBody CartItem cartItem) {
-        boolean result = cartService.updateCartItemQuantity(userId, cartItem.getProductId(), cartItem.getQuantity());
+    @PutMapping("/user/update-item")
+    @Operation(summary = "更新商品数量")
+    public BaseResponse<Boolean> updateCartItemQuantity(@RequestBody CartItem cartItem, HttpServletRequest request) {
+        boolean result = cartService.updateCartItemQuantity(request, cartItem.getProductId(), cartItem.getQuantity());
         return ResultUtils.success(result);
     }
 
-    @GetMapping("/user/{userId}/items")
-    @Operation(summary = "Get all items in cart")
-    public BaseResponse<List<CartItem>> getCartItems(@PathVariable int userId) {
-        List<CartItem> cartItems = cartService.getCartItems(userId);
+    @GetMapping("/user/items")
+    @Operation(summary = "获取购物车中所有商品信息")
+    public BaseResponse<List<CartItem>> getCartItems(HttpServletRequest request) {
+        List<CartItem> cartItems = cartService.getCartItems(request);
         return ResultUtils.success(cartItems);
     }
 }

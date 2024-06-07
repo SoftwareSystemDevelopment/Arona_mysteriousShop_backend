@@ -1,22 +1,19 @@
 package com.software_system_development.arona_mysterious_shop_backend.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.software_system_development.arona_mysterious_shop_backend.common.ErrorCode;
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
-import com.software_system_development.arona_mysterious_shop_backend.mapper.UserMapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserLoginRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserRegisterRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserUpdateRequest;
-import com.software_system_development.arona_mysterious_shop_backend.model.entity.User;
 import com.software_system_development.arona_mysterious_shop_backend.model.enums.UserRoleEnum;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
+import com.software_system_development.arona_mysterious_shop_backend.service.CartService;
 import com.software_system_development.arona_mysterious_shop_backend.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -47,6 +44,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private CartService cartService;
 
 
     @Override
@@ -98,6 +98,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             user.setUserCreateDate(userCreateDate);
             user.setUserUpdateDate(userUpdateDate);
             boolean saveResult = this.save(user);
+            // 在用户注册后立即创建购物车
+            cartService.createCart(user.getUserId());
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");
             }

@@ -3,7 +3,6 @@ package com.software_system_development.arona_mysterious_shop_backend.service;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductAddRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductUpdateRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.ProductVO;
 import jakarta.servlet.http.HttpServletRequest;
 

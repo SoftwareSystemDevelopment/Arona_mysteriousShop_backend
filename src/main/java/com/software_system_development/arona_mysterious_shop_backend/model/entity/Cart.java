@@ -16,20 +16,20 @@ import lombok.Data;
 @Data
 public class Cart implements Serializable {
     /**
-     * 购物车id
+     * 购物车ID
      */
     @TableId(type = IdType.AUTO)
     private Integer cartId;
 
     /**
-     * 用户id
+     * 用户ID
      */
     private Integer userId;
 
     /**
      * 创建时间
      */
-    private Date creatTime;
+    private Date createTime;
 
     /**
      * 更新时间

@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
 import lombok.Data;
 
 /**
@@ -17,18 +16,18 @@ import lombok.Data;
 @Data
 public class CartItem implements Serializable {
     /**
-     * 购物车项id
+     * 购物车项ID
      */
     @TableId(type = IdType.AUTO)
     private Integer cartItemId;
 
     /**
-     * 购物车id
+     * 购物车ID
      */
     private Integer cartId;
 
     /**
-     * 商品id
+     * 商品ID
      */
     private Integer productId;
 
@@ -41,16 +40,6 @@ public class CartItem implements Serializable {
      * 价格
      */
     private BigDecimal price;
-
-    /**
-     * 创建时间
-     */
-    private Date creatTime;
-
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

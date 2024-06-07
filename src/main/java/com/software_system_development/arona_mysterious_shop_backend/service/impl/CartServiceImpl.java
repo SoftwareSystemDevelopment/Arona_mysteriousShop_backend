@@ -1,16 +1,12 @@
 package com.software_system_development.arona_mysterious_shop_backend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.software_system_development.arona_mysterious_shop_backend.mapper.CartItemMapper;
-import com.software_system_development.arona_mysterious_shop_backend.mapper.CartMapper;
-import com.software_system_development.arona_mysterious_shop_backend.model.entity.Cart;
-import com.software_system_development.arona_mysterious_shop_backend.model.entity.CartItem;
 import com.software_system_development.arona_mysterious_shop_backend.service.CartService;
+import com.software_system_development.arona_mysterious_shop_backend.service.UserService;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -27,41 +23,46 @@ public class CartServiceImpl implements CartService {
     @Resource
     private CartItemMapper cartItemMapper;
 
+    @Resource
+    private UserService userService;
+
     @Override
-    public Cart createCart(Cart cart) {
+    public Cart createCart(int userId) {
+        Cart cart = new Cart();
+        cart.setUserId(userId);
         cartMapper.insert(cart);
         return cart;
     }
 
     @Override
-    public Cart getCartByUserId(int userId) {
+    public Cart getCartByUserId(HttpServletRequest request) {
         QueryWrapper<Cart> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id", userId);
+        queryWrapper.eq("userId", userService.getUserVO(request).getUserId());
         return cartMapper.selectOne(queryWrapper);
     }
 
     @Override
-    public CartItem addCartItem(int userId, CartItem cartItem) {
-        Cart cart = getCartByUserId(userId);
+    public CartItem addCartItem(HttpServletRequest request, CartItem cartItem) {
+        Cart cart = getCartByUserId(request);
         cartItem.setCartId(cart.getCartId());
         cartItemMapper.insert(cartItem);
         return cartItem;
     }
 
     @Override
-    public boolean removeCartItem(int userId, int productId) {
-        Cart cart = getCartByUserId(userId);
+    public boolean removeCartItem(HttpServletRequest request, int productId) {
+        Cart cart = getCartByUserId(request);
         QueryWrapper<CartItem> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("cart_id", cart.getCartId()).eq("product_id", productId);
+        queryWrapper.eq("cartId", cart.getCartId()).eq("productId", productId);
         int result = cartItemMapper.delete(queryWrapper);
         return result > 0;
     }
 
     @Override
-    public boolean updateCartItemQuantity(int userId, int productId, int quantity) {
-        Cart cart = getCartByUserId(userId);
+    public boolean updateCartItemQuantity(HttpServletRequest request, int productId, int quantity) {
+        Cart cart = getCartByUserId(request);
         QueryWrapper<CartItem> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("cart_id", cart.getCartId()).eq("product_id", productId);
+        queryWrapper.eq("cartId", cart.getCartId()).eq("productId", productId);
         CartItem cartItem = cartItemMapper.selectOne(queryWrapper);
         if (cartItem != null) {
             cartItem.setQuantity(quantity);
@@ -72,8 +73,8 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public List<CartItem> getCartItems(int userId) {
-        Cart cart = getCartByUserId(userId);
+    public List<CartItem> getCartItems(HttpServletRequest request) {
+        Cart cart = getCartByUserId(request);
         QueryWrapper<CartItem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("cart_id", cart.getCartId());
         return cartItemMapper.selectList(queryWrapper);

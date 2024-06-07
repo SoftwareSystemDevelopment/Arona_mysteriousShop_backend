@@ -1,6 +1,5 @@
 package com.software_system_development.arona_mysterious_shop_backend.model.vo;
 
-import com.software_system_development.arona_mysterious_shop_backend.model.entity.OrderItemInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

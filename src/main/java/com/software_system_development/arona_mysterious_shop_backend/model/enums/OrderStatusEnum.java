@@ -11,12 +11,10 @@ import java.util.stream.Collectors;
  *
  */
 public enum OrderStatusEnum {
-
-
-    NOT_APPLIED( "未下单",0),
-    PENDING("审核中",1),
-    APPROVED("下单成功",2),
-    REJECTED( "下单失败",3);
+    UNPLACED( "未下单",0),
+    PLACED("已下单",1),
+    FAILED( "下单失败",2),
+    DELIVERED("送货中",3);
 
 
     private final String text;

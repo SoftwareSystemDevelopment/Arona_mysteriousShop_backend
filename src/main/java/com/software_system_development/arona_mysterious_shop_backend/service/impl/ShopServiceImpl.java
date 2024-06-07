@@ -1,9 +1,7 @@
 package com.software_system_development.arona_mysterious_shop_backend.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.software_system_development.arona_mysterious_shop_backend.model.entity.Shop;
 import com.software_system_development.arona_mysterious_shop_backend.service.ShopService;
-import com.software_system_development.arona_mysterious_shop_backend.mapper.ShopMapper;
 import org.springframework.stereotype.Service;
 
 /**

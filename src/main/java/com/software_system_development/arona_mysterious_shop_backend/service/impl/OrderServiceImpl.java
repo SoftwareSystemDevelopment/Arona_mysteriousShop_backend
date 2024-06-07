@@ -6,11 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.software_system_development.arona_mysterious_shop_backend.common.ErrorCode;
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
-import com.software_system_development.arona_mysterious_shop_backend.mapper.OrderMapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderAddRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderUpdateRequest;
-import com.software_system_development.arona_mysterious_shop_backend.model.entity.CartItem;
-import com.software_system_development.arona_mysterious_shop_backend.model.entity.Order;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.CartService;
 import com.software_system_development.arona_mysterious_shop_backend.service.OrderService;
@@ -20,7 +17,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -117,8 +113,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public List<CartItem> getCartItems(int cartId) {
+    public List<CartItem> getCartItems(HttpServletRequest request) {
         // 这里调用购物车服务获取购物车中的所有产品信息
-        return cartService.getCartItems(cartId);
+        return cartService.getCartItems(request);
     }
 }

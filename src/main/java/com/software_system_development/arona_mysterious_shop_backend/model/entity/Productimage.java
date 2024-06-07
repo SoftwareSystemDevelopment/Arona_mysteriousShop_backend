@@ -9,11 +9,11 @@ import lombok.Data;
 
 /**
  * 
- * @TableName productimage
+ * @TableName product_image
  */
-@TableName(value ="productimage")
+@TableName(value ="product_image")
 @Data
-public class Productimage implements Serializable {
+public class ProductImage implements Serializable {
     /**
      * 商品图片ID
      */

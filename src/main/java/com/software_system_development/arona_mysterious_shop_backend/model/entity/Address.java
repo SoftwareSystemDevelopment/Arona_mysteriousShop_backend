@@ -21,12 +21,12 @@ public class Address implements Serializable {
     private Integer addressAreaId;
 
     /**
-     * 地址名称
+     * 详细地址信息
      */
     private String addressName;
 
     /**
-     * 创建地址的用户id
+     * 创建地址的用户ID
      */
     private Integer addressUserId;
 

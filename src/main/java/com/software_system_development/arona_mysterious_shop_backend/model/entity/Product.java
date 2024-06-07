@@ -53,7 +53,7 @@ public class Product implements Serializable {
     private Integer isDelete;
 
     /**
-     * 供应商Id
+     * 供应商ID
      */
     private Integer providerId;
 
@@ -68,7 +68,7 @@ public class Product implements Serializable {
     private Date productCreateDate;
 
     /**
-     * 商品更新时间
+     * 商品最近更新时间
      */
     private Date productUpdateDate;
 

@@ -115,9 +115,8 @@ public class OrderController {
         Address address = addressService.getById(orderAddressId);
         String orderAddress = address.getAddressName();
 
-        // 获取购物车中的所有产品信息
-        int cartId = order.getOrderCartId();
-        List<CartItem> cartItems = orderService.getCartItems(cartId);
+        // 获取购物车商品列表
+        List<CartItem> cartItems = orderService.getCartItems(request);
 
         // 构造订单商品信息列表
         List<OrderItemInfo> orderItems = new ArrayList<>();

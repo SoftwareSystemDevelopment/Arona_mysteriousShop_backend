@@ -5,18 +5,20 @@
 <mapper namespace="com.software_system_development.arona_mysterious_shop_backend.mapper.UserMapper">
 
     <resultMap id="BaseResultMap" type="com.software_system_development.arona_mysterious_shop_backend.model.entity.User">
-            <id property="userId" column="userId" jdbcType="INTEGER"/>
-            <result property="userName" column="userName" jdbcType="VARCHAR"/>
-            <result property="userAccount" column="userAccount" jdbcType="VARCHAR"/>
-            <result property="userPassword" column="userPassword" jdbcType="VARCHAR"/>
-            <result property="userAvatar" column="userAvatar" jdbcType="VARCHAR"/>
-            <result property="userRole" column="userRole" jdbcType="VARCHAR"/>
-            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+            <id property="userId" column="user_id" jdbcType="INTEGER"/>
+            <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+            <result property="userAccount" column="user_account" jdbcType="VARCHAR"/>
+            <result property="userPassword" column="user_password" jdbcType="VARCHAR"/>
+            <result property="userAvatar" column="user_avatar" jdbcType="VARCHAR"/>
+            <result property="userRole" column="user_role" jdbcType="VARCHAR"/>
+            <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
+            <result property="userCreateDate" column="user_create_date" jdbcType="TIMESTAMP"/>
+            <result property="userUpdateDate" column="user_update_date" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        userId,userName,userAccount,
-        userPassword,userAvatar,userRole,
-        isDelete
+        user_id,user_name,user_account,
+        user_password,user_avatar,user_role,
+        is_delete,user_create_date,user_update_date
     </sql>
 </mapper>

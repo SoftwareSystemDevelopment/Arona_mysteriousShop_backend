@@ -10,11 +10,11 @@ import lombok.Data;
 
 /**
  * 
- * @TableName order
+ * @TableName orders
  */
-@TableName(value ="order")
+@TableName(value ="orders")
 @Data
-public class Order implements Serializable {
+public class Orders implements Serializable {
     /**
      * 订单ID
      */
@@ -42,7 +42,7 @@ public class Order implements Serializable {
     private String orderMobile;
 
     /**
-     * 支付时间
+     * 下单时间
      */
     private Date orderPayDate;
 
@@ -67,14 +67,14 @@ public class Order implements Serializable {
     private Integer orderUserId;
 
     /**
-     * 订单对应购物车ID
-     */
-    private Integer orderCartId;
-
-    /**
      * 是否删除
      */
     private Integer isDelete;
+
+    /**
+     * 订单对应购物车ID
+     */
+    private Integer orderCartId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

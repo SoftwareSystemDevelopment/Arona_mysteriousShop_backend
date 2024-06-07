@@ -5,22 +5,23 @@
 <mapper namespace="com.software_system_development.arona_mysterious_shop_backend.mapper.ProductMapper">
 
     <resultMap id="BaseResultMap" type="com.software_system_development.arona_mysterious_shop_backend.model.entity.Product">
-            <id property="productId" column="productId" jdbcType="INTEGER"/>
-            <result property="productName" column="productName" jdbcType="VARCHAR"/>
-            <result property="productPrice" column="productPrice" jdbcType="DECIMAL"/>
-            <result property="productCreateDate" column="productCreateDate" jdbcType="TIMESTAMP"/>
-            <result property="productCategoryName" column="productCategoryName" jdbcType="VARCHAR"/>
-            <result property="productIsEnabled" column="productIsEnabled" jdbcType="TINYINT"/>
+            <id property="productId" column="product_id" jdbcType="INTEGER"/>
+            <result property="productName" column="product_name" jdbcType="VARCHAR"/>
+            <result property="productPrice" column="product_price" jdbcType="DECIMAL"/>
+            <result property="productCategoryName" column="product_category_name" jdbcType="VARCHAR"/>
+            <result property="productIsEnabled" column="product_is_enabled" jdbcType="TINYINT"/>
             <result property="stock" column="stock" jdbcType="INTEGER"/>
-            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
-            <result property="providerId" column="providerId" jdbcType="INTEGER"/>
-            <result property="productDescription" column="productDescription" jdbcType="VARCHAR"/>
+            <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
+            <result property="providerId" column="provider_id" jdbcType="INTEGER"/>
+            <result property="productDescription" column="product_description" jdbcType="VARCHAR"/>
+            <result property="productCreateDate" column="product_create_date" jdbcType="TIMESTAMP"/>
+            <result property="productUpdateDate" column="product_update_date" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        productId,productName,productPrice,
-        productCreateDate,productCategoryName,productIsEnabled,
-        stock,isDelete,providerId,
-        productDescription
+        product_id,product_name,product_price,
+        product_category_name,product_is_enabled,stock,
+        is_delete,provider_id,product_description,
+        product_create_date,product_update_date
     </sql>
 </mapper>
