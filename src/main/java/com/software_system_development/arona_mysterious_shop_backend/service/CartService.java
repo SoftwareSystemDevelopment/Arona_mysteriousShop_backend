@@ -1,21 +1,39 @@
 package com.software_system_development.arona_mysterious_shop_backend.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Cart;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.CartItem;
-import jakarta.servlet.http.HttpServletRequest;
 
-/**
-* @author 29967
-* @description 针对表【cart】的数据库操作Service
-* @createDate 2024-06-06 22:12:08
-*/
 import java.util.List;
 
 public interface CartService {
-    Cart createCart(int userId);
-    Cart getCartByUserId(HttpServletRequest request);
-    CartItem addCartItem(HttpServletRequest request, CartItem cartItem);
-    boolean removeCartItem(HttpServletRequest request, int productId);
-    boolean updateCartItemQuantity(HttpServletRequest request, int productId, int quantity);
-    List<CartItem> getCartItems(HttpServletRequest request);
+
+    /**
+     * 为用户创建购物车
+     * @param cart 购物车对象
+     * @return 创建的购物车的ID
+     */
+    boolean save(Cart cart);
+
+    /**
+     * 更新购物车
+     * @param cart 购物车对象
+     * @param cartItems 购物车商品列表
+     * @return 更新后的购物车的ID
+     */
+    boolean update(Cart cart, List<CartItem> cartItems);
+
+    /**
+     * 根据ID获取购物车信息
+     * @param id 购物车ID
+     * @return 购物车对象
+     */
+    Cart getById(int id);
+
+    /**
+     * 获取购物车中的商品列表
+     * @param cartId 购物车ID
+     * @return 购物车中的商品列表
+     */
+    List<CartItem> getCartItems(int cartId);
 }

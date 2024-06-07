@@ -14,11 +14,13 @@
             <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
             <result property="userCreateDate" column="user_create_date" jdbcType="TIMESTAMP"/>
             <result property="userUpdateDate" column="user_update_date" jdbcType="TIMESTAMP"/>
+            <result property="cartId" column="cart_id" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        user_id,user_name,user_account,
-        user_password,user_avatar,user_role,
-        is_delete,user_create_date,user_update_date
+        userId,userName,userAccount,
+        userPassword,userAvatar,userRole,
+        isDelete,userCreateDate,userUpdateDate,
+        cartId
     </sql>
 </mapper>

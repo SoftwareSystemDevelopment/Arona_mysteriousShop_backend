@@ -12,10 +12,8 @@ import com.software_system_development.arona_mysterious_shop_backend.model.dto.o
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.*;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.OrderVO;
-import com.software_system_development.arona_mysterious_shop_backend.service.AddressService;
-import com.software_system_development.arona_mysterious_shop_backend.service.CartService;
-import com.software_system_development.arona_mysterious_shop_backend.service.OrderService;
-import com.software_system_development.arona_mysterious_shop_backend.service.ProductService;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
+import com.software_system_development.arona_mysterious_shop_backend.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -41,6 +39,9 @@ public class OrderController {
 
     @Resource
     private AddressService addressService;
+
+    @Resource
+    private UserService userService;
 
     @PostMapping("/add")
     @Operation(summary = "新增订单")
@@ -100,8 +101,14 @@ public class OrderController {
         if (orderId <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        orderService.placeOrder(orderId, request);
+        // 从HttpServletRequest中获取当前登录用户
+        UserVO loginUser = userService.getUserVO(request);
 
+        // 通过UserService获取用户对应的购物车ID
+        Integer cartId = userService.getCartByUserId(loginUser.getUserId()).getCartId();
+
+        // 下订单
+        orderService.placeOrder(orderId, request);
         // 获取订单基本信息
         Order order = orderService.getOrder(orderId, request);
         String orderCode = order.getOrderCode();
@@ -110,21 +117,17 @@ public class OrderController {
         String orderMobile = order.getOrderMobile();
         Date orderPayDate = order.getOrderPayDate();
         int orderStatus = order.getOrderStatus();
-
         // 根据地址ID获取地址信息
         Address address = addressService.getById(orderAddressId);
         String orderAddress = address.getAddressName();
-
         // 获取购物车商品列表
-        List<CartItem> cartItems = orderService.getCartItems(request);
-
+        List<CartItem> cartItems = orderService.getCartItems(cartId);
         // 构造订单商品信息列表
         List<OrderItemInfo> orderItems = new ArrayList<>();
         for (CartItem cartItem : cartItems) {
             // 根据商品ID获取商品名称
             Product product = productService.getById(cartItem.getProductId());
             String productName = product.getProductName();
-
             OrderItemInfo orderItemInfo = new OrderItemInfo (
                     cartItem.getProductId(),
                     productName,
@@ -133,7 +136,6 @@ public class OrderController {
             );
             orderItems.add(orderItemInfo);
         }
-
         // 构造订单完整信息并返回给前端
         OrderVO orderVo = new OrderVO (
                 orderCode,
@@ -146,6 +148,4 @@ public class OrderController {
         );
         return ResultUtils.success(orderVo);
     }
-
-
 }

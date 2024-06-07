@@ -61,6 +61,11 @@ public class User implements Serializable {
      */
     private Date userUpdateDate;
 
+    /**
+     * 用户对应的购物车id
+     */
+    private Integer cartId;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

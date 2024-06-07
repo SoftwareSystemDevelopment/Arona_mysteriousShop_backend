@@ -73,7 +73,7 @@ public class AddressServiceImpl extends ServiceImpl<AddressMapper, Address>
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "无删除查看");
         }
         QueryWrapper<Address> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("addressUserId", userId);
+        queryWrapper.eq("address_user_id", userId);
         List<Address> addressList = this.list(queryWrapper);
         if (addressList == null || addressList.isEmpty()) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "未找到对应地址");

@@ -121,7 +121,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
             return Collections.emptyList();
         }
         QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like("productName", productName);
+        queryWrapper.like("product_name", productName);
         return this.list(queryWrapper);
     }
 
@@ -131,7 +131,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
             return Collections.emptyList();
         }
         QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("productCategoryName", productCategoryName);
+        queryWrapper.eq("productCategory_name", productCategoryName);
         return this.list(queryWrapper);
     }
 
@@ -141,21 +141,21 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
             return Collections.emptyList();
         }
         QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        queryWrapper.between("productPrice", minPrice, maxPrice);
+        queryWrapper.between("product_price", minPrice, maxPrice);
         return this.list(queryWrapper);
     }
 
     @Override
     public List<Product> getByMinProductPrice(BigDecimal minPrice) {
         QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        queryWrapper.ge("productPrice", minPrice);
+        queryWrapper.ge("product_price", minPrice);
         return this.list(queryWrapper);
     }
 
     @Override
     public List<Product> getByMaxProductPrice(BigDecimal maxPrice) {
         QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        queryWrapper.le("productPrice", maxPrice);
+        queryWrapper.le("product_price", maxPrice);
         return this.list(queryWrapper);
     }
 
@@ -166,7 +166,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
             return Collections.emptyList();
         }
         QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("providerId", providerId);
+        queryWrapper.eq("provider_id", providerId);
         return this.list(queryWrapper);
     }
 
@@ -176,7 +176,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
             return Collections.emptyList();
         }
         QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like("productDescription", description);
+        queryWrapper.like("product_description", description);
         return this.list(queryWrapper);
     }
 

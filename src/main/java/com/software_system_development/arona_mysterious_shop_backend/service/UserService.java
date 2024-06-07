@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserLoginRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserRegisterRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserUpdateRequest;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.Cart;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.User;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
 import jakarta.servlet.http.HttpServletRequest;
@@ -74,4 +75,9 @@ public interface UserService extends IService<User> {
      * @return
      */
     boolean isAdmin(UserVO user);
+
+    /**
+     * 获取用户购物车信息
+     */
+    Cart getCartByUserId(Integer userId);
 }

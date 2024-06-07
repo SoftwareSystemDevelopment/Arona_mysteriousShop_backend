@@ -31,8 +31,8 @@ public interface OrderService extends IService<Order> {
 
     /**
      * 获取购物车中的所有产品信息
-     * @param request
+     * @param cartId
      * @return 购物车中的所有产品信息列表
      */
-    List<CartItem> getCartItems(HttpServletRequest request);
+    List<CartItem> getCartItems(Integer cartId);
 }

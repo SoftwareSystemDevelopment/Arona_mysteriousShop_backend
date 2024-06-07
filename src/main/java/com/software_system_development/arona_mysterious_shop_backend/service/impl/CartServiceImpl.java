@@ -1,6 +1,8 @@
 package com.software_system_development.arona_mysterious_shop_backend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.software_system_development.arona_mysterious_shop_backend.common.ErrorCode;
+import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
 import com.software_system_development.arona_mysterious_shop_backend.mapper.CartItemMapper;
 import com.software_system_development.arona_mysterious_shop_backend.mapper.CartMapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Cart;
@@ -13,11 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
-* @author 29967
-* @description 针对表【cart】的数据库操作Service实现
-* @createDate 2024-06-06 22:12:08
-*/
 @Service
 public class CartServiceImpl implements CartService {
 
@@ -27,65 +24,36 @@ public class CartServiceImpl implements CartService {
     @Resource
     private CartItemMapper cartItemMapper;
 
-    @Resource
-    private UserService userService;
-
     @Override
-    public Cart createCart(int userId) {
-        Cart cart = new Cart();
-        cart.setUserId(userId);
-        cartMapper.insert(cart);
-        return cart;
-    }
-
-    @Override
-    public Cart getCartByUserId(HttpServletRequest request) {
-        QueryWrapper<Cart> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userId", userService.getUserVO(request).getUserId());
-        return cartMapper.selectOne(queryWrapper);
-    }
-
-    @Override
-    public CartItem addCartItem(HttpServletRequest request, CartItem cartItem) {
-        Cart cart = getCartByUserId(request);
-        cartItem.setCartId(cart.getCartId());
-        cartItemMapper.insert(cartItem);
-        return cartItem;
-    }
-
-    @Override
-    public boolean removeCartItem(HttpServletRequest request, int productId) {
-        Cart cart = getCartByUserId(request);
-        QueryWrapper<CartItem> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("cartId", cart.getCartId()).eq("productId", productId);
-        int result = cartItemMapper.delete(queryWrapper);
-        return result > 0;
-    }
-
-    @Override
-    public boolean updateCartItemQuantity(HttpServletRequest request, int productId, int quantity) {
-        Cart cart = getCartByUserId(request);
-        QueryWrapper<CartItem> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("cartId", cart.getCartId()).eq("productId", productId);
-        CartItem cartItem = cartItemMapper.selectOne(queryWrapper);
-        if (cartItem != null) {
-            cartItem.setQuantity(quantity);
-            cartItemMapper.updateById(cartItem);
+    public boolean save(Cart cart) {
+        int result = cartMapper.insert(cart);
+        if (result > 0) {
             return true;
+        } else {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "购物车创建失败");
         }
-        return false;
     }
 
     @Override
-    public List<CartItem> getCartItems(HttpServletRequest request) {
-        Cart cart = getCartByUserId(request);
+    public boolean update(Cart cart, List<CartItem> cartItems) {
+        // 更新购物车中的商品信息
+        cartItemMapper.delete(new QueryWrapper<CartItem>().eq("cart_id", cart.getCartId()));
+        for (CartItem cartItem : cartItems) {
+            cartItem.setCartId(cart.getCartId());
+            cartItemMapper.insert(cartItem);
+        }
+        return true;
+    }
+
+    @Override
+    public Cart getById(int id) {
+        return cartMapper.selectById(id);
+    }
+
+    @Override
+    public List<CartItem> getCartItems(int cartId) {
         QueryWrapper<CartItem> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("cart_id", cart.getCartId());
+        queryWrapper.eq("cart_id", cartId);
         return cartItemMapper.selectList(queryWrapper);
     }
 }
-
-
-
-
-

@@ -92,7 +92,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public Page<Order> listOrdersByPage(Page<Order> page, QueryWrapper<Order> queryWrapper, HttpServletRequest request) {
         UserVO loginUser = userService.getUserVO(request);
         if (!userService.isAdmin(loginUser)) {
-            queryWrapper.eq("orderUserId", loginUser.getUserId());
+            queryWrapper.eq("order_user_id", loginUser.getUserId());
         }
         return page(page, queryWrapper);
     }
@@ -116,8 +116,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public List<CartItem> getCartItems(HttpServletRequest request) {
+    public List<CartItem> getCartItems(Integer cartId) {
         // 这里调用购物车服务获取购物车中的所有产品信息
-        return cartService.getCartItems(request);
+        return cartService.getCartItems(cartId);
     }
 }

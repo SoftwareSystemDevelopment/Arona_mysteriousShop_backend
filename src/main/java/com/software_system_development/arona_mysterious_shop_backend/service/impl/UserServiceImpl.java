@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.software_system_development.arona_mysterious_shop_backend.common.ErrorCode;
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
+import com.software_system_development.arona_mysterious_shop_backend.mapper.CartMapper;
 import com.software_system_development.arona_mysterious_shop_backend.mapper.UserMapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserLoginRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserRegisterRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserUpdateRequest;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.Cart;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.User;
 import com.software_system_development.arona_mysterious_shop_backend.model.enums.UserRoleEnum;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
@@ -50,6 +52,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     private CartService cartService;
 
+    @Resource
+    CartMapper cartMapper;
+
 
     @Override
     public int userRegister(UserRegisterRequest userRegisterRequest) {
@@ -66,17 +71,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (userAccount.length() < 4) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户账号过短");
         }
-        // 账户不能包含特殊字符
-        String validPattern = "[`~!@#$%^&*()+=|{}':;',\\\\[\\\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
-        Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
-        if (matcher.find()) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号不能包含特殊字符");
-        }
         if (userName.length() < 4) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户名过短");
         }
         if (userPassword.length() < 8) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户密码过短");
+        }
+        // 账户不能包含特殊字符
+        String validPattern = "[`~!@#$%^&*()+=|{}':;',\\\\[\\\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
+        Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
+        if (matcher.find()) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号不能包含特殊字符");
         }
         if(!userRole.equals(UserRoleEnum.USER.getValue()) &&!userRole.equals(UserRoleEnum.PROVIDER.getValue())) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户角色错误");
@@ -84,7 +89,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         synchronized (userAccount.intern()) {
             // 账户不能重复
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("userAccount", userAccount);
+            queryWrapper.eq("user_account", userAccount);
             long count = userMapper.selectCount(queryWrapper);
             if (count > 0) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号重复");
@@ -99,12 +104,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             user.setUserRole(userRole);
             user.setUserCreateDate(userCreateDate);
             user.setUserUpdateDate(userUpdateDate);
+
+            // 为用户创建购物车
+            Cart cart = new Cart();
+            cart.setCreateTime(new Date());
+            cart.setUpdateTime(new Date());
+            boolean cartSaveResult = cartService.save(cart);
+            if (!cartSaveResult) {
+                throw new BusinessException(ErrorCode.SYSTEM_ERROR, "购物车创建失败");
+            }
+            user.setCartId(cart.getCartId()); // 将购物车ID设置到用户对象中
+
             boolean saveResult = this.save(user);
-            // 在用户注册后立即创建购物车
-            cartService.createCart(user.getUserId());
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");
             }
+
             return user.getUserId();
         }
     }
@@ -133,8 +148,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
         // 查询用户是否存在
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userAccount", userAccount);
-        queryWrapper.eq("userPassword", encryptPassword);
+        queryWrapper.eq("user_account", userAccount);
+        queryWrapper.eq("user_password", encryptPassword);
         User user = this.baseMapper.selectOne(queryWrapper);
         // 用户不存在
         if (user == null) {
@@ -195,21 +210,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public User getByUserAccount(String userAccount) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userAccount", userAccount);
+        queryWrapper.eq("user_account", userAccount);
         return getOne(queryWrapper);
     }
 
     @Override
     public List<User> getByUserName(String userName) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like("userName", userName);
+        queryWrapper.like("user_name", userName);
         return list(queryWrapper);
     }
 
     @Override
     public List<User> getByUserRole(String userRole) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userRole", userRole);
+        queryWrapper.eq("user_role", userRole);
         return list(queryWrapper);
     }
 
@@ -271,6 +286,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public boolean isAdmin(UserVO user) {
         return user != null && UserRoleEnum.ADMIN.getValue().equals(user.getUserRole());
+    }
+
+    @Override
+    public Cart getCartByUserId(Integer userId) {
+        QueryWrapper<Cart> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", userId);
+        return cartMapper.selectOne(queryWrapper);
     }
 }
 

@@ -22,11 +22,6 @@ public class Cart implements Serializable {
     private Integer cartId;
 
     /**
-     * 用户ID
-     */
-    private Integer userId;
-
-    /**
      * 创建时间
      */
     private Date createTime;
