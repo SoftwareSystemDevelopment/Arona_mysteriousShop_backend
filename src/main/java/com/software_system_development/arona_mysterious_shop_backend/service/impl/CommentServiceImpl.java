@@ -6,7 +6,6 @@ import com.software_system_development.arona_mysterious_shop_backend.common.Erro
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
 import com.software_system_development.arona_mysterious_shop_backend.mapper.CommentMapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.comment.CommentAddRequest;
-import com.software_system_development.arona_mysterious_shop_backend.model.dto.comment.CommentDeleteRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Comment;
 import com.software_system_development.arona_mysterious_shop_backend.model.enums.UserRoleEnum;
@@ -36,62 +35,41 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     ProductService productService;
 
     @Override
-    public int addComment(CommentAddRequest commentAddRequest) {
-        if (commentAddRequest == null || commentAddRequest.getCommentContent() == null || commentAddRequest.getCommentUserId() == null || commentAddRequest.getCommentProductId() == null) {
+    public int addComment(CommentAddRequest commentAddRequest, HttpServletRequest request) {
+        if (commentAddRequest.getCommentContent() == null || commentAddRequest.getCommentProductId() == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
-
-        // 检查 commentUserId 是否存在
-        if (userService.getById(commentAddRequest.getCommentUserId()) == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "指定的用户ID不存在");
-        }
-
-        // 检查 commentProductId 是否存在
         Product product = productService.getById(commentAddRequest.getCommentProductId());
         if (product == null || product.getIsDelete() == 1) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "指定的商品ID不存在或已被删除");
         }
-
         Comment comment = new Comment();
         BeanUtils.copyProperties(commentAddRequest, comment);
+        comment.setCommentUserId(userService.getUserVO(request).getUserId());
         comment.setCommentCreateDate(new Date());
-
         boolean saveResult = this.save(comment);
         if (!saveResult) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "添加评论失败");
         }
-
         return comment.getCommentId();
     }
 
     @Override
-    public boolean deleteComment(CommentDeleteRequest commentDeleteRequest, HttpServletRequest request) {
-        if (commentDeleteRequest == null || commentDeleteRequest.getCommentId() == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
-        }
-
-        Comment comment = this.getById(commentDeleteRequest.getCommentId());
-        if (comment == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "评论未找到");
-        }
-
-        // 从请求中获取当前用户信息
+    public boolean deleteComment(Integer commentId, HttpServletRequest request) {
+        // 获取当前登录用户信息
         UserVO loginUser = userService.getUserVO(request);
-        String userRole = loginUser.getUserRole();
-
-        // 验证用户权限
-        if (!UserRoleEnum.ADMIN.getValue().equals(userRole) && !commentDeleteRequest.getCommentUserId().equals(loginUser.getUserId())) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "无权限删除");
+        // 根据评论ID查询评论信息
+        Comment comment = this.getById(commentId);
+        if (comment == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "评论不存在");
         }
-
-        boolean removeResult = this.removeById(commentDeleteRequest.getCommentId());
-        if (!removeResult) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "删除评论失败");
+        // 检查当前登录用户是否为评论的所有者或管理员
+        if (!loginUser.getUserId().equals(comment.getCommentUserId()) && !loginUser.getUserRole().equals(UserRoleEnum.ADMIN.getValue())) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "无删除权限");
         }
-
-        return true;
+        // 删除评论
+        return this.removeById(commentId);
     }
-
 
     @Override
     public List<Comment> getCommentsByProductId(Integer productId) {
@@ -99,12 +77,11 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
         }
         QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("commentProductId", productId);
+        queryWrapper.eq("commentProductId", productId);
         List<Comment> commentList = this.list(queryWrapper);
         if (commentList == null || commentList.isEmpty()) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "未找到评论");
         }
-
         return commentList;
     }
 }

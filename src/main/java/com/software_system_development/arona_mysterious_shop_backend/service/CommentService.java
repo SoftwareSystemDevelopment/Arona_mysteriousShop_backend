@@ -1,7 +1,6 @@
 package com.software_system_development.arona_mysterious_shop_backend.service;
 
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.comment.CommentAddRequest;
-import com.software_system_development.arona_mysterious_shop_backend.model.dto.comment.CommentDeleteRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Comment;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,17 +17,19 @@ public interface CommentService extends IService<Comment> {
     /**
      * 添加评论
      * @param commentAddRequest
-     * @return
-     */
-    int addComment(CommentAddRequest commentAddRequest);
-
-    /**
-     * 删除评论
-     * @param commentDeleteRequest
      * @param request
      * @return
      */
-    boolean deleteComment(CommentDeleteRequest commentDeleteRequest, HttpServletRequest request);
+    int addComment(CommentAddRequest commentAddRequest, HttpServletRequest request);
+
+    /**
+     * 删除评论
+     * @param commentId
+     * @param request
+     * @return
+     */
+    boolean deleteComment(Integer commentId, HttpServletRequest request);
+
 
     /**
      * 查询某商品下的所有评论

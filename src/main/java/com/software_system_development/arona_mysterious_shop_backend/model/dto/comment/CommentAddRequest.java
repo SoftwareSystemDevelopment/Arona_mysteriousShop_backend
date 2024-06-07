@@ -10,11 +10,6 @@ public class CommentAddRequest {
     private String commentContent;
 
     /**
-     * 评论对应用户ID
-     */
-    private Integer commentUserId;
-
-    /**
      * 评论对应商品ID
      */
     private Integer commentProductId;

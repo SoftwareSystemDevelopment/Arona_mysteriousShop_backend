@@ -5,7 +5,6 @@ import com.software_system_development.arona_mysterious_shop_backend.common.Erro
 import com.software_system_development.arona_mysterious_shop_backend.common.ResultUtils;
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.comment.CommentAddRequest;
-import com.software_system_development.arona_mysterious_shop_backend.model.dto.comment.CommentDeleteRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Comment;
 import com.software_system_development.arona_mysterious_shop_backend.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,11 +37,11 @@ public class CommentController {
      */
     @PostMapping("/add")
     @Operation(summary = "增加评论")
-    public BaseResponse<Integer> addComment(@RequestBody CommentAddRequest commentAddRequest) {
-        if (commentAddRequest == null) {
+    public BaseResponse<Integer> addComment(@RequestBody CommentAddRequest commentAddRequest, HttpServletRequest request) {
+        if (commentAddRequest == null || request == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        int result = commentService.addComment(commentAddRequest);
+        int result = commentService.addComment(commentAddRequest,request);
         return ResultUtils.success(result);
     }
 
@@ -52,15 +51,23 @@ public class CommentController {
      * @param commentDeleteRequest 评论删除请求
      * @return {@link BaseResponse}<{@link Boolean}>
      */
-    @PostMapping("/delete")
+    /**
+     * 删除评论
+     *
+     * @param commentId 评论ID
+     * @param request HttpServletRequest
+     * @return {@link BaseResponse}<{@link Boolean}>
+     */
+    @DeleteMapping("/delete")
     @Operation(summary = "删除评论")
-    public BaseResponse<Boolean> deleteComment(@RequestBody CommentDeleteRequest commentDeleteRequest, HttpServletRequest request) {
-        if (commentDeleteRequest == null || commentDeleteRequest.getCommentId() == null || commentDeleteRequest.getCommentUserId() == null) {
+    public BaseResponse<Boolean> deleteComment(@RequestParam Integer commentId, HttpServletRequest request) {
+        if (commentId == null || commentId <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
         }
-        boolean result = commentService.deleteComment(commentDeleteRequest, request);
+        boolean result = commentService.deleteComment(commentId, request);
         return ResultUtils.success(result);
     }
+
 
     /**
      * 查询某商品下的所有评论
