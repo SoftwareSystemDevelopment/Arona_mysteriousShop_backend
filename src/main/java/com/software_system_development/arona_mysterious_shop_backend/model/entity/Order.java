@@ -10,9 +10,9 @@ import lombok.Data;
 
 /**
  * 
- * @TableName orders
+ * @TableName order
  */
-@TableName(value ="orders")
+@TableName(value ="order")
 @Data
 public class Order implements Serializable {
     /**

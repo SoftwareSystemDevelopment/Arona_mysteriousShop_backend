@@ -5,14 +5,14 @@
 <mapper namespace="com.software_system_development.arona_mysterious_shop_backend.mapper.ShopMapper">
 
     <resultMap id="BaseResultMap" type="com.software_system_development.arona_mysterious_shop_backend.model.entity.Shop">
-            <id property="id" column="id" jdbcType="INTEGER"/>
+            <id property="shopId" column="shopId" jdbcType="INTEGER"/>
             <result property="name" column="name" jdbcType="VARCHAR"/>
             <result property="description" column="description" jdbcType="VARCHAR"/>
-            <result property="shopUserId" column="shop_user_id" jdbcType="INTEGER"/>
+            <result property="shopUserId" column="shopUserId" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name,description,
-        shop_user_id
+        shopId,name,description,
+        shopUserId
     </sql>
 </mapper>

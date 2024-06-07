@@ -70,10 +70,10 @@ public class AddressServiceImpl extends ServiceImpl<AddressMapper, Address>
         // 获取当前登录用户信息
         UserVO loginUser = userService.getUserVO(request);
         if(!loginUser.getUserRole().equals(UserRoleEnum.ADMIN.getValue()) && !loginUser.getUserId().equals(userId)) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, "无删除查看");
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "无权限查看");
         }
         QueryWrapper<Address> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("address_user_id", userId);
+        queryWrapper.eq("addressUserId", userId);
         List<Address> addressList = this.list(queryWrapper);
         if (addressList == null || addressList.isEmpty()) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "未找到对应地址");

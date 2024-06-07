@@ -5,41 +5,35 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import lombok.Data;
 
 /**
  * 
- * @TableName cart_item
+ * @TableName productimage
  */
-@TableName(value ="cart_item")
+@TableName(value ="productimage")
 @Data
-public class CartItem implements Serializable {
+public class ProductImage implements Serializable {
     /**
-     * 购物车项ID
+     * 商品图片ID
      */
     @TableId(type = IdType.AUTO)
-    private Integer cartItemId;
+    private Integer productImageId;
 
     /**
-     * 购物车ID
+     * 商品图片地址
      */
-    private Integer cartId;
+    private String productImageSrc;
 
     /**
-     * 商品ID
+     * 图片对应商品ID
      */
-    private Integer productId;
+    private Integer productImageProductId;
 
     /**
-     * 数量
+     * 图片存储位置
      */
-    private Integer quantity;
-
-    /**
-     * 价格
-     */
-    private BigDecimal price;
+    private String productImageStore;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

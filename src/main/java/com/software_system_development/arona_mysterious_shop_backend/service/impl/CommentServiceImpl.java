@@ -77,7 +77,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
         }
         QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("comment_productId", productId);
+        queryWrapper.eq("commentProductId", productId);
         List<Comment> commentList = this.list(queryWrapper);
         if (commentList == null || commentList.isEmpty()) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "未找到评论");

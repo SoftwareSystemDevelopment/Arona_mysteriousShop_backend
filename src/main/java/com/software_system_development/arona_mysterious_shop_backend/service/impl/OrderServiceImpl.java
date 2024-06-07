@@ -9,7 +9,7 @@ import com.software_system_development.arona_mysterious_shop_backend.exception.B
 import com.software_system_development.arona_mysterious_shop_backend.mapper.OrderMapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderAddRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderUpdateRequest;
-import com.software_system_development.arona_mysterious_shop_backend.model.entity.CartItem;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.CartProduct;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Order;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.CartService;
@@ -92,7 +92,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public Page<Order> listOrdersByPage(Page<Order> page, QueryWrapper<Order> queryWrapper, HttpServletRequest request) {
         UserVO loginUser = userService.getUserVO(request);
         if (!userService.isAdmin(loginUser)) {
-            queryWrapper.eq("order_user_id", loginUser.getUserId());
+            queryWrapper.eq("orderUserId", loginUser.getUserId());
         }
         return page(page, queryWrapper);
     }
@@ -116,8 +116,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public List<CartItem> getCartItems(Integer cartId) {
+    public List<CartProduct> getCartProducts(Integer cartId) {
         // 这里调用购物车服务获取购物车中的所有产品信息
-        return cartService.getCartItems(cartId);
+        return cartService.getCartProducts(cartId);
     }
 }

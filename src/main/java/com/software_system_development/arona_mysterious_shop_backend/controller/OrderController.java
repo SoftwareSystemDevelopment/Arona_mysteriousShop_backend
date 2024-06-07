@@ -121,18 +121,18 @@ public class OrderController {
         Address address = addressService.getById(orderAddressId);
         String orderAddress = address.getAddressName();
         // 获取购物车商品列表
-        List<CartItem> cartItems = orderService.getCartItems(cartId);
+        List<CartProduct> cartProducts = orderService.getCartProducts(cartId);
         // 构造订单商品信息列表
         List<OrderItemInfo> orderItems = new ArrayList<>();
-        for (CartItem cartItem : cartItems) {
+        for (CartProduct cartProduct : cartProducts) {
             // 根据商品ID获取商品名称
-            Product product = productService.getById(cartItem.getProductId());
+            Product product = productService.getById(cartProduct.getProductId());
             String productName = product.getProductName();
             OrderItemInfo orderItemInfo = new OrderItemInfo (
-                    cartItem.getProductId(),
+                    cartProduct.getProductId(),
                     productName,
-                    cartItem.getPrice(),
-                    cartItem.getQuantity()
+                    cartProduct.getPrice(),
+                    cartProduct.getQuantity()
             );
             orderItems.add(orderItemInfo);
         }

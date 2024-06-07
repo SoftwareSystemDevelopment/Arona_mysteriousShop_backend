@@ -18,7 +18,7 @@ public class Shop implements Serializable {
      * 主键
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Integer shopId;
 
     /**
      * 商铺名称

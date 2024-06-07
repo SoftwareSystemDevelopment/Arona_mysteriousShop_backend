@@ -35,5 +35,10 @@ public class UserVO implements Serializable {
      */
     private String userRole;
 
+    /**
+     *  用户对应购物车id
+     */
+    private Integer cartId;
+
     private static final long serialVersionUID = 1L;
 }

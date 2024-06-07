@@ -5,24 +5,24 @@
 <mapper namespace="com.software_system_development.arona_mysterious_shop_backend.mapper.OrderMapper">
 
     <resultMap id="BaseResultMap" type="com.software_system_development.arona_mysterious_shop_backend.model.entity.Order">
-            <id property="orderId" column="order_id" jdbcType="INTEGER"/>
-            <result property="orderCode" column="order_code" jdbcType="VARCHAR"/>
-            <result property="orderAddress" column="order_address" jdbcType="INTEGER"/>
-            <result property="orderReceiver" column="order_receiver" jdbcType="VARCHAR"/>
-            <result property="orderMobile" column="order_mobile" jdbcType="VARCHAR"/>
-            <result property="orderPayDate" column="order_pay_date" jdbcType="TIMESTAMP"/>
-            <result property="orderDeliveryDate" column="order_delivery_date" jdbcType="TIMESTAMP"/>
-            <result property="orderConfirmDate" column="order_confirm_date" jdbcType="TIMESTAMP"/>
-            <result property="orderStatus" column="order_status" jdbcType="TINYINT"/>
-            <result property="orderUserId" column="order_user_id" jdbcType="INTEGER"/>
-            <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
-            <result property="orderCartId" column="order_cart_id" jdbcType="INTEGER"/>
+            <id property="orderId" column="orderId" jdbcType="INTEGER"/>
+            <result property="orderCode" column="orderCode" jdbcType="VARCHAR"/>
+            <result property="orderAddress" column="orderAddress" jdbcType="INTEGER"/>
+            <result property="orderReceiver" column="orderReceiver" jdbcType="VARCHAR"/>
+            <result property="orderMobile" column="orderMobile" jdbcType="VARCHAR"/>
+            <result property="orderPayDate" column="orderPayDate" jdbcType="TIMESTAMP"/>
+            <result property="orderDeliveryDate" column="orderDeliveryDate" jdbcType="TIMESTAMP"/>
+            <result property="orderConfirmDate" column="orderConfirmDate" jdbcType="TIMESTAMP"/>
+            <result property="orderStatus" column="orderStatus" jdbcType="TINYINT"/>
+            <result property="orderUserId" column="orderUserId" jdbcType="INTEGER"/>
+            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+            <result property="orderCartId" column="orderCartId" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        order_id,order_code,order_address,
-        order_receiver,order_mobile,order_pay_date,
-        order_delivery_date,order_confirm_date,order_status,
-        order_user_id,is_delete,order_cart_id
+        orderId,orderCode,orderAddress,
+        orderReceiver,orderMobile,orderPayDate,
+        orderDeliveryDate,orderConfirmDate,orderStatus,
+        orderUserId,isDelete,orderCartId
     </sql>
 </mapper>

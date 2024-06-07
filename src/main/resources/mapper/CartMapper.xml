@@ -5,13 +5,12 @@
 <mapper namespace="com.software_system_development.arona_mysterious_shop_backend.mapper.CartMapper">
 
     <resultMap id="BaseResultMap" type="com.software_system_development.arona_mysterious_shop_backend.model.entity.Cart">
-            <id property="cartId" column="cart_id" jdbcType="INTEGER"/>
-            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <id property="cartId" column="cartId" jdbcType="INTEGER"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        cart_id,create_time,
-        update_time
+        cartId,createTime,updateTime
     </sql>
 </mapper>

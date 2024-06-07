@@ -17,7 +17,7 @@ public class Address implements Serializable {
     /**
      * 地区ID
      */
-    @TableId
+    @TableId(type = IdType.AUTO)
     private Integer addressAreaId;
 
     /**

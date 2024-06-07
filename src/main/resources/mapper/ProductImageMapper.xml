@@ -5,14 +5,14 @@
 <mapper namespace="com.software_system_development.arona_mysterious_shop_backend.mapper.ProductImageMapper">
 
     <resultMap id="BaseResultMap" type="com.software_system_development.arona_mysterious_shop_backend.model.entity.ProductImage">
-            <id property="productImageId" column="product_image_id" jdbcType="INTEGER"/>
-            <result property="productImageSrc" column="product_image_src" jdbcType="VARCHAR"/>
-            <result property="productImageProductId" column="product_image_product_id" jdbcType="INTEGER"/>
-            <result property="productImageStore" column="product_image_store" jdbcType="VARCHAR"/>
+            <id property="productImageId" column="productImageId" jdbcType="INTEGER"/>
+            <result property="productImageSrc" column="productImageSrc" jdbcType="VARCHAR"/>
+            <result property="productImageProductId" column="productImageProductId" jdbcType="INTEGER"/>
+            <result property="productImageStore" column="productImageStore" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        product_image_id,product_image_src,product_image_product_id,
-        product_image_store
+        productImageId,productImageSrc,productImageProductId,
+        productImageStore
     </sql>
 </mapper>
