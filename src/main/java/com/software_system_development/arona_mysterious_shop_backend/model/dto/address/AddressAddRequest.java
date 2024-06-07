@@ -6,12 +6,7 @@ import lombok.Data;
 public class AddressAddRequest {
 
     /**
-     * 地址名称
+     * 地址
      */
-    private Integer addressName;
-
-    /**
-     * 对应userid
-     */
-    private Integer userId;
+    private String addressName;
 }

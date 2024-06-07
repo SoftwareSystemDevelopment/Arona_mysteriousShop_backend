@@ -38,7 +38,7 @@ public interface ProductService extends IService<Product> {
      * @param request
      * @return
      */
-    boolean removeProduct(Integer productId, HttpServletRequest request);
+    boolean deleteProduct(Integer productId, HttpServletRequest request);
 
     /**
      * 根据条件查询商品列表

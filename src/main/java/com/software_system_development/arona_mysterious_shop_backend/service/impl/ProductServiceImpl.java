@@ -98,7 +98,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
     }
 
     @Override
-    public boolean removeProduct(Integer productId, HttpServletRequest request) {
+    public boolean deleteProduct(Integer productId, HttpServletRequest request) {
         // 获取当前登录用户信息
         UserVO loginUser = userService.getUserVO(request);
         // 根据商品ID查询商品信息

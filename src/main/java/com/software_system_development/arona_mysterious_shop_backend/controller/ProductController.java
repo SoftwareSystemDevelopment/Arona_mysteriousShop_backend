@@ -88,7 +88,7 @@ public class ProductController {
         if (productId == null || productId <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        boolean result = productService.removeProduct(productId, request);
+        boolean result = productService.deleteProduct(productId, request);
         return ResultUtils.success(result);
     }
 
@@ -207,6 +207,16 @@ public class ProductController {
     public BaseResponse<List<ProductVO>> listProductVO() {
         // 查询全部产品列表
         List<Product> productList = productService.list();
+        // 将产品列表转换为产品封装列表
+        List<ProductVO> productVOList = productService.getProductVO(productList);
+        return ResultUtils.success(productVOList);
+    }
+
+    @GetMapping("/list/vo/provider/{providerId}")
+    @Operation(summary = "获取供应商的产品VO列表")
+    public BaseResponse<List<ProductVO>> listProductVOByProvider(@PathVariable Integer providerId) {
+        // 根据供应商ID查询产品列表
+        List<Product> productList = productService.getByProviderId(providerId);
         // 将产品列表转换为产品封装列表
         List<ProductVO> productVOList = productService.getProductVO(productList);
         return ResultUtils.success(productVOList);
