@@ -67,5 +67,4 @@ public interface ProductService extends IService<Product> {
      */
     BigDecimal getProductPrice(Integer productId);
 
-
 }

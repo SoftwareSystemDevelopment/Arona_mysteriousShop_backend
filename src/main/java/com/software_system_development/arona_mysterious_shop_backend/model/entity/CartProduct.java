@@ -16,6 +16,12 @@ import lombok.Data;
 @Data
 public class CartProduct implements Serializable {
     /**
+     * 主键
+     */
+    @TableId(type = IdType.AUTO)
+    private Integer cartProductId;
+
+    /**
      * 购物车ID
      */
     private Integer cartId;
@@ -29,11 +35,6 @@ public class CartProduct implements Serializable {
      * 数量
      */
     private Integer quantity;
-
-    /**
-     * 价格
-     */
-    private BigDecimal price;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

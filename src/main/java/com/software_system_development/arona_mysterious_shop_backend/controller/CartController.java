@@ -39,7 +39,9 @@ public class CartController {
 
     @GetMapping("/items")
     @Operation(summary = "获取当前用户的购物车中的所有购物车项信息")
-    public List<CartProduct> getCartProducts(@PathVariable int cartId) {
+    public List<CartProduct> getCartProducts(HttpServletRequest request) {
+        UserVO currentUser= (UserVO)request.getSession().getAttribute(USER_LOGIN_STATE);
+        int cartId = currentUser.getCartId();
         return cartService.getCartProducts(cartId);
     }
 }

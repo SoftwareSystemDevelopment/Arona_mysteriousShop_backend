@@ -131,7 +131,7 @@ public class OrderController {
             OrderItemInfo orderItemInfo = new OrderItemInfo (
                     cartProduct.getProductId(),
                     productName,
-                    cartProduct.getPrice(),
+                    product.getProductPrice(),
                     cartProduct.getQuantity()
             );
             orderItems.add(orderItemInfo);

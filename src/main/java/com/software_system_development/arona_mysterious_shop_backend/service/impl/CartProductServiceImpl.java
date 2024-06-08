@@ -50,10 +50,9 @@ public class CartProductServiceImpl extends ServiceImpl<CartProductMapper, CartP
 
         // 查询购物车中是否存在该商品
         int productId = cartProductRemoveRequest.getProductId();
-        CartProduct cartProduct = cartProductMapper.selectById(productId);
-        if (cartProduct == null || cartProduct.getCartId() != cartId) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "购物车中不存在该商品");
-        }
+        QueryWrapper<CartProduct> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("productId", productId).eq("cartId", cartId);
+        CartProduct cartProduct = cartProductMapper.selectOne(queryWrapper);
 
         int deleteQuantity = cartProductRemoveRequest.getQuantity();
         int currentQuantity = cartProduct.getQuantity();
@@ -61,7 +60,7 @@ public class CartProductServiceImpl extends ServiceImpl<CartProductMapper, CartP
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "移除数量大于购物车中的数量");
         } else if (deleteQuantity == currentQuantity) {
             // 如果移除数量等于当前购物车中的数量，则直接删除该商品
-            return cartProductMapper.deleteById(productId) > 0;
+            return cartProductMapper.deleteById(cartProduct) > 0;
         } else {
             // 更新商品数量
             cartProduct.setQuantity(currentQuantity - deleteQuantity);
@@ -92,8 +91,6 @@ public class CartProductServiceImpl extends ServiceImpl<CartProductMapper, CartP
         if (product == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "商品不存在");
         }
-        // 获取到商品价格
-        BigDecimal price = product.getProductPrice();
         // 获取到当前购物车ID
         UserVO userVO = userService.getUserVO(request);
         int cartId = userVO.getCartId();
@@ -117,7 +114,6 @@ public class CartProductServiceImpl extends ServiceImpl<CartProductMapper, CartP
             CartProduct cartProduct = new CartProduct();
             cartProduct.setProductId(productId);
             cartProduct.setQuantity(quantity);
-            cartProduct.setPrice(price);
             cartProduct.setCartId(cartId);
             // 插入商品项到购物车
             int inserted = cartProductMapper.insert(cartProduct);
