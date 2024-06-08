@@ -79,5 +79,5 @@ public interface UserService extends IService<User> {
     /**
      * 获取用户购物车信息
      */
-    Cart getCartByUserId(Integer userId);
+    Integer getCartId(UserVO user);
 }

@@ -289,11 +289,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public Cart getCartByUserId(Integer userId) {
-        QueryWrapper<Cart> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userId", userId);
-        return cartMapper.selectOne(queryWrapper);
+    public Integer getCartId(UserVO user) {
+        return user.getCartId();
     }
+
 }
 
 

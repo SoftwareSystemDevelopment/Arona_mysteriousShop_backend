@@ -67,4 +67,10 @@ public interface ProductService extends IService<Product> {
      */
     BigDecimal getProductPrice(Integer productId);
 
+    /**
+     * 获取商品的名称
+     * @param productId
+     * @return
+     */
+    String getProductName(Integer productId);
 }

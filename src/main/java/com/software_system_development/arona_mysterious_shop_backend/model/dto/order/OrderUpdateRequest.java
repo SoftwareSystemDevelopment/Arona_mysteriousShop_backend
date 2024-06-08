@@ -14,7 +14,7 @@ import java.util.Date;
 public class OrderUpdateRequest implements Serializable {
 
     private Integer orderId;
-    private String orderAddress;
+    private Integer orderAddress;
     private String orderReceiver;
     private String orderMobile;
 

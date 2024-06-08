@@ -11,18 +11,14 @@
             <result property="orderReceiver" column="orderReceiver" jdbcType="VARCHAR"/>
             <result property="orderMobile" column="orderMobile" jdbcType="VARCHAR"/>
             <result property="orderPayDate" column="orderPayDate" jdbcType="TIMESTAMP"/>
-            <result property="orderDeliveryDate" column="orderDeliveryDate" jdbcType="TIMESTAMP"/>
-            <result property="orderConfirmDate" column="orderConfirmDate" jdbcType="TIMESTAMP"/>
             <result property="orderStatus" column="orderStatus" jdbcType="TINYINT"/>
             <result property="orderUserId" column="orderUserId" jdbcType="INTEGER"/>
             <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
-            <result property="orderCartId" column="orderCartId" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         orderId,orderCode,orderAddress,
-        orderReceiver,orderMobile,orderPayDate,
-        orderDeliveryDate,orderConfirmDate,orderStatus,
-        orderUserId,isDelete,orderCartId
+        orderReceiver,orderMobile,orderPayDate,orderStatus,
+        orderUserId,isDelete
     </sql>
 </mapper>

@@ -219,6 +219,16 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         }
         return product.getProductPrice();
     }
+
+    @Override
+    public String getProductName(Integer productId) {
+
+        Product product = this.getById(productId);
+        if (product == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "商品不存在");
+        }
+        return product.getProductName();
+    }
 }
 
 

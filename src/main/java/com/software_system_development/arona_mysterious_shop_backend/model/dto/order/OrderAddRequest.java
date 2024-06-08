@@ -13,7 +13,7 @@ import java.io.Serializable;
 public class OrderAddRequest implements Serializable {
 
     private String orderCode;
-    private String orderAddress;
+    private Integer orderAddress;
     private String orderReceiver;
     private String orderMobile;
     private Integer orderUserId;

@@ -10,9 +10,9 @@ import lombok.Data;
 
 /**
  * 
- * @TableName order
+ * @TableName order_
  */
-@TableName(value ="order")
+@TableName(value ="order_")
 @Data
 public class Order implements Serializable {
     /**
@@ -47,17 +47,7 @@ public class Order implements Serializable {
     private Date orderPayDate;
 
     /**
-     * 发货时间
-     */
-    private Date orderDeliveryDate;
-
-    /**
-     * 确认收货时间
-     */
-    private Date orderConfirmDate;
-
-    /**
-     * 订单状态 0-待支付 1-待发货 2-待收货 3-已收货 4-已取消
+     * 订单状态 0-待支付 1-已下单 2-待收货 3-已收货 4-已取消
      */
     private Integer orderStatus;
 
@@ -70,11 +60,6 @@ public class Order implements Serializable {
      * 是否删除
      */
     private Integer isDelete;
-
-    /**
-     * 订单对应购物车ID
-     */
-    private Integer orderCartId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

@@ -80,6 +80,19 @@ public class AddressServiceImpl extends ServiceImpl<AddressMapper, Address>
         }
         return addressList;
     }
+
+    @Override
+    public Address getAddressById(Integer addressId) {
+
+        if (addressId == null || addressId <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
+        }
+        Address address = this.getById(addressId);
+        if (address == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "未找到对应地址");
+        }
+        return address;
+    }
 }
 
 
