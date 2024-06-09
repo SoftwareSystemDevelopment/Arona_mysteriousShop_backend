@@ -2,7 +2,6 @@ package com.software_system_development.arona_mysterious_shop_backend.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductAddRequest;
-import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductQueryRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductUpdateRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
@@ -10,7 +9,6 @@ import com.software_system_development.arona_mysterious_shop_backend.model.vo.Pr
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.math.BigDecimal;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import java.util.List;
 
 /**
@@ -43,12 +41,6 @@ public interface ProductService extends IService<Product> {
      */
     boolean deleteProduct(Integer productId, HttpServletRequest request);
 
-    /**
-     * 分页查询商品信息
-     * @param productQueryRequest
-     * @return
-     */
-    QueryWrapper<Product> getQueryWrapper(ProductQueryRequest productQueryRequest);
 
     /**
      *  获取商品信息
@@ -65,9 +57,29 @@ public interface ProductService extends IService<Product> {
      */
     ProductVO getProductVO(int id);
 
+    /**
+     * 根据条件查询商品列表
+     * @param productName
+     * @param productCategory
+     * @param minPrice
+     * @param maxPrice
+     * @param productDescription
+     * @return
+     */
+    QueryWrapper<Product> getQueryWrapper(String productName, String productCategory, BigDecimal minPrice, BigDecimal maxPrice, String productDescription);
 
+    /**
+     * 获取商品列表VO
+     * @param productList
+     * @return
+     */
     List<ProductVO> getProductVO(List<Product> productList);
 
+    /**
+     * 根据供应商ID获取商品列表
+     * @param providerId
+     * @return
+     */
     List<Product> getByProviderId(Integer providerId);
 
     /**

@@ -7,7 +7,6 @@ import com.software_system_development.arona_mysterious_shop_backend.exception.B
 import com.software_system_development.arona_mysterious_shop_backend.exception.ThrowUtils;
 import com.software_system_development.arona_mysterious_shop_backend.mapper.ProductMapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductAddRequest;
-import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductQueryRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
 import com.software_system_development.arona_mysterious_shop_backend.model.enums.CategoryEnum;
@@ -42,15 +41,16 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
     @Override
     public int addProduct(ProductAddRequest productAddRequest, HttpServletRequest request) {
         String productName = productAddRequest.getProductName();
-        String productCategoryName = productAddRequest.getProductCategoryName();
         BigDecimal productPrice = productAddRequest.getProductPrice();
         Integer stock = productAddRequest.getStock();
+        String productCategoryName = productAddRequest.getProductCategoryName();
         Integer productIsEnabled = productAddRequest.getProductIsEnabled();
+        String productDescription = productAddRequest.getProductDescription();
         Integer providerId = userService.getUserVO(request).getUserId();
         Date productCreateDate = new Date();
         Date productUpdateDate = new Date();
 
-        if (StringUtils.isAnyBlank(productName, productCategoryName) || productPrice == null || stock == null || productIsEnabled == null || providerId == null) {
+        if (StringUtils.isAnyBlank(productName, productCategoryName, productDescription) || productPrice == null || stock == null || productIsEnabled == null || providerId == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
         Product product = new Product();
@@ -59,8 +59,6 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         product.setProductCreateDate(productCreateDate);
         product.setProductUpdateDate(productUpdateDate);
         isValid(product, true);
-        UserVO loginUser = userService.getUserVO(request);
-        product.setProviderId(loginUser.getUserId());
         boolean result = save(product);
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
@@ -72,13 +70,14 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
     public int updateProduct(ProductUpdateRequest productUpdateRequest, HttpServletRequest request) {
         Integer productId = productUpdateRequest.getProductId();
         String productName = productUpdateRequest.getProductName();
-        String productCategoryName = productUpdateRequest.getProductCategoryName();
         BigDecimal productPrice = productUpdateRequest.getProductPrice();
         Integer stock = productUpdateRequest.getStock();
+        String productCategoryName = productUpdateRequest.getProductCategoryName();
         Integer productIsEnabled = productUpdateRequest.getProductIsEnabled();
+        String productDescription = productUpdateRequest.getProductDescription();
         Date productUpdateDate = new Date();
 
-        if (productId == null || StringUtils.isAnyBlank(productName, productCategoryName) || productPrice == null || stock == null || productIsEnabled == null) {
+        if (productId == null || StringUtils.isAnyBlank(productName, productCategoryName, productDescription) || productPrice == null || stock == null || productIsEnabled == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
         //不是自己上架的商品不允许修改
@@ -111,45 +110,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         if (!loginUser.getUserId().equals(product.getProviderId())) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "无删除权限");
         }
+        product.setProductUpdateDate(new Date());
         // 删除商品
         return this.removeById(productId);
     }
-
-    @Override
-    public QueryWrapper<Product> getQueryWrapper(ProductQueryRequest productQueryRequest) {
-        if (productQueryRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
-        }
-        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        // 添加产品名称的查询条件
-        if (!StringUtils.isEmpty(productQueryRequest.getProductName())) {
-            queryWrapper.like("productName", productQueryRequest.getProductName());
-        }
-        // 添加产品所属分类的查询条件
-        if (!StringUtils.isEmpty(productQueryRequest.getProductCategoryName())) {
-            queryWrapper.eq("productCategoryName", productQueryRequest.getProductCategoryName());
-        }
-        // 添加产品价格区间查询条件
-        if (productQueryRequest.getMinPrice() != null) {
-            if(productQueryRequest.getMaxPrice() != null) {
-                queryWrapper.between("productPrice", productQueryRequest.getMinPrice(), productQueryRequest.getMaxPrice());
-            } else {
-                queryWrapper.ge("productPrice", productQueryRequest.getMinPrice());
-            }
-        }
-        if(productQueryRequest.getMaxPrice() != null) {
-            queryWrapper.le("productPrice", productQueryRequest.getMaxPrice());
-        }
-        //添加商品描述查询条件
-        if(productQueryRequest.getProductDescription() != null){
-            queryWrapper.like("productDescription", productQueryRequest.getProductDescription());
-        }
-
-        // 添加排序条件
-        queryWrapper.orderByAsc("productId");
-        return queryWrapper;
-    }
-
 
     @Override
     public Product getProduct(int id, HttpServletRequest request) {
@@ -173,6 +137,37 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         ProductVO productVO = new ProductVO();
         BeanUtils.copyProperties(product, productVO);
         return productVO;
+    }
+
+    @Override
+    public QueryWrapper<Product> getQueryWrapper(String productName, String productCategory, BigDecimal minPrice, BigDecimal maxPrice, String productDescription) {
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        // 添加产品名称的查询条件
+        if (!StringUtils.isEmpty(productName)) {
+            queryWrapper.like("productName", productName);
+        }
+        // 添加产品所属分类的查询条件
+        if (!StringUtils.isEmpty(productCategory)) {
+            queryWrapper.eq("productCategoryName", productCategory);
+        }
+        // 添加产品价格区间查询条件
+        if (minPrice != null) {
+            if (maxPrice != null) {
+                queryWrapper.between("productPrice", minPrice, maxPrice);
+            } else {
+                queryWrapper.ge("productPrice", minPrice);
+            }
+        }
+        if (maxPrice != null) {
+            queryWrapper.le("productPrice", maxPrice);
+        }
+        // 添加商品描述查询条件
+        if (!StringUtils.isEmpty(productDescription)) {
+            queryWrapper.like("productDescription", productDescription);
+        }
+        // 添加排序条件
+        queryWrapper.orderByAsc("productId");
+        return queryWrapper;
     }
 
     public List<ProductVO> getProductVO(List<Product> productList) {
@@ -200,8 +195,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         }
 
         String name = product.getProductName();
-        String productCategoryName = product.getProductCategoryName();
         BigDecimal price = product.getProductPrice();
+        String productCategoryName = product.getProductCategoryName();
         Integer stock = product.getStock();
         Integer productIsEnabled = product.getProductIsEnabled();
 
@@ -209,14 +204,13 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         ThrowUtils.throwIf(price.intValue() < 0, ErrorCode.PARAMS_ERROR,"价格不能小于0");
         ThrowUtils.throwIf(productIsEnabled != 0 && productIsEnabled != 1, ErrorCode.PARAMS_ERROR,"商品状态错误");
         ThrowUtils.throwIf(!CategoryEnum.contains(productCategoryName), ErrorCode.PARAMS_ERROR,"商品类型错误");
-        if (name.length() > 256) {
+        if (name.length() > 100) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "名称过长");
         }
     }
 
     @Override
     public BigDecimal getProductPrice(Integer productId) {
-
         Product product = this.getById(productId);
         if (product == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "商品不存在");
@@ -226,7 +220,6 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
 
     @Override
     public String getProductName(Integer productId) {
-
         Product product = this.getById(productId);
         if (product == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "商品不存在");

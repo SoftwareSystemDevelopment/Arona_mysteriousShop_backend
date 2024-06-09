@@ -1,22 +1,25 @@
 package com.software_system_development.arona_mysterious_shop_backend.model.enums;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Schema(description = "商品类型")
 public enum CategoryEnum {
+    @Schema(description = "报告")
     REPORT("报告", "report"),
-
+    @Schema(description = "强化石")
     EXP_ORB("强化石", "exp_orb"),
-
+    @Schema(description = "专武材料")
     UE_EXP_MATERIAL("专武材料", "ue_exp_material"),
-
+    @Schema(description = "技能光盘")
     BD("技能光盘", "bd"),
-
+    @Schema(description = "技能书")
     SKILL_BOOK("技能书", "skill_book"),
-
+    @Schema(description = "欧帕兹")
     OOPARTS("欧帕兹", "ooparts");
 
     private final String text;

@@ -53,34 +53,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public int userRegister(UserRegisterRequest userRegisterRequest) {
-        String userAccount = userRegisterRequest.getUserAccount();
-        String userPassword = userRegisterRequest.getUserPassword();
-        String userName = userRegisterRequest.getUserName();
-        String userRole = userRegisterRequest.getUserRole();
-        Date userCreateDate = new Date();
-        Date userUpdateDate = new Date();
-
-        // 1. 校验
-        validateUserParams(userAccount, userPassword, userName, userRole, false);
-        synchronized (userAccount.intern()) {
+        // 校验参数
+        validateUserParams(userRegisterRequest.getUserAccount(), userRegisterRequest.getUserPassword(),
+                userRegisterRequest.getUserName(), userRegisterRequest.getUserRole(), false);
+        synchronized (userRegisterRequest.getUserAccount().intern()) {
             // 账户不能重复
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("userAccount", userAccount);
+            queryWrapper.eq("userAccount", userRegisterRequest.getUserAccount());
             long count = userMapper.selectCount(queryWrapper);
             if (count > 0) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号重复");
             }
-            // 2. 加密
-            String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
-            // 3. 插入数据
+            String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userRegisterRequest.getUserPassword()).getBytes());
             User user = new User();
-            user.setUserAccount(userAccount);
-            user.setUserName(userName);
-            user.setUserPassword(encryptPassword);
-            user.setUserRole(userRole);
-            user.setUserCreateDate(userCreateDate);
-            user.setUserUpdateDate(userUpdateDate);
-            // 4. 为用户创建购物车
+
             Cart cart = new Cart();
             cart.setCreateTime(new Date());
             cart.setUpdateTime(new Date());
@@ -88,7 +74,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             if (!cartSaveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "购物车创建失败");
             }
+            BeanUtils.copyProperties(userRegisterRequest, user);
+            user.setUserPassword(encryptPassword);
+            user.setUserCreateDate(new Date());
+            user.setUserUpdateDate(new Date());
             user.setCartId(cart.getCartId());
+            // 插入数据库
             boolean saveResult = this.save(user);
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");
@@ -98,11 +89,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
 
+
     @Override
     public UserVO userLogin(UserLoginRequest userLoginRequest, HttpServletRequest request) {
         String userAccount = userLoginRequest.getUserAccount();
         String userPassword = userLoginRequest.getUserPassword();
-
         // 1. 校验
         validateUserParams(userAccount, userPassword, null, null, true);
         // 2. 加密
@@ -126,7 +117,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public int userUpdate(UserUpdateRequest userUpdateRequest, HttpServletRequest request) {
         UserVO currentUser = getUserVO(request);
         Integer userId = userUpdateRequest.getUserId();
-        String userAvatar = userUpdateRequest.getUserAvatar();
         String userPassword = userUpdateRequest.getUserPassword();
         String userName = userUpdateRequest.getUserName();
         Date userUpdateDate = new Date();
@@ -134,31 +124,31 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
         if (userPassword.length() < 8) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR,"用户密码过短");
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户密码过短");
         }
-        //判断是否有权限修改，必须要是用户自己或者是管理员
+        // 判断是否有权限修改，必须要是用户自己或者是管理员
         if (!currentUser.getUserId().equals(userId) && !isAdmin(currentUser)) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "无权限修改");
         }
-        //修改用户信息
+        // 修改用户信息
         User user = new User();
+        BeanUtils.copyProperties(userUpdateRequest, user);
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
-        user.setUserId(userId);
-        user.setUserName(userName);
-        user.setUserAvatar(userAvatar);
         user.setUserPassword(encryptPassword);
-        user.setUserCreateDate(userUpdateDate);
+        user.setUserUpdateDate(userUpdateDate);
         boolean updateResult = this.updateById(user);
         if (!updateResult) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "修改失败");
         }
-        //如果是修改自己的信息，则更新session
-        if(currentUser.getUserId().equals(userId)) {
-            UserVO safetyUser = getUserVO(user);
+        // 如果是修改自己的信息，则更新session
+        if (currentUser.getUserId().equals(userId)) {
+            User updatedUser = this.getById(userId);
+            UserVO safetyUser = getUserVO(updatedUser);
             request.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
         }
         return userId;
     }
+
 
     @Override
     public boolean userLogout(HttpServletRequest request) {
