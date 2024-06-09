@@ -1,6 +1,8 @@
 package com.software_system_development.arona_mysterious_shop_backend.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductAddRequest;
+import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductQueryRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductUpdateRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
@@ -8,6 +10,7 @@ import com.software_system_development.arona_mysterious_shop_backend.model.vo.Pr
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.math.BigDecimal;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import java.util.List;
 
 /**
@@ -41,19 +44,31 @@ public interface ProductService extends IService<Product> {
     boolean deleteProduct(Integer productId, HttpServletRequest request);
 
     /**
-     * 根据条件查询商品列表
-     * @param productName
+     * 分页查询商品信息
+     * @param productQueryRequest
      * @return
      */
-    List<Product> getByProductName(String productName);
-    List<Product> getByProductCategoryName(String productCategoryName);
-    List<Product> getByProductPriceRange(BigDecimal minPrice, BigDecimal maxPrice);
-    List<Product> getByMinProductPrice(BigDecimal minPrice);
-    List<Product> getByMaxProductPrice(BigDecimal maxPrice);
-    List<Product> getByProviderId(Integer providerId);
-    List<Product> getByDescription(String description);
+    QueryWrapper<Product> getQueryWrapper(ProductQueryRequest productQueryRequest);
+
+    /**
+     *  获取商品信息
+     * @param id
+     * @param request
+     * @return
+     */
+    Product getProduct(int id, HttpServletRequest request);
+
+    /**
+     * 获取商品信息VO
+     * @param id
+     * @return
+     */
+    ProductVO getProductVO(int id);
+
 
     List<ProductVO> getProductVO(List<Product> productList);
+
+    List<Product> getByProviderId(Integer providerId);
 
     /**
      * 校验商品信息合法性

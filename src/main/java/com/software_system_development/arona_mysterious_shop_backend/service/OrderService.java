@@ -1,9 +1,11 @@
 package com.software_system_development.arona_mysterious_shop_backend.service;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderAddRequest;
+import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderQueryRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.CartProduct;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Order;
@@ -26,4 +28,6 @@ public interface OrderService extends IService<Order> {
     List<Order> list(HttpServletRequest request);
 
     List<OrderVO> getOrderVO(List<Order> orderList);
+
+    QueryWrapper<Order> getQueryWrapper(OrderQueryRequest orderQueryRequest);
 }

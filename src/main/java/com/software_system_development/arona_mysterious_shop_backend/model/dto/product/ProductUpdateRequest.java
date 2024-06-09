@@ -44,11 +44,6 @@ public class ProductUpdateRequest implements Serializable {
     private Integer productIsEnabled;
 
     /**
-     * 供货商ID
-     */
-    private Integer providerId;
-
-    /**
      * 商品描述
      */
     private String productDescription;

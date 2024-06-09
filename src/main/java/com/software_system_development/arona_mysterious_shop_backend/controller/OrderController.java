@@ -1,6 +1,7 @@
 package com.software_system_development.arona_mysterious_shop_backend.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.software_system_development.arona_mysterious_shop_backend.annotation.AuthCheck;
 import com.software_system_development.arona_mysterious_shop_backend.common.BaseResponse;
@@ -8,7 +9,9 @@ import com.software_system_development.arona_mysterious_shop_backend.common.Erro
 import com.software_system_development.arona_mysterious_shop_backend.common.ResultUtils;
 import com.software_system_development.arona_mysterious_shop_backend.constant.UserConstant;
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
+import com.software_system_development.arona_mysterious_shop_backend.exception.ThrowUtils;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderAddRequest;
+import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderQueryRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.*;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.OrderVO;
@@ -34,6 +37,8 @@ public class OrderController {
 
     @Resource
     private OrderService orderService;
+    @Resource
+    private UserService userService;
 
     @PostMapping("/place")
     @Operation(summary = "下订单")
@@ -77,11 +82,20 @@ public class OrderController {
 
     @PostMapping("/list")
     @Operation(summary = "分页获取订单列表")
-    public BaseResponse<List<OrderVO>> listOrderVO(HttpServletRequest request) {
-        List<Order> orderList = orderService.list(request);
-        // 将订单列表转换为VO
-        List<OrderVO> orderVOList = orderService.getOrderVO(orderList);
-        return ResultUtils.success(orderVOList);
+    public BaseResponse<Page<OrderVO>> listOrderVO(@RequestBody OrderQueryRequest orderQueryRequest, HttpServletRequest request) {
+        if (orderQueryRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        UserVO currentUser = userService.getUserVO(request);
+        long current = orderQueryRequest.getCurrent();
+        long size = orderQueryRequest.getPageSize();
+        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        IPage<Order> orderPage = orderService.page(new Page<>(current, size),
+                orderService.getQueryWrapper(orderQueryRequest).eq("orderUserId", currentUser.getUserId()));
+        List<OrderVO> orderVOList = orderService.getOrderVO(orderPage.getRecords());
+        Page<OrderVO> orderVOPage = new Page<>(current, size, orderPage.getTotal());
+        orderVOPage.setRecords(orderVOList);
+        return ResultUtils.success(orderVOPage);
     }
 
 }

@@ -7,6 +7,7 @@ import com.software_system_development.arona_mysterious_shop_backend.exception.B
 import com.software_system_development.arona_mysterious_shop_backend.exception.ThrowUtils;
 import com.software_system_development.arona_mysterious_shop_backend.mapper.ProductMapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductAddRequest;
+import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductQueryRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
 import com.software_system_development.arona_mysterious_shop_backend.model.enums.CategoryEnum;
@@ -75,16 +76,16 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         BigDecimal productPrice = productUpdateRequest.getProductPrice();
         Integer stock = productUpdateRequest.getStock();
         Integer productIsEnabled = productUpdateRequest.getProductIsEnabled();
-        Integer providerId = productUpdateRequest.getProviderId();
         Date productUpdateDate = new Date();
 
-        if (productId == null || StringUtils.isAnyBlank(productName, productCategoryName) || productPrice == null || stock == null || productIsEnabled == null || providerId == null) {
+        if (productId == null || StringUtils.isAnyBlank(productName, productCategoryName) || productPrice == null || stock == null || productIsEnabled == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
         //不是自己上架的商品不允许修改
         UserVO loginUser = userService.getUserVO(request);
-        if(!loginUser.getUserId().equals(providerId)) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, "无修改权限");
+        int providerId= getProductVO(productId).getProviderId();
+        if(!loginUser.getUserId().equals(providerId)){
+            throw new BusinessException(ErrorCode.OPERATION_ERROR,"无修改权限");
         }
         Product product = new Product();
         BeanUtils.copyProperties(productUpdateRequest, product);
@@ -114,51 +115,73 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         return this.removeById(productId);
     }
 
-
     @Override
-    public List<Product> getByProductName(String productName) {
-        if (StringUtils.isBlank(productName)) {
-            return Collections.emptyList();
+    public QueryWrapper<Product> getQueryWrapper(ProductQueryRequest productQueryRequest) {
+        if (productQueryRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
         }
         QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like("productName", productName);
-        return this.list(queryWrapper);
-    }
-
-    @Override
-    public List<Product> getByProductCategoryName(String productCategoryName) {
-        if (StringUtils.isBlank(productCategoryName)) {
-            return Collections.emptyList();
+        // 添加产品名称的查询条件
+        if (!StringUtils.isEmpty(productQueryRequest.getProductName())) {
+            queryWrapper.like("productName", productQueryRequest.getProductName());
         }
-        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("productCategoryName", productCategoryName);
-        return this.list(queryWrapper);
-    }
-
-    @Override
-    public List<Product> getByProductPriceRange(BigDecimal minPrice, BigDecimal maxPrice) {
-        if (minPrice.compareTo(maxPrice) > 0) {
-            return Collections.emptyList();
+        // 添加产品所属分类的查询条件
+        if (!StringUtils.isEmpty(productQueryRequest.getProductCategoryName())) {
+            queryWrapper.eq("productCategoryName", productQueryRequest.getProductCategoryName());
         }
-        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        queryWrapper.between("productPrice", minPrice, maxPrice);
-        return this.list(queryWrapper);
+        // 添加产品价格区间查询条件
+        if (productQueryRequest.getMinPrice() != null) {
+            if(productQueryRequest.getMaxPrice() != null) {
+                queryWrapper.between("productPrice", productQueryRequest.getMinPrice(), productQueryRequest.getMaxPrice());
+            } else {
+                queryWrapper.ge("productPrice", productQueryRequest.getMinPrice());
+            }
+        }
+        if(productQueryRequest.getMaxPrice() != null) {
+            queryWrapper.le("productPrice", productQueryRequest.getMaxPrice());
+        }
+        //添加商品描述查询条件
+        if(productQueryRequest.getProductDescription() != null){
+            queryWrapper.like("productDescription", productQueryRequest.getProductDescription());
+        }
+
+        // 添加排序条件
+        queryWrapper.orderByAsc("productId");
+        return queryWrapper;
+    }
+
+
+    @Override
+    public Product getProduct(int id, HttpServletRequest request) {
+        UserVO loginUser = userService.getUserVO(request);
+        Product product = this.getById(id);
+        if (product == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "商品不存在");
+        }
+        if (!loginUser.getUserId().equals(product.getProviderId())) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "无查看权限");
+        }
+        return product;
     }
 
     @Override
-    public List<Product> getByMinProductPrice(BigDecimal minPrice) {
-        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        queryWrapper.ge("productPrice", minPrice);
-        return this.list(queryWrapper);
+    public ProductVO getProductVO(int id) {
+        Product product = this.getById(id);
+        if (product == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "商品不存在");
+        }
+        ProductVO productVO = new ProductVO();
+        BeanUtils.copyProperties(product, productVO);
+        return productVO;
     }
 
-    @Override
-    public List<Product> getByMaxProductPrice(BigDecimal maxPrice) {
-        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        queryWrapper.le("productPrice", maxPrice);
-        return this.list(queryWrapper);
+    public List<ProductVO> getProductVO(List<Product> productList) {
+        return productList.stream().map(product -> {
+            ProductVO productVO = new ProductVO();
+            BeanUtils.copyProperties(product, productVO);
+            return productVO;
+        }).collect(Collectors.toList());
     }
-
 
     @Override
     public List<Product> getByProviderId(Integer providerId) {
@@ -168,25 +191,6 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("providerId", providerId);
         return this.list(queryWrapper);
-    }
-
-    @Override
-    public List<Product> getByDescription(String description) {
-        if (StringUtils.isBlank(description)) {
-            return Collections.emptyList();
-        }
-        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like("productDescription", description);
-        return this.list(queryWrapper);
-    }
-
-
-    public List<ProductVO> getProductVO(List<Product> productList) {
-        return productList.stream().map(product -> {
-            ProductVO productVO = new ProductVO();
-            BeanUtils.copyProperties(product, productVO);
-            return productVO;
-        }).collect(Collectors.toList());
     }
 
     @Override

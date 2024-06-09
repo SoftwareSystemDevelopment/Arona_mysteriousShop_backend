@@ -1,6 +1,7 @@
 package com.software_system_development.arona_mysterious_shop_backend.service.impl;
 
 import cn.hutool.core.date.DateTime;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -9,6 +10,7 @@ import com.software_system_development.arona_mysterious_shop_backend.exception.B
 import com.software_system_development.arona_mysterious_shop_backend.mapper.OrderItemMapper;
 import com.software_system_development.arona_mysterious_shop_backend.mapper.OrderMapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderAddRequest;
+import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderQueryRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Address;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.CartProduct;
@@ -190,5 +192,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             orderVO.setOrderItems(orderItemMapper.selectList(new QueryWrapper<OrderItem>().eq("orderId", order.getOrderId())));
             return orderVO;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public QueryWrapper<Order> getQueryWrapper(OrderQueryRequest orderQueryRequest) {
+
+        QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+        if (orderQueryRequest.getOrderStatus() != null) {
+            queryWrapper.eq("orderStatus", orderQueryRequest.getOrderStatus());
+        }
+        if(orderQueryRequest.getOrderCode() != null) {
+            queryWrapper.eq("orderCode", orderQueryRequest.getOrderCode());
+        }
+        if(orderQueryRequest.getReceiverName() != null) {
+            queryWrapper.like("orderReceiver", orderQueryRequest.getReceiverName());
+        }
+        // 添加排序条件
+        queryWrapper.orderByAsc("orderId");
+        return queryWrapper;
     }
 }
