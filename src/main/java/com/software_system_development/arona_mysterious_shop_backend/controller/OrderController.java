@@ -3,19 +3,14 @@ package com.software_system_development.arona_mysterious_shop_backend.controller
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.software_system_development.arona_mysterious_shop_backend.annotation.AuthCheck;
 import com.software_system_development.arona_mysterious_shop_backend.common.BaseResponse;
 import com.software_system_development.arona_mysterious_shop_backend.common.ErrorCode;
 import com.software_system_development.arona_mysterious_shop_backend.common.ResultUtils;
-import com.software_system_development.arona_mysterious_shop_backend.constant.UserConstant;
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
-import com.software_system_development.arona_mysterious_shop_backend.exception.ThrowUtils;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderAddRequest;
-import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderQueryRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.*;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.OrderVO;
-import com.software_system_development.arona_mysterious_shop_backend.model.vo.ProductVO;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,8 +20,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -40,6 +33,12 @@ public class OrderController {
     @Resource
     private UserService userService;
 
+    /**
+     * 下订单
+     * @param orderAddRequest
+     * @param request
+     * @return
+     */
     @PostMapping("/place")
     @Operation(summary = "下订单")
     public BaseResponse<Integer> placeOrder(@RequestBody OrderAddRequest orderAddRequest, HttpServletRequest request) {
@@ -50,6 +49,12 @@ public class OrderController {
         return ResultUtils.success(result);
     }
 
+    /**
+     * 更新订单
+     * @param orderUpdateRequest
+     * @param request
+     * @return
+     */
     @PostMapping("/update")
     @Operation(summary = "更新订单")
     public BaseResponse<Integer> updateOrder(@RequestBody OrderUpdateRequest orderUpdateRequest, HttpServletRequest request) {
@@ -60,6 +65,12 @@ public class OrderController {
         return ResultUtils.success(result);
     }
 
+    /**
+     * 删除订单
+     * @param orderId
+     * @param request
+     * @return
+     */
     @PostMapping("/delete")
     @Operation(summary = "删除订单")
     public BaseResponse<Boolean> deleteOrder(@RequestParam int orderId, HttpServletRequest request) {
@@ -70,6 +81,12 @@ public class OrderController {
         return ResultUtils.success(result);
     }
 
+    /**
+     * 获取订单详情
+     * @param orderId
+     * @param request
+     * @return
+     */
     @GetMapping("/get")
     @Operation(summary = "获取订单详情")
     public BaseResponse<OrderVO> getOrderVO(@RequestParam int orderId, HttpServletRequest request) {
@@ -80,22 +97,23 @@ public class OrderController {
         return ResultUtils.success(order);
     }
 
-    @PostMapping("/list")
+    @GetMapping("/list")
     @Operation(summary = "分页获取订单列表")
-    public BaseResponse<Page<OrderVO>> listOrderVO(@RequestBody OrderQueryRequest orderQueryRequest, HttpServletRequest request) {
-        if (orderQueryRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
+    public BaseResponse<Page<OrderVO>> listOrderVO(@RequestParam(required = false) String orderCode,
+                                                   @RequestParam(required = false) String receiverName,
+                                                   @RequestParam(required = false) String orderStatus,
+                                                   @RequestParam(defaultValue = "1") long current,
+                                                   @RequestParam(defaultValue = "10") long size,
+                                                   HttpServletRequest request) {
         UserVO currentUser = userService.getUserVO(request);
-        long current = orderQueryRequest.getCurrent();
-        long size = orderQueryRequest.getPageSize();
-        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        IPage<Order> orderPage = orderService.page(new Page<>(current, size),
-                orderService.getQueryWrapper(orderQueryRequest).eq("orderUserId", currentUser.getUserId()));
+        QueryWrapper<Order> queryWrapper = orderService.getQueryWrapper(orderCode, receiverName, orderStatus)
+                .eq("orderUserId", currentUser.getUserId());
+
+        IPage<Order> orderPage = orderService.page(new Page<>(current, size), queryWrapper);
         List<OrderVO> orderVOList = orderService.getOrderVO(orderPage.getRecords());
         Page<OrderVO> orderVOPage = new Page<>(current, size, orderPage.getTotal());
         orderVOPage.setRecords(orderVOList);
+
         return ResultUtils.success(orderVOPage);
     }
-
 }

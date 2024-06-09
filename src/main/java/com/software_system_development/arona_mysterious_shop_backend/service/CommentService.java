@@ -1,5 +1,6 @@
 package com.software_system_development.arona_mysterious_shop_backend.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.comment.CommentAddRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Comment;
@@ -32,9 +33,11 @@ public interface CommentService extends IService<Comment> {
 
 
     /**
-     * 查询某商品下的所有评论
+     * 分页查询某商品下的所有评论
      * @param productId
+     * @param current
+     * @param size
      * @return
      */
-    List<Comment> getCommentsByProductId(Integer productId);
+    Page<Comment> listCommentsByProductId(int productId, long current, long size);
 }

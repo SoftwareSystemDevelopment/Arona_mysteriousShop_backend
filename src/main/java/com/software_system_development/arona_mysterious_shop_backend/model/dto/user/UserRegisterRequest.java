@@ -37,4 +37,10 @@ public class UserRegisterRequest implements Serializable {
      */
     @NotNull
     private String userRole;
+
+    /**
+     * 店铺名
+     */
+    private String shopName;
+
 }

@@ -1,5 +1,6 @@
 package com.software_system_development.arona_mysterious_shop_backend.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.software_system_development.arona_mysterious_shop_backend.common.BaseResponse;
 import com.software_system_development.arona_mysterious_shop_backend.common.ErrorCode;
 import com.software_system_development.arona_mysterious_shop_backend.common.ResultUtils;
@@ -48,12 +49,6 @@ public class CommentController {
     /**
      * 删除评论
      *
-     * @param commentDeleteRequest 评论删除请求
-     * @return {@link BaseResponse}<{@link Boolean}>
-     */
-    /**
-     * 删除评论
-     *
      * @param commentId 评论ID
      * @param request HttpServletRequest
      * @return {@link BaseResponse}<{@link Boolean}>
@@ -76,14 +71,17 @@ public class CommentController {
      * @return {@link BaseResponse}<{@link List}<{@link Comment}>>
      */
     @GetMapping("/list")
-    @Operation(summary = "查询某商品下的所有评论")
-    public BaseResponse<List<Comment>> listComments(@RequestParam int productId) {
+    @Operation(summary = "分页查询指定商品下的所有评论")
+    public BaseResponse<Page<Comment>> listComments(@RequestParam int productId,
+                                                    @RequestParam(defaultValue = "1") long current,
+                                                    @RequestParam(defaultValue = "10") long size) {
         if (productId <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        List<Comment> commentList = commentService.getCommentsByProductId(productId);
-        return ResultUtils.success(commentList);
+        Page<Comment> commentPage = commentService.listCommentsByProductId(productId, current, size);
+        return ResultUtils.success(commentPage);
     }
+
 
 
 }

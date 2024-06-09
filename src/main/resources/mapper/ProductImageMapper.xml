@@ -8,11 +8,9 @@
             <id property="productImageId" column="productImageId" jdbcType="INTEGER"/>
             <result property="productImageSrc" column="productImageSrc" jdbcType="VARCHAR"/>
             <result property="productImageProductId" column="productImageProductId" jdbcType="INTEGER"/>
-            <result property="productImageStore" column="productImageStore" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        productImageId,productImageSrc,productImageProductId,
-        productImageStore
+        productImageId,productImageSrc,productImageProductId
     </sql>
 </mapper>

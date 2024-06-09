@@ -1,6 +1,7 @@
 package com.software_system_development.arona_mysterious_shop_backend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.software_system_development.arona_mysterious_shop_backend.common.ErrorCode;
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
@@ -33,6 +34,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     UserService userService;
     @Resource
     ProductService productService;
+    @Resource
+    CommentMapper commentMapper;
 
     @Override
     public int addComment(CommentAddRequest commentAddRequest, HttpServletRequest request) {
@@ -72,18 +75,13 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
     @Override
-    public List<Comment> getCommentsByProductId(Integer productId) {
-        if (productId == null || productId <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
-        }
+    public Page<Comment> listCommentsByProductId(int productId, long current, long size) {
+        Page<Comment> commentPage = new Page<>(current, size);
         QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("commentProductId", productId);
-        List<Comment> commentList = this.list(queryWrapper);
-        if (commentList == null || commentList.isEmpty()) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "未找到评论");
-        }
-        return commentList;
+        return commentMapper.selectPage(commentPage, queryWrapper);
     }
+
 }
 
 

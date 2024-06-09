@@ -9,9 +9,9 @@ import lombok.Data;
 
 /**
  * 
- * @TableName productimage
+ * @TableName productImage
  */
-@TableName(value ="productimage")
+@TableName(value ="productImage")
 @Data
 public class ProductImage implements Serializable {
     /**
@@ -30,11 +30,5 @@ public class ProductImage implements Serializable {
      */
     private Integer productImageProductId;
 
-    /**
-     * 图片存储位置
-     */
-    private String productImageStore;
-
-    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

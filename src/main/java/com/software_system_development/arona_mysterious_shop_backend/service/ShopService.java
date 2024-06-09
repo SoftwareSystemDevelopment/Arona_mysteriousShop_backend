@@ -1,7 +1,12 @@
 package com.software_system_development.arona_mysterious_shop_backend.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.software_system_development.arona_mysterious_shop_backend.model.dto.shop.ShopUpdateRequest;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Shop;
+
+import java.util.List;
 
 /**
 * @author 29967
@@ -9,6 +14,12 @@ import com.software_system_development.arona_mysterious_shop_backend.model.entit
 * @createDate 2024-06-07 10:39:04
 */
 public interface ShopService extends IService<Shop> {
+
+    /**
+     * 更新店铺信息
+     * @param shopUpdateRequest
+     */
+    boolean updateShop(ShopUpdateRequest shopUpdateRequest);
 
 
 }

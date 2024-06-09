@@ -6,16 +6,19 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.software_system_development.arona_mysterious_shop_backend.common.ErrorCode;
+import com.software_system_development.arona_mysterious_shop_backend.constant.UserConstant;
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
 import com.software_system_development.arona_mysterious_shop_backend.mapper.UserMapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserLoginRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserRegisterRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Cart;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.Shop;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.User;
 import com.software_system_development.arona_mysterious_shop_backend.model.enums.UserRoleEnum;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.CartService;
+import com.software_system_development.arona_mysterious_shop_backend.service.ShopService;
 import com.software_system_development.arona_mysterious_shop_backend.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,6 +54,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     private CartService cartService;
 
+    @Resource
+    ShopService shopService;
+
     @Override
     public int userRegister(UserRegisterRequest userRegisterRequest) {
         // 校验参数
@@ -84,9 +90,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");
             }
+
+            // 如果注册的角色是 provider，创建一个店铺
+            if (UserConstant.PROVIDER_ROLE.equals(userRegisterRequest.getUserRole())) {
+                Shop shop = new Shop();
+                shop.setName(userRegisterRequest.getShopName()); // 店铺名称
+                shop.setDescription("Default description"); // 设置默认描述
+                shop.setShopUserId(user.getUserId()); // 关联用户ID
+                shopService.save(shop); // 保存店铺
+            }
+
             return user.getUserId();
         }
     }
+
 
 
 
