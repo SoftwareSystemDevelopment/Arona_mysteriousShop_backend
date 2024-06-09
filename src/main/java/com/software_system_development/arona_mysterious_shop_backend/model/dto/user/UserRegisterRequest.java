@@ -1,5 +1,6 @@
 package com.software_system_development.arona_mysterious_shop_backend.model.dto.user;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,20 +17,24 @@ public class UserRegisterRequest implements Serializable {
     /**
      * 用户账号
      */
+    @NotNull
     private String userAccount;
 
     /**
      * 用户昵称
      */
+    @NotNull
     private String userName;
 
     /**
      * 用户密码
      */
+    @NotNull
     private String userPassword;
 
     /**
      * 用户角色
      */
+    @NotNull
     private String userRole;
 }

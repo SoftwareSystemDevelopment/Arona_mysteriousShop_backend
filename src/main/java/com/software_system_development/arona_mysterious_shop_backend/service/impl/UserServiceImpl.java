@@ -1,11 +1,12 @@
 package com.software_system_development.arona_mysterious_shop_backend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.software_system_development.arona_mysterious_shop_backend.common.ErrorCode;
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
-import com.software_system_development.arona_mysterious_shop_backend.mapper.CartMapper;
 import com.software_system_development.arona_mysterious_shop_backend.mapper.UserMapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserLoginRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserRegisterRequest;
@@ -39,22 +40,16 @@ import static com.software_system_development.arona_mysterious_shop_backend.cons
 */
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
-
     /**
      * 盐值，混淆密码
      */
     private static final String SALT = "arona";
-
 
     @Resource
     private UserMapper userMapper;
 
     @Resource
     private CartService cartService;
-
-    @Resource
-    private CartMapper cartMapper;
-
 
     @Override
     public int userRegister(UserRegisterRequest userRegisterRequest) {
@@ -64,28 +59,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String userRole = userRegisterRequest.getUserRole();
         Date userCreateDate = new Date();
         Date userUpdateDate = new Date();
+
         // 1. 校验
-        if (StringUtils.isAnyBlank(userAccount,userName, userPassword, userRole)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
-        }
-        if (userAccount.length() < 4) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户账号过短");
-        }
-        if (userName.length() < 4) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户名过短");
-        }
-        if (userPassword.length() < 8) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户密码过短");
-        }
-        // 账户不能包含特殊字符
-        String validPattern = "[`~!@#$%^&*()+=|{}':;',\\\\[\\\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
-        Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
-        if (matcher.find()) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号不能包含特殊字符");
-        }
-        if(!userRole.equals(UserRoleEnum.USER.getValue()) &&!userRole.equals(UserRoleEnum.PROVIDER.getValue())) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户角色错误");
-        }
+        validateUserParams(userAccount, userPassword, userName, userRole, false);
         synchronized (userAccount.intern()) {
             // 账户不能重复
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -104,8 +80,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             user.setUserRole(userRole);
             user.setUserCreateDate(userCreateDate);
             user.setUserUpdateDate(userUpdateDate);
-
-            // 为用户创建购物车
+            // 4. 为用户创建购物车
             Cart cart = new Cart();
             cart.setCreateTime(new Date());
             cart.setUpdateTime(new Date());
@@ -113,37 +88,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             if (!cartSaveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "购物车创建失败");
             }
-            user.setCartId(cart.getCartId()); // 将购物车ID设置到用户对象中
-
+            user.setCartId(cart.getCartId());
             boolean saveResult = this.save(user);
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");
             }
-
             return user.getUserId();
         }
     }
+
 
     @Override
     public UserVO userLogin(UserLoginRequest userLoginRequest, HttpServletRequest request) {
         String userAccount = userLoginRequest.getUserAccount();
         String userPassword = userLoginRequest.getUserPassword();
+
         // 1. 校验
-        if (StringUtils.isAnyBlank(userAccount, userPassword)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
-        }
-        if (userAccount.length() < 4) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号错误");
-        }
-        // 账户不能包含特殊字符
-        String validPattern = "[`~!@#$%^&*()+=|{}':;',\\\\[\\\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
-        Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
-        if (matcher.find()) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号错误");
-        }
-        if (userPassword.length() < 8) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码错误");
-        }
+        validateUserParams(userAccount, userPassword, null, null, true);
         // 2. 加密
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
         // 查询用户是否存在
@@ -151,7 +112,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         queryWrapper.eq("userAccount", userAccount);
         queryWrapper.eq("userPassword", encryptPassword);
         User user = this.baseMapper.selectOne(queryWrapper);
-        // 用户不存在
         if (user == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户名或密码错误");
         }
@@ -170,8 +130,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String userPassword = userUpdateRequest.getUserPassword();
         String userName = userUpdateRequest.getUserName();
         Date userUpdateDate = new Date();
-        if (StringUtils.isAnyBlank(userAvatar, userPassword, userName) || userId == null) {
+        if (StringUtils.isAnyBlank(userPassword, userName) || userId == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
+        }
+        if (userPassword.length() < 8) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"用户密码过短");
         }
         //判断是否有权限修改，必须要是用户自己或者是管理员
         if (!currentUser.getUserId().equals(userId) && !isAdmin(currentUser)) {
@@ -208,24 +171,31 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public User getByUserAccount(String userAccount) {
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userAccount", userAccount);
-        return getOne(queryWrapper);
+    public UserVO getCurrentUser(HttpServletRequest request) {
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        if (userObj == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        return (UserVO) userObj;
     }
 
     @Override
-    public List<User> getByUserName(String userName) {
+    public IPage<User> searchUsers(Integer userId, String userAccount, String userName, String userRole, long current, long size) {
+        Page<User> page = new Page<>(current, size);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like("userName", userName);
-        return list(queryWrapper);
-    }
-
-    @Override
-    public List<User> getByUserRole(String userRole) {
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userRole", userRole);
-        return list(queryWrapper);
+        if (userId != null) {
+            queryWrapper.eq("userId", userId);
+        }
+        if (userAccount != null) {
+            queryWrapper.eq("userAccount", userAccount);
+        }
+        if (userName != null) {
+            queryWrapper.eq("userName", userName);
+        }
+        if (userRole != null) {
+            queryWrapper.eq("userRole", userRole);
+        }
+        return this.page(page, queryWrapper);
     }
 
     @Override
@@ -243,7 +213,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User getUser(User user) {
         return user;
     }
-
 
     @Override
     public List<User> getUser(List<User> userList) {
@@ -293,6 +262,31 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return user.getCartId();
     }
 
+    private void validateUserParams(String userAccount, String userPassword, String userName, String userRole, boolean isLogin) {
+        if (StringUtils.isAnyBlank(userAccount, userPassword)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
+        }
+        if (userAccount.length() < 4) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户账号过短");
+        }
+        // 账户不能包含特殊字符
+        String validPattern = "[`~!@#$%^&*()+=|{}':;',\\\\[\\\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
+        Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
+        if (matcher.find()) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号不能包含特殊字符");
+        }
+        if (userPassword.length() < 8) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户密码过短");
+        }
+        if (!isLogin) {
+            if (StringUtils.isAnyBlank(userName, userRole)) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
+            }
+            if (!userRole.equals(UserRoleEnum.USER.getValue()) && !userRole.equals(UserRoleEnum.PROVIDER.getValue())) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户角色错误");
+            }
+        }
+    }
 }
 
 

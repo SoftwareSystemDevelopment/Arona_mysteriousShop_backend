@@ -1,5 +1,7 @@
 package com.software_system_development.arona_mysterious_shop_backend.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.software_system_development.arona_mysterious_shop_backend.annotation.AuthCheck;
 import com.software_system_development.arona_mysterious_shop_backend.common.BaseResponse;
@@ -116,6 +118,19 @@ public class UserController {
     }
 
     /**
+     * 获取当前登录用户信息
+     */
+    @GetMapping("/current")
+    @Operation(summary = "获取当前登录用户信息")
+    public BaseResponse<UserVO> getCurrentUser(HttpServletRequest request) {
+        if (request == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        UserVO userVO = userService.getCurrentUser(request);
+        return ResultUtils.success(userVO);
+    }
+
+    /**
      * 综合查询用户信息
      * @param userId
      * @param userAccount
@@ -123,34 +138,20 @@ public class UserController {
      * @param userRole
      * @return
      */
-    @GetMapping("/search")
-    @Operation(summary = "综合查询用户信息")
+    @GetMapping("/list")
+    @Operation(summary = "分页查询用户信息（仅管理员）")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<List<User>> searchUser(@RequestParam(required = false) Integer userId,
-                                               @RequestParam(required = false) String userAccount,
-                                               @RequestParam(required = false) String userName,
-                                               @RequestParam(required = false) String userRole) {
-        // 执行查询操作
-        List<User> users = Collections.emptyList();
-        if (userId != null) {
-            User user = userService.getById(userId);
-            if (user != null) {
-                users = Collections.singletonList(user);
-            }
-        } else if (userAccount != null) {
-            User user = userService.getByUserAccount(userAccount);
-            if (user != null) {
-                users = Collections.singletonList(user);
-            }
-        } else if (userName != null) {
-            users = userService.getByUserName(userName);
-        } else if (userRole != null) {
-            users = userService.getByUserRole(userRole);
-        }
-        // 返回结果
-        ThrowUtils.throwIf(users.isEmpty(), ErrorCode.NOT_FOUND_ERROR);
-        return ResultUtils.success(users);
+    public BaseResponse<IPage<User>> searchUser(@RequestParam(required = false) Integer userId,
+                                                @RequestParam(required = false) String userAccount,
+                                                @RequestParam(required = false) String userName,
+                                                @RequestParam(required = false) String userRole,
+                                                @RequestParam(defaultValue = "1") long current,
+                                                @RequestParam(defaultValue = "10") long size) {
+        IPage<User> userPage = userService.searchUsers(userId, userAccount, userName, userRole, current, size);
+        ThrowUtils.throwIf(userPage.getRecords().isEmpty(), ErrorCode.NOT_FOUND_ERROR);
+        return ResultUtils.success(userPage);
     }
+
 
     /**
      * 综合查询用户VO信息
@@ -160,51 +161,21 @@ public class UserController {
      * @param userRole
      * @return
      */
-    @GetMapping("/search/vo")
-    @Operation(summary = "综合查询用户VO信息")
-    public BaseResponse<List<UserVO>> searchUserVO(@RequestParam(required = false) Integer userId,
-                                             @RequestParam(required = false) String userAccount,
-                                             @RequestParam(required = false) String userName,
-                                             @RequestParam(required = false) String userRole) {
-        BaseResponse<List<User>> response = searchUser(userId, userAccount, userName, userRole);
-        List<User> users = response.getData();
-        if (users == null || users.isEmpty()) {
+    @GetMapping("/list/vo")
+    @Operation(summary = "分页查询用户VO信息")
+    public BaseResponse<IPage<UserVO>> searchUserVO(@RequestParam(required = false) Integer userId,
+                                                    @RequestParam(required = false) String userAccount,
+                                                    @RequestParam(required = false) String userName,
+                                                    @RequestParam(required = false) String userRole,
+                                                    @RequestParam(defaultValue = "1") long current,
+                                                    @RequestParam(defaultValue = "10") long size) {
+        IPage<User> userPage = userService.searchUsers(userId, userAccount, userName, userRole, current, size);
+        if (userPage.getRecords() == null || userPage.getRecords().isEmpty()) {
             return ResultUtils.success(null);
         }
-        return ResultUtils.success(userService.getUserVO(users));
-    }
-
-    /**
-     * 获取用户列表（分页展示）
-     *
-     * @param current 当前页数
-     * @param size    每页大小
-     * @return {@link BaseResponse}<{@link List}<{@link User}>>
-     */
-    @GetMapping("/list")
-    @Operation(summary = "获取用户列表（分页展示）")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<List<User>> listUsers(
-            @RequestParam(defaultValue = "1") long current,
-            @RequestParam(defaultValue = "10") long size) {
-        Page<User> userPage = userService.page(new Page<>(current, size));
-        return ResultUtils.success(userPage.getRecords());
-    }
-
-    /**
-     * 获取用户VO列表（分页展示）
-     *
-     * @param current 当前页数
-     * @param size    每页大小
-     * @return {@link BaseResponse}<{@link List}<{@link UserVO}>>
-     */
-    @GetMapping("/list/vo")
-    @Operation(summary = "获取用户VO列表（分页展示）")
-    public BaseResponse<List<UserVO>> listUserVOs(
-            @RequestParam(defaultValue = "1") long current,
-            @RequestParam(defaultValue = "10") long size) {
-        Page<User> userPage = userService.page(new Page<>(current, size));
         List<UserVO> userVOList = userService.getUserVO(userPage.getRecords());
-        return ResultUtils.success(userVOList);
+        IPage<UserVO> userVOPage = new Page<>(current, size, userPage.getTotal());
+        userVOPage.setRecords(userVOList);
+        return ResultUtils.success(userVOPage);
     }
 }

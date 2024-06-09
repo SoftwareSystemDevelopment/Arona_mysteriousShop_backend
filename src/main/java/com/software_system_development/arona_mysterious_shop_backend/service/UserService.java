@@ -1,5 +1,6 @@
 package com.software_system_development.arona_mysterious_shop_backend.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserLoginRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.user.UserRegisterRequest;
@@ -33,23 +34,37 @@ public interface UserService extends IService<User> {
     UserVO userLogin(UserLoginRequest userLoginRequest, HttpServletRequest request);
 
     /**
-     * 用户修改信息
+     * 更新用户信息
+     * @param userUpdateRequest
+     * @param request
+     * @return
      */
     int userUpdate(UserUpdateRequest userUpdateRequest, HttpServletRequest request);
 
     /**
      * 用户注销
-     *
      * @param request
      */
     boolean userLogout(HttpServletRequest request);
 
     /**
-     * 根据条件查询用户
+     * 获取当前用户信息
+     * @param request
+     * @return
      */
-    User getByUserAccount(String userAccount);
-    List<User> getByUserName(String userName);
-    List<User> getByUserRole(String userRole);
+    UserVO getCurrentUser(HttpServletRequest request);
+
+    /**
+     * 根据条件查询用户列表
+     * @param userId
+     * @param userAccount
+     * @param userName
+     * @param userRole
+     * @param current
+     * @param size
+     * @return
+     */
+    IPage<User> searchUsers(Integer userId, String userAccount, String userName, String userRole, long current, long size);
 
     /**
      *  获取用户信息
