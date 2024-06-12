@@ -12,6 +12,7 @@ import com.software_system_development.arona_mysterious_shop_backend.common.Resu
 import com.software_system_development.arona_mysterious_shop_backend.constant.UserConstant;
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.User;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.PageVO;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -141,15 +142,16 @@ public class UserController {
     @GetMapping("/list")
     @Operation(summary = "分页查询用户信息（仅管理员）")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<IPage<User>> searchUser(@RequestParam(required = false) Integer userId,
-                                                @RequestParam(required = false) String userAccount,
-                                                @RequestParam(required = false) String userName,
-                                                @RequestParam(required = false) String userRole,
-                                                @RequestParam(defaultValue = "1") long current,
-                                                @RequestParam(defaultValue = "10") long size) {
+    public BaseResponse<PageVO<User>> searchUser(@RequestParam(required = false) Integer userId,
+                                                 @RequestParam(required = false) String userAccount,
+                                                 @RequestParam(required = false) String userName,
+                                                 @RequestParam(required = false) String userRole,
+                                                 @RequestParam(defaultValue = "1") long current,
+                                                 @RequestParam(defaultValue = "10") long size) {
         IPage<User> userPage = userService.searchUsers(userId, userAccount, userName, userRole, current, size);
         ThrowUtils.throwIf(userPage.getRecords().isEmpty(), ErrorCode.NOT_FOUND_ERROR);
-        return ResultUtils.success(userPage);
+        PageVO<User> userPageVO = new PageVO<>(userPage.getRecords(), userPage.getTotal());
+        return ResultUtils.success(userPageVO);
     }
 
 
@@ -163,7 +165,7 @@ public class UserController {
      */
     @GetMapping("/list/vo")
     @Operation(summary = "分页查询用户VO信息")
-    public BaseResponse<IPage<UserVO>> searchUserVO(@RequestParam(required = false) Integer userId,
+    public BaseResponse<PageVO<UserVO>> searchUserVO(@RequestParam(required = false) Integer userId,
                                                     @RequestParam(required = false) String userAccount,
                                                     @RequestParam(required = false) String userName,
                                                     @RequestParam(required = false) String userRole,
@@ -176,6 +178,7 @@ public class UserController {
         List<UserVO> userVOList = userService.getUserVO(userPage.getRecords());
         IPage<UserVO> userVOPage = new Page<>(current, size, userPage.getTotal());
         userVOPage.setRecords(userVOList);
-        return ResultUtils.success(userVOPage);
+        PageVO<UserVO> userPageVO = new PageVO<>(userVOPage.getRecords(), userVOPage.getTotal());
+        return ResultUtils.success(userPageVO);
     }
 }

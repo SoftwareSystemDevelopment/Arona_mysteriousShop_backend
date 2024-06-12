@@ -39,7 +39,7 @@ public class User implements Serializable {
     /**
      * 用户头像
      */
-    private String userAvatar;
+    private Integer userAvatar;
 
     /**
      * 用户角色 user/admin/provider

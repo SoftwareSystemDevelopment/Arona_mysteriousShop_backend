@@ -72,6 +72,11 @@ public class Product implements Serializable {
      */
     private Date productUpdateDate;
 
+    /**
+     * 商品图片id
+     */
+    private Integer productImage;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

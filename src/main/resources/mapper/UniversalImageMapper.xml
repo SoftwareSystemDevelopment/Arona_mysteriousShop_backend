@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.software_system_development.arona_mysterious_shop_backend.mapper.UniversalImageMapper">
+
+    <resultMap id="BaseResultMap" type="com.software_system_development.arona_mysterious_shop_backend.model.entity.UniversalImage">
+            <id property="imageId" column="imageId" jdbcType="INTEGER"/>
+            <result property="imageSrc" column="imageSrc" jdbcType="VARCHAR"/>
+            <result property="productId" column="productId" jdbcType="INTEGER"/>
+            <result property="userId" column="userId" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        imageId,imageSrc,productId,
+        userId
+    </sql>
+</mapper>

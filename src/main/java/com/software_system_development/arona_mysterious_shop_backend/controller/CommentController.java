@@ -1,5 +1,6 @@
 package com.software_system_development.arona_mysterious_shop_backend.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.software_system_development.arona_mysterious_shop_backend.common.BaseResponse;
 import com.software_system_development.arona_mysterious_shop_backend.common.ErrorCode;
@@ -7,6 +8,7 @@ import com.software_system_development.arona_mysterious_shop_backend.common.Resu
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.comment.CommentAddRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Comment;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.PageVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -72,16 +74,14 @@ public class CommentController {
      */
     @GetMapping("/list")
     @Operation(summary = "分页查询指定商品下的所有评论")
-    public BaseResponse<Page<Comment>> listComments(@RequestParam int productId,
-                                                    @RequestParam(defaultValue = "1") long current,
-                                                    @RequestParam(defaultValue = "10") long size) {
+    public BaseResponse<IPage<Comment>> listComments(@RequestParam int productId,
+                                                     @RequestParam(defaultValue = "1") long current,
+                                                     @RequestParam(defaultValue = "10") long size) {
         if (productId <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Page<Comment> commentPage = commentService.listCommentsByProductId(productId, current, size);
+        IPage<Comment> commentPage = commentService.listCommentsByProductId(productId, current, size);
+
         return ResultUtils.success(commentPage);
     }
-
-
-
 }

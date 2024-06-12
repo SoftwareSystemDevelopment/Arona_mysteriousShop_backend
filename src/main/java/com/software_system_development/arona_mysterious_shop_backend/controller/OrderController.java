@@ -11,6 +11,7 @@ import com.software_system_development.arona_mysterious_shop_backend.model.dto.o
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.order.OrderUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.*;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.OrderVO;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.PageVO;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -99,7 +100,7 @@ public class OrderController {
 
     @GetMapping("/list")
     @Operation(summary = "分页获取订单列表")
-    public BaseResponse<Page<OrderVO>> listOrderVO(@RequestParam(required = false) String orderCode,
+    public BaseResponse<IPage<OrderVO>> listOrderVO(@RequestParam(required = false) String orderCode,
                                                    @RequestParam(required = false) String receiverName,
                                                    @RequestParam(required = false) String orderStatus,
                                                    @RequestParam(defaultValue = "1") long current,
@@ -111,7 +112,7 @@ public class OrderController {
 
         IPage<Order> orderPage = orderService.page(new Page<>(current, size), queryWrapper);
         List<OrderVO> orderVOList = orderService.getOrderVO(orderPage.getRecords());
-        Page<OrderVO> orderVOPage = new Page<>(current, size, orderPage.getTotal());
+        IPage<OrderVO> orderVOPage = new Page<>(current, size, orderPage.getTotal());
         orderVOPage.setRecords(orderVOList);
 
         return ResultUtils.success(orderVOPage);

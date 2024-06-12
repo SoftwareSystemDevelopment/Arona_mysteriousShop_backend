@@ -9,26 +9,32 @@ import lombok.Data;
 
 /**
  * 
- * @TableName productImage
+ * @TableName universalimage
  */
-@TableName(value ="productImage")
+@TableName(value ="universalimage")
 @Data
-public class ProductImage implements Serializable {
+public class UniversalImage implements Serializable {
     /**
-     * 商品图片ID
+     * 图片ID
      */
     @TableId(type = IdType.AUTO)
-    private Integer productImageId;
+    private Integer imageId;
 
     /**
-     * 商品图片地址
+     * 图片地址
      */
-    private String productImageSrc;
+    private String imageSrc;
 
     /**
      * 图片对应商品ID
      */
-    private Integer productImageProductId;
+    private Integer productId;
 
+    /**
+     * 用户id
+     */
+    private Integer userId;
+
+    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

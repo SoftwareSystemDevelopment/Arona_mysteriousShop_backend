@@ -23,10 +23,7 @@ public class UserUpdateRequest implements Serializable {
     @NotNull
     private String userName;
 
-    /**
-     * 用户头像
-     */
-    private String userAvatar;
+    private Integer userAvatar;
 
     /**
      * 用户密码

@@ -9,6 +9,7 @@ import com.software_system_development.arona_mysterious_shop_backend.mapper.Prod
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductAddRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.UniversalImage;
 import com.software_system_development.arona_mysterious_shop_backend.model.enums.CategoryEnum;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.ProductVO;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;

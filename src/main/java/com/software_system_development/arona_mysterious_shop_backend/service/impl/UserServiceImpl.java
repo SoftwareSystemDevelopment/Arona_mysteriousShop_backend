@@ -19,6 +19,7 @@ import com.software_system_development.arona_mysterious_shop_backend.model.enums
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.CartService;
 import com.software_system_development.arona_mysterious_shop_backend.service.ShopService;
+import com.software_system_development.arona_mysterious_shop_backend.service.UniversalImageService;
 import com.software_system_development.arona_mysterious_shop_backend.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,9 +55,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     private CartService cartService;
 
-    @Resource
-    ShopService shopService;
-
     @Override
     public int userRegister(UserRegisterRequest userRegisterRequest) {
         // 校验参数
@@ -90,16 +88,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");
             }
-
-            // 如果注册的角色是 provider，创建一个店铺
-            if (UserConstant.PROVIDER_ROLE.equals(userRegisterRequest.getUserRole())) {
-                Shop shop = new Shop();
-                shop.setName(userRegisterRequest.getShopName()); // 店铺名称
-                shop.setDescription("Default description"); // 设置默认描述
-                shop.setShopUserId(user.getUserId()); // 关联用户ID
-                shopService.save(shop); // 保存店铺
-            }
-
             return user.getUserId();
         }
     }
@@ -153,6 +141,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
         user.setUserPassword(encryptPassword);
         user.setUserUpdateDate(userUpdateDate);
+
         boolean updateResult = this.updateById(user);
         if (!updateResult) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "修改失败");
