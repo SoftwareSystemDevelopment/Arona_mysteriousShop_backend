@@ -3,6 +3,7 @@ package com.software_system_development.arona_mysterious_shop_backend.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Cart;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.CartProduct;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.CartProductVO;
 
 import java.util.List;
 
@@ -27,4 +28,11 @@ public interface CartService extends IService<Cart> {
      * @return 购物车中的商品列表
      */
     List<CartProduct> getCartProducts(int cartId);
+
+    /**
+     * 获取购物车中的商品列表的VO对象
+     * @param cartId
+     * @return
+     */
+    List<CartProductVO> getCartProductVOs(int cartId);
 }

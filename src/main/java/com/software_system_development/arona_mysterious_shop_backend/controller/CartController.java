@@ -1,20 +1,21 @@
 package com.software_system_development.arona_mysterious_shop_backend.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.software_system_development.arona_mysterious_shop_backend.common.ErrorCode;
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Cart;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.CartProduct;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.User;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.CartProductVO;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.PageVO;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.CartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -39,9 +40,13 @@ public class CartController {
 
     @GetMapping("/items")
     @Operation(summary = "获取当前用户的购物车中的所有购物车项信息")
-    public List<CartProduct> getCartProducts(HttpServletRequest request) {
+    public PageVO<CartProductVO> getCartProducts(@RequestParam(defaultValue = "1") long current,
+                                                                                          @RequestParam(defaultValue = "10") long size, HttpServletRequest request) {
         UserVO currentUser= (UserVO)request.getSession().getAttribute(USER_LOGIN_STATE);
         int cartId = currentUser.getCartId();
-        return cartService.getCartProducts(cartId);
+        List<CartProductVO> cartProductVOS = cartService.getCartProductVOs(cartId);
+        IPage<CartProductVO> page = new Page<>(current, size);
+        page.setRecords(cartProductVOS);
+        return new PageVO<>(page.getRecords(),page.getTotal());
     }
 }
