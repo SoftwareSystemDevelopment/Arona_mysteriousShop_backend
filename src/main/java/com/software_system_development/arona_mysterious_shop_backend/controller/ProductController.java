@@ -12,6 +12,7 @@ import com.software_system_development.arona_mysterious_shop_backend.common.Resu
 import com.software_system_development.arona_mysterious_shop_backend.constant.UserConstant;
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.PageVO;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.ProductVO;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.ProductService;
@@ -138,7 +139,7 @@ public class ProductController {
     @GetMapping("/list/product")
     @Operation(summary = "供货商分页获取自己的产品列表")
     @AuthCheck(mustRole = UserConstant.PROVIDER_ROLE)
-    public BaseResponse<Page<Product>> listProductsByProvider(
+    public BaseResponse<PageVO<Product>> listProductsByProvider(
             @RequestParam(required = false) String productName,
             @RequestParam(required = false) String productCategory,
             @RequestParam(required = false) BigDecimal minPrice,
@@ -154,7 +155,8 @@ public class ProductController {
         queryWrapper.eq("providerId", currentUser.getUserId());
         // 执行分页查询
         Page<Product> productPage = productService.page(new Page<>(current, size), queryWrapper);
-        return ResultUtils.success(productPage);
+        PageVO<Product> productPageVO = new PageVO<>(productPage.getRecords(), productPage.getTotal());
+        return ResultUtils.success(productPageVO);
     }
 
     /**
@@ -167,11 +169,11 @@ public class ProductController {
      * @param productDescription 商品描述
      * @param current            当前页数
      * @param size               每页大小
-     * @return {@link BaseResponse}<{@link Page}<{@link ProductVO}>>
+     * @return {@link BaseResponse}<{@link PageVO}<{@link ProductVO}>>
      */
     @GetMapping("/list/vo")
     @Operation(summary = "分页获取产品VO列表")
-    public BaseResponse<Page<ProductVO>> listProductVOByPage(
+    public BaseResponse<PageVO<ProductVO>> listProductVOByPage(
             @RequestParam(required = false) String productName,
             @RequestParam(required = false) String productCategory,
             @RequestParam(required = false) BigDecimal minPrice,
@@ -186,17 +188,8 @@ public class ProductController {
         List<ProductVO> productVOList = productService.getProductVO(productPage.getRecords());
         Page<ProductVO> productVOPage = new Page<>(current, size, productPage.getTotal());
         productVOPage.setRecords(productVOList);
-        return ResultUtils.success(productVOPage);
-    }
-
-
-
-    @GetMapping("/list/vo/provider/{providerId}")
-    @Operation(summary = "获取对应供应商的产品VO列表")
-    public BaseResponse<List<ProductVO>> listProductVOByProvider(@PathVariable Integer providerId) {
-        List<Product> productList = productService.getByProviderId(providerId);
-        List<ProductVO> productVOList = productService.getProductVO(productList);
-        return ResultUtils.success(productVOList);
+        PageVO<ProductVO> productVOPageVO = new PageVO<>(productVOPage.getRecords(), productVOPage.getTotal());
+        return ResultUtils.success(productVOPageVO);
     }
 
 }

@@ -100,7 +100,7 @@ public class OrderController {
 
     @GetMapping("/list")
     @Operation(summary = "分页获取订单列表")
-    public BaseResponse<IPage<OrderVO>> listOrderVO(@RequestParam(required = false) String orderCode,
+    public BaseResponse<PageVO<OrderVO>> listOrderVO(@RequestParam(required = false) String orderCode,
                                                    @RequestParam(required = false) String receiverName,
                                                    @RequestParam(required = false) String orderStatus,
                                                    @RequestParam(defaultValue = "1") long current,
@@ -110,11 +110,11 @@ public class OrderController {
         QueryWrapper<Order> queryWrapper = orderService.getQueryWrapper(orderCode, receiverName, orderStatus)
                 .eq("orderUserId", currentUser.getUserId());
 
-        IPage<Order> orderPage = orderService.page(new Page<>(current, size), queryWrapper);
+        Page<Order> orderPage = orderService.page(new Page<>(current, size), queryWrapper);
         List<OrderVO> orderVOList = orderService.getOrderVO(orderPage.getRecords());
-        IPage<OrderVO> orderVOPage = new Page<>(current, size, orderPage.getTotal());
+        Page<OrderVO> orderVOPage = new Page<>(current, size, orderPage.getTotal());
         orderVOPage.setRecords(orderVOList);
-
-        return ResultUtils.success(orderVOPage);
+        PageVO<OrderVO> pageVO = new PageVO<>(orderVOPage.getRecords(), orderVOPage.getTotal());
+        return ResultUtils.success(pageVO);
     }
 }

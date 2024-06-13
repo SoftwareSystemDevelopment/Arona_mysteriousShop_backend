@@ -49,11 +49,15 @@ public class ShopController {
      */
     @GetMapping("/{userId}/products")
     @Operation(summary = "分页展示店铺的商品列表")
-    public BaseResponse<IPage<Product>> listShopProductsByPage(@PathVariable Integer userId,
+    public BaseResponse<PageVO<ProductVO>> listShopProductsByPage(@PathVariable Integer userId,
                                                                @RequestParam(defaultValue = "1") long current,
                                                                @RequestParam(defaultValue = "10") long size) {
-        IPage<Product> shopProductPage = productService.page(new Page<>(current, size), new QueryWrapper<Product>().eq("providerId", userId));
-        return ResultUtils.success(shopProductPage);
+        List<Product> shopProduct = productService.getByProviderId(userId);
+        List<ProductVO> productVO = productService.getProductVO(shopProduct);
+        IPage<ProductVO> page = new Page<>(current, size);
+        page.setRecords(productVO);
+        PageVO<ProductVO> shopProductPageVO = new PageVO<>(page.getRecords(), page.getTotal());
+        return ResultUtils.success(shopProductPageVO);
     }
 
 }

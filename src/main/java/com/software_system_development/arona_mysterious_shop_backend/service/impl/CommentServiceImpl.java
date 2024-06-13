@@ -95,7 +95,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             CommentVO commentVO = new CommentVO();
             BeanUtils.copyProperties(comment, commentVO);
             commentVO.setUserName(userService.getUserVO(request).getUserName());
-            assert commentVOS != null;
             commentVOS.add(commentVO);
         }
         return commentVOS;
