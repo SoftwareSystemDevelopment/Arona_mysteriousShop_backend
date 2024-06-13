@@ -1,6 +1,8 @@
 package com.software_system_development.arona_mysterious_shop_backend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.software_system_development.arona_mysterious_shop_backend.common.ErrorCode;
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
@@ -11,6 +13,7 @@ import com.software_system_development.arona_mysterious_shop_backend.model.dto.p
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.UniversalImage;
 import com.software_system_development.arona_mysterious_shop_backend.model.enums.CategoryEnum;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.PageVO;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.ProductVO;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.ProductService;

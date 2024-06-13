@@ -3,7 +3,11 @@ package com.software_system_development.arona_mysterious_shop_backend.model.dto.
 import lombok.Data;
 
 @Data
-public class AddressAddRequest {
+public class AddressUpdateRequest {
+    /**
+     * 地址ID
+     */
+    private Integer addressId;
 
     /**
      * 地址

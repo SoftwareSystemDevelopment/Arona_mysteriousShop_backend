@@ -7,6 +7,9 @@ import com.software_system_development.arona_mysterious_shop_backend.common.Base
 import com.software_system_development.arona_mysterious_shop_backend.common.ResultUtils;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.shop.ShopUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.User;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.PageVO;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.ProductVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.ProductService;
 import com.software_system_development.arona_mysterious_shop_backend.service.ShopService;
 import io.swagger.v3.oas.annotations.Operation;

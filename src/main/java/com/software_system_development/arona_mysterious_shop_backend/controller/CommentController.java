@@ -8,6 +8,7 @@ import com.software_system_development.arona_mysterious_shop_backend.common.Resu
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.comment.CommentAddRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Comment;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.CommentVO;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.PageVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -70,18 +71,17 @@ public class CommentController {
      * 查询某商品下的所有评论
      *
      * @param productId 商品ID
-     * @return {@link BaseResponse}<{@link List}<{@link Comment}>>
+     * @return {@link BaseResponse}<{@link List}<{@link CommentVO}>>
      */
     @GetMapping("/list")
     @Operation(summary = "分页查询指定商品下的所有评论")
-    public BaseResponse<IPage<Comment>> listComments(@RequestParam int productId,
-                                                     @RequestParam(defaultValue = "1") long current,
-                                                     @RequestParam(defaultValue = "10") long size) {
+    public BaseResponse<PageVO<CommentVO>> listComments(@RequestParam int productId,
+                                                       @RequestParam(defaultValue = "1") long current,
+                                                       @RequestParam(defaultValue = "10") long size, HttpServletRequest request) {
         if (productId <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        IPage<Comment> commentPage = commentService.listCommentsByProductId(productId, current, size);
-
+        PageVO<CommentVO> commentPage = commentService.listCommentsByProductId(productId, current, size, request);
         return ResultUtils.success(commentPage);
     }
 }

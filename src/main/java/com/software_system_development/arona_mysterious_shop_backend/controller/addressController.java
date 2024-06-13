@@ -5,6 +5,7 @@ import com.software_system_development.arona_mysterious_shop_backend.common.Erro
 import com.software_system_development.arona_mysterious_shop_backend.common.ResultUtils;
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.address.AddressAddRequest;
+import com.software_system_development.arona_mysterious_shop_backend.model.dto.address.AddressUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Address;
 import com.software_system_development.arona_mysterious_shop_backend.service.AddressService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,6 +58,15 @@ public class addressController {
         return ResultUtils.success(result);
     }
 
+    @PostMapping
+    @Operation(summary = "修改地址信息")
+    public BaseResponse<Integer> updateAddress(@RequestBody AddressUpdateRequest addressUpdateRequest, HttpServletRequest request) {
+        if (addressUpdateRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
+        }
+        int result = addressService.updateAddress(addressUpdateRequest, request);
+        return ResultUtils.success(result);
+    }
 
     /**
      * 查询某用户下的所有地址

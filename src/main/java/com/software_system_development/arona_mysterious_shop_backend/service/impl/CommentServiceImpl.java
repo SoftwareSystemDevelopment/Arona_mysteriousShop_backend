@@ -10,6 +10,8 @@ import com.software_system_development.arona_mysterious_shop_backend.model.dto.c
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Comment;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
 import com.software_system_development.arona_mysterious_shop_backend.model.enums.UserRoleEnum;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.CommentVO;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.PageVO;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.ProductService;
 import com.software_system_development.arona_mysterious_shop_backend.service.CommentService;
@@ -75,11 +77,28 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
     @Override
-    public Page<Comment> listCommentsByProductId(int productId, long current, long size) {
-        Page<Comment> commentPage = new Page<>(current, size);
+    public PageVO<CommentVO> listCommentsByProductId(int productId, long current, long size, HttpServletRequest request) {
+        Page<Comment> page = new Page<>(current, size);
         QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("commentProductId", productId);
-        return commentMapper.selectPage(commentPage, queryWrapper);
+        List<Comment> comments = commentMapper.selectPage(page, queryWrapper).getRecords();
+        List<CommentVO> commentVOS = convertFromComments(comments, request);
+        return new PageVO<>(commentVOS, page.getTotal());
+    }
+
+    private List<CommentVO> convertFromComments(List<Comment> comments, HttpServletRequest request) {
+        List<CommentVO> commentVOS = null;
+        if (comments != null && !comments.isEmpty()) {
+            commentVOS = new java.util.ArrayList<>();
+        }
+        for (Comment comment : comments) {
+            CommentVO commentVO = new CommentVO();
+            BeanUtils.copyProperties(comment, commentVO);
+            commentVO.setUserName(userService.getUserVO(request).getUserName());
+            assert commentVOS != null;
+            commentVOS.add(commentVO);
+        }
+        return commentVOS;
     }
 
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.shop.ShopUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Shop;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.ProductVO;
 
 import java.util.List;
 
@@ -20,6 +21,5 @@ public interface ShopService extends IService<Shop> {
      * @param shopUpdateRequest
      */
     boolean updateShop(ShopUpdateRequest shopUpdateRequest);
-
 
 }

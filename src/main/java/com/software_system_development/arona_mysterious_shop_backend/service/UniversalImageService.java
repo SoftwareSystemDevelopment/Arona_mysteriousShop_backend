@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
 * @author 29967
-* @description 针对表【productimage】的数据库操作Service
+* @description 针对表【UniversalImage】的数据库操作Service
 * @createDate 2024-06-05 12:28:45
 */
 public interface UniversalImageService extends IService<UniversalImage> {

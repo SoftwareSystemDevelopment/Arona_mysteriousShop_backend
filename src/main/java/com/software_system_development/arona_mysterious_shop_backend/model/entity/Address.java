@@ -35,6 +35,16 @@ public class Address implements Serializable {
      */
     private Integer isDelete;
 
+    /**
+     * 收货人姓名
+     */
+    private String receiver;
+
+    /**
+     * 收货人手机好
+     */
+    private String userPhone;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

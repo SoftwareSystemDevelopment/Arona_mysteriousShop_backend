@@ -6,6 +6,7 @@ import com.software_system_development.arona_mysterious_shop_backend.common.Erro
 import com.software_system_development.arona_mysterious_shop_backend.exception.BusinessException;
 import com.software_system_development.arona_mysterious_shop_backend.mapper.AddressMapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.address.AddressAddRequest;
+import com.software_system_development.arona_mysterious_shop_backend.model.dto.address.AddressUpdateRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Address;
 import com.software_system_development.arona_mysterious_shop_backend.model.enums.UserRoleEnum;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
@@ -13,6 +14,7 @@ import com.software_system_development.arona_mysterious_shop_backend.service.Add
 import com.software_system_development.arona_mysterious_shop_backend.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +34,7 @@ public class AddressServiceImpl extends ServiceImpl<AddressMapper, Address>
 
     @Override
     public int addAddress(AddressAddRequest addressAddRequest, HttpServletRequest request) {
-        if (addressAddRequest.getAddressName() == null) {
+        if (StringUtils.isAnyBlank(addressAddRequest.getAddressName(), addressAddRequest.getReceiver(), addressAddRequest.getUserPhone())) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
         Address address = new Address();
@@ -92,6 +94,30 @@ public class AddressServiceImpl extends ServiceImpl<AddressMapper, Address>
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "未找到对应地址");
         }
         return address;
+    }
+
+
+    @Override
+    public int updateAddress(AddressUpdateRequest addressUpdateRequest, HttpServletRequest request) {
+        if(StringUtils.isAnyBlank(addressUpdateRequest.getAddressName(), addressUpdateRequest.getReceiver(), addressUpdateRequest.getUserPhone())) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
+        }
+        Address address = this.getById(addressUpdateRequest.getAddressId());
+        if (address == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "未找到对应地址");
+        }
+        // 获取当前登录用户信息
+        UserVO loginUser = userService.getUserVO(request);
+        // 检查有无权限修改
+        if (!loginUser.getUserId().equals(address.getAddressUserId()) && !loginUser.getUserRole().equals(UserRoleEnum.ADMIN.getValue())) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "无修改权限");
+        }
+        BeanUtils.copyProperties(addressUpdateRequest, address);
+        boolean updateResult = this.updateById(address);
+        if (!updateResult) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "修改地址失败");
+        }
+        return address.getAddressAreaId();
     }
 }
 

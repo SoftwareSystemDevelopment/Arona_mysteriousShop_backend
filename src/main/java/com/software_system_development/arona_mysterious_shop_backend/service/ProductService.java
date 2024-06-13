@@ -1,10 +1,13 @@
 package com.software_system_development.arona_mysterious_shop_backend.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductAddRequest;
 import com.software_system_development.arona_mysterious_shop_backend.model.dto.product.ProductUpdateRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.PageVO;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.ProductVO;
 import jakarta.servlet.http.HttpServletRequest;
 
