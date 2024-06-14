@@ -1,7 +1,6 @@
 package com.software_system_development.arona_mysterious_shop_backend.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.software_system_development.arona_mysterious_shop_backend.common.BaseResponse;
 import com.software_system_development.arona_mysterious_shop_backend.common.ErrorCode;
@@ -100,14 +99,14 @@ public class OrderController {
 
     @GetMapping("/list")
     @Operation(summary = "分页获取订单列表")
-    public BaseResponse<PageVO<OrderVO>> listOrderVO(@RequestParam(required = false) String orderCode,
+    public BaseResponse<PageVO<OrderVO>> listOrderVO(@RequestParam(required = false) Integer orderId,
                                                    @RequestParam(required = false) String receiverName,
                                                    @RequestParam(required = false) String orderStatus,
                                                    @RequestParam(defaultValue = "1") long current,
                                                    @RequestParam(defaultValue = "10") long size,
                                                    HttpServletRequest request) {
         UserVO currentUser = userService.getUserVO(request);
-        QueryWrapper<Order> queryWrapper = orderService.getQueryWrapper(orderCode, receiverName, orderStatus)
+        QueryWrapper<Order> queryWrapper = orderService.getQueryWrapper(orderId, receiverName, orderStatus)
                 .eq("orderUserId", currentUser.getUserId());
 
         Page<Order> orderPage = orderService.page(new Page<>(current, size), queryWrapper);

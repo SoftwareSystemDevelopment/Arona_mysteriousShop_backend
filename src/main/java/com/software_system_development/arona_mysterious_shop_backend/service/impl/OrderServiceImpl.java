@@ -55,19 +55,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         // 获取当前登录用户
         UserVO loginUser = userService.getUserVO(request);
         // 校验
-        if (orderAddRequest.getOrderCode() == null || orderAddRequest.getOrderAddress() == null ||
-                orderAddRequest.getOrderReceiver() == null || orderAddRequest.getOrderMobile() == null ||
-                orderAddRequest.getOrderUserId() == null) {
+        if (orderAddRequest.getOrderAddress() == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
-        }
-
-        // 检查订单编号是否重复
-        if (isOrderCodeExists(orderAddRequest.getOrderCode())) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "订单编号已存在");
-        }
-        // 校验是否有权限下订单
-        if (!orderAddRequest.getOrderUserId().equals(loginUser.getUserId())) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, "无权限下订单");
         }
         // 检查收货地址是否合法
         addressService.getAddressById(orderAddRequest.getOrderAddress());
@@ -82,7 +71,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         // 创建订单对象并保存
         Order order = new Order();
         BeanUtils.copyProperties(orderAddRequest, order);
-        order.setOrderStatus(1); // 订单状态设置为已下单
+        order.setOrderStatus(0);
         order.setOrderPayDate(DateTime.now());
         order.setOrderUserId(loginUser.getUserId());
         boolean orderResult = save(order);
@@ -109,16 +98,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return order.getOrderId();
     }
 
-    /**
-     * 检查订单编号是否已存在
-     */
-    private boolean isOrderCodeExists(String orderCode) {
-        QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("orderCode", orderCode);
-        return count(queryWrapper) > 0;
-    }
-
-
     @Override
     public int updateOrder(OrderUpdateRequest orderUpdateRequest, HttpServletRequest request) {
         UserVO loginUser = userService.getUserVO(request);
@@ -129,10 +108,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (!order.getOrderUserId().equals(loginUser.getUserId()) && !userService.isAdmin(loginUser)) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "无权限修改订单");
         }
-        //检查修改后地址是否合法
-        addressService.getAddressById(orderUpdateRequest.getOrderAddress());
-
         BeanUtils.copyProperties(orderUpdateRequest, order);
+        switch (orderUpdateRequest.getOrderStatus()) {
+            case 0: order.setOrderStatus(0);
+                break;
+            case 1: order.setOrderStatus(1);
+                break;
+            case 2: order.setOrderStatus(2);
+                break;
+            case 3: order.setOrderStatus(3);
+                break;
+            case 4: order.setOrderStatus(4);
+                break;
+        }
         boolean result = updateById(order);
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
@@ -166,17 +154,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         OrderVO orderVO = new OrderVO();
         BeanUtils.copyProperties(order, orderVO);
         orderVO.setOrderAddress(addressService.getAddressById(order.getOrderAddress()).getAddressName());
+        orderVO.setOrderReceiver(addressService.getAddressById(order.getOrderAddress()).getReceiver());
+        orderVO.setOrderMobile(addressService.getAddressById(order.getOrderAddress()).getUserPhone());
         List<OrderItem> orderItems = orderItemMapper.selectList(new QueryWrapper<OrderItem>().eq("orderId", orderId));
         orderVO.setOrderItems(orderItems);
         return orderVO;
     }
 
     @Override
-    public QueryWrapper<Order> getQueryWrapper(String orderCode, String receiverName, String orderStatus) {
+    public QueryWrapper<Order> getQueryWrapper(Integer orderId, String receiverName, String orderStatus) {
         QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
         // 添加订单号查询条件
-        if (!StringUtils.isEmpty(orderCode)) {
-            queryWrapper.like("orderCode", orderCode);
+        if (orderId != null) {
+            queryWrapper.like("orderId", orderId);
         }
         // 添加收货人查询条件
         if (!StringUtils.isEmpty(receiverName)) {
@@ -193,10 +183,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public List<OrderVO> getOrderVO(List<Order> orderList) {
         return orderList.stream().map(order -> {
             OrderVO orderVO = new OrderVO();
-            orderVO.setOrderCode(order.getOrderCode());
+            orderVO.setOrderId(order.getOrderId());
             orderVO.setOrderAddress(addressService.getAddressById(order.getOrderAddress()).getAddressName());
-            orderVO.setOrderReceiver(order.getOrderReceiver());
-            orderVO.setOrderMobile(order.getOrderMobile());
+            orderVO.setOrderReceiver(addressService.getAddressById(order.getOrderAddress()).getReceiver());
+            orderVO.setOrderMobile(addressService.getAddressById(order.getOrderAddress()).getUserPhone());
             orderVO.setOrderPayDate(order.getOrderPayDate());
             orderVO.setOrderStatus(order.getOrderStatus());
             orderVO.setOrderItems(orderItemMapper.selectList(new QueryWrapper<OrderItem>().eq("orderId", order.getOrderId())));

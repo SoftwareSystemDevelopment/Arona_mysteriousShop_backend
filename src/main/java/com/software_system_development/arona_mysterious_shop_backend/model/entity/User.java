@@ -37,11 +37,6 @@ public class User implements Serializable {
     private String userPassword;
 
     /**
-     * 用户头像
-     */
-    private Integer userAvatar;
-
-    /**
      * 用户角色 user/admin/provider
      */
     private String userRole;

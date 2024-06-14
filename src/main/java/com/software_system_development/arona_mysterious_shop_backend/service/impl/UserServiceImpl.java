@@ -125,10 +125,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String userPassword = userUpdateRequest.getUserPassword();
         String userName = userUpdateRequest.getUserName();
         Date userUpdateDate = new Date();
-        if (StringUtils.isAnyBlank(userPassword, userName) || userId == null) {
+        if (StringUtils.isAnyBlank(userName) || userId == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
-        if (userPassword.length() < 8) {
+        if (userPassword != null && userPassword.length() < 8) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户密码过短");
         }
         // 判断是否有权限修改，必须要是用户自己或者是管理员
@@ -138,8 +138,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 修改用户信息
         User user = new User();
         BeanUtils.copyProperties(userUpdateRequest, user);
-        String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
-        user.setUserPassword(encryptPassword);
+        if(userPassword != null) {
+            String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
+            user.setUserPassword(encryptPassword);
+        }
         user.setUserUpdateDate(userUpdateDate);
 
         boolean updateResult = this.updateById(user);

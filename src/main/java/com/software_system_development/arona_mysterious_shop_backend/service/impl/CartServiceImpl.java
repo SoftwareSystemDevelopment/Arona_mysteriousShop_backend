@@ -7,8 +7,10 @@ import com.software_system_development.arona_mysterious_shop_backend.exception.B
 import com.software_system_development.arona_mysterious_shop_backend.mapper.CartMapper;
 import com.software_system_development.arona_mysterious_shop_backend.mapper.CartProductMapper;
 import com.software_system_development.arona_mysterious_shop_backend.mapper.ProductMapper;
+import com.software_system_development.arona_mysterious_shop_backend.mapper.UniversalImageMapper;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Cart;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.CartProduct;
+import com.software_system_development.arona_mysterious_shop_backend.model.entity.UniversalImage;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.CartProductVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.CartService;
 import com.software_system_development.arona_mysterious_shop_backend.service.ProductService;
@@ -37,6 +39,9 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements Ca
     @Resource
     private ProductMapper productMapper;
 
+    @Resource
+    private UniversalImageMapper universalImageMapper;
+
     @Override
     public boolean save(Cart cart) {
         int result = cartMapper.insert(cart);
@@ -62,6 +67,12 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements Ca
             BeanUtils.copyProperties(cartProduct, cartProductVO);
             cartProductVO.setProductName(productMapper.selectById(cartProduct.getProductId()).getProductName());
             cartProductVO.setProductPrice(productMapper.selectById(cartProduct.getProductId()).getProductPrice());
+            cartProductVO.setProductDescription(productMapper.selectById(cartProduct.getProductId()).getProductDescription());
+            QueryWrapper<UniversalImage> queryWrapper  = new QueryWrapper<>();
+            queryWrapper.eq("productId", cartProduct.getProductId());
+            if(universalImageMapper.selectOne(queryWrapper) != null){
+                cartProductVO.setProductImage(universalImageMapper.selectOne(queryWrapper).getImageSrc());
+            }
             return cartProductVO;
         }).toList();
     }

@@ -23,12 +23,9 @@ public class UserUpdateRequest implements Serializable {
     @NotNull
     private String userName;
 
-    private Integer userAvatar;
-
     /**
      * 用户密码
      */
-    @NotNull
     private String userPassword;
 
     private static final long serialVersionUID = 1L;

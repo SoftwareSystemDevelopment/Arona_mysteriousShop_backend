@@ -1,6 +1,7 @@
 package com.software_system_development.arona_mysterious_shop_backend.model.vo;
 
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.OrderItem;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -10,9 +11,10 @@ import java.util.List;
 @Data
 public class OrderVO {
     /**
-     * 订单号
+     * 订单id
      */
-    private String orderCode;
+    private Integer orderId;
+
     /**
      * 收货地址
      */

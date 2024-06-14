@@ -14,30 +14,10 @@ import java.io.Serializable;
 public class OrderAddRequest implements Serializable {
 
     /**
-     * 订单编号
-     */
-    @NotNull
-    private String orderCode;
-    /**
      * 收货地址
      */
     @NotNull
     private Integer orderAddress;
-    /**
-     * 收货人
-     */
-    @NotNull
-    private String orderReceiver;
-    /**
-     * 收货人手机号
-     */
-    @NotNull
-    private String orderMobile;
-    /**
-     * 下订单的用户ID
-     */
-    @NotNull
-    private Integer orderUserId;
 
     private static final long serialVersionUID = 1L;
 }

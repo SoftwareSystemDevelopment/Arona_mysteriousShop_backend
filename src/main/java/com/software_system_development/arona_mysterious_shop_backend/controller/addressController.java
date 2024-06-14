@@ -74,12 +74,9 @@ public class addressController {
      * @return {@link BaseResponse}<{@link List}<{@link Address}>>
      */
     @GetMapping("/list")
-    @Operation(summary = "查询某用户下的所有地址")
-    public BaseResponse<List<Address>> listComments(@RequestParam Integer userId, HttpServletRequest request) {
-        if (userId == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        List<Address> addressList = addressService.getAddressByUserId(userId, request);
+    @Operation(summary = "查询用户的所有地址")
+    public BaseResponse<List<Address>> listComments(HttpServletRequest request) {
+        List<Address> addressList = addressService.getAddressByUserId(request);
         return ResultUtils.success(addressList);
     }
 }

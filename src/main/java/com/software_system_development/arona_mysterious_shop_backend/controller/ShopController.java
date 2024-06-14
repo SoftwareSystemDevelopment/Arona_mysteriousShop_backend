@@ -10,15 +10,20 @@ import com.software_system_development.arona_mysterious_shop_backend.model.entit
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.User;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.PageVO;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.ProductVO;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.ShopVO;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.UserVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.ProductService;
 import com.software_system_development.arona_mysterious_shop_backend.service.ShopService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.software_system_development.arona_mysterious_shop_backend.constant.UserConstant.USER_LOGIN_STATE;
 
 
 @RestController
@@ -60,4 +65,10 @@ public class ShopController {
         return ResultUtils.success(shopProductPageVO);
     }
 
+    @GetMapping("/info")
+    @Operation(summary = "获取店铺信息")
+    public BaseResponse<ShopVO> getShopInfo(Integer userId) {
+        ShopVO shopVO = shopService.getShopVO(userId);
+        return ResultUtils.success(shopVO);
+    }
 }

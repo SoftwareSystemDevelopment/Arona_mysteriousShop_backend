@@ -23,6 +23,16 @@ public class CartProductVO {
     private BigDecimal productPrice;
 
     /**
+     * 商品图片
+     */
+    private String productImage;
+
+    /**
+     * 商品描述
+     */
+    private String productDescription;
+
+    /**
      * 数量
      */
     private Integer quantity;

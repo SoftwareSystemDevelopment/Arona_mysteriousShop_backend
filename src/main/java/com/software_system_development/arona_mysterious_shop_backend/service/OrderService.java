@@ -46,12 +46,12 @@ public interface OrderService extends IService<Order> {
 
     /**
      * 分页查询订单
-     * @param orderCode
+     * @param orderId
      * @param receiverName
      * @param orderStatus
      * @return
      */
-    QueryWrapper<Order> getQueryWrapper(String orderCode, String receiverName, String orderStatus);
+    QueryWrapper<Order> getQueryWrapper(Integer orderId, String receiverName, String orderStatus);
 
     /**
      * 获取orderVO

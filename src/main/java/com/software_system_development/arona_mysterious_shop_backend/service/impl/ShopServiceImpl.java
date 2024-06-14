@@ -14,9 +14,11 @@ import com.software_system_development.arona_mysterious_shop_backend.model.entit
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.User;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.PageVO;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.ProductVO;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.ShopVO;
 import com.software_system_development.arona_mysterious_shop_backend.service.ProductService;
 import com.software_system_development.arona_mysterious_shop_backend.service.ShopService;
 import jakarta.annotation.Resource;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +53,20 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop>
         }
         // 执行更新
         return updateById(shop);
+    }
+
+    @Override
+    public ShopVO getShopVO(Integer userId) {
+
+        // 查询店铺信息
+        Shop shop = getOne(new QueryWrapper<Shop>().eq("shopUserId", userId));
+        if (shop == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "店铺不存在");
+        }
+        // 查询店铺信息
+        ShopVO shopVO = new ShopVO();
+        BeanUtils.copyProperties(shop, shopVO);
+        return shopVO;
     }
 
 }

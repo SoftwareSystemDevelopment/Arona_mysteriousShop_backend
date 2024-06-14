@@ -31,10 +31,9 @@ public interface AddressService extends IService<Address> {
 
     /**
      * 根据用户ID获取地址列表
-     * @param userId
      * @return
      */
-    List<Address> getAddressByUserId(Integer userId, HttpServletRequest request);
+    List<Address> getAddressByUserId(HttpServletRequest request);
 
     /**
      * 根据地址ID获取地址信息

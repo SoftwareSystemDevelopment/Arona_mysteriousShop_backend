@@ -22,24 +22,9 @@ public class Order implements Serializable {
     private Integer orderId;
 
     /**
-     * 订单编号
-     */
-    private String orderCode;
-
-    /**
      * 订单对应地址ID
      */
     private Integer orderAddress;
-
-    /**
-     * 收件人
-     */
-    private String orderReceiver;
-
-    /**
-     * 收件人手机号
-     */
-    private String orderMobile;
 
     /**
      * 下单时间

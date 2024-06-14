@@ -65,17 +65,11 @@ public class AddressServiceImpl extends ServiceImpl<AddressMapper, Address>
     }
 
     @Override
-    public List<Address> getAddressByUserId(Integer userId, HttpServletRequest request) {
-        if (userId == null || userId <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
-        }
+    public List<Address> getAddressByUserId(HttpServletRequest request) {
         // 获取当前登录用户信息
         UserVO loginUser = userService.getUserVO(request);
-        if(!loginUser.getUserRole().equals(UserRoleEnum.ADMIN.getValue()) && !loginUser.getUserId().equals(userId)) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, "无权限查看");
-        }
         QueryWrapper<Address> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("addressUserId", userId);
+        queryWrapper.eq("addressUserId", loginUser.getUserId());
         List<Address> addressList = this.list(queryWrapper);
         if (addressList == null || addressList.isEmpty()) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "未找到对应地址");

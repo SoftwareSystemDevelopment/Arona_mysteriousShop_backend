@@ -6,6 +6,7 @@ import com.software_system_development.arona_mysterious_shop_backend.model.dto.s
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Product;
 import com.software_system_development.arona_mysterious_shop_backend.model.entity.Shop;
 import com.software_system_development.arona_mysterious_shop_backend.model.vo.ProductVO;
+import com.software_system_development.arona_mysterious_shop_backend.model.vo.ShopVO;
 
 import java.util.List;
 
@@ -22,4 +23,10 @@ public interface ShopService extends IService<Shop> {
      */
     boolean updateShop(ShopUpdateRequest shopUpdateRequest);
 
+    /**
+     * 获取店铺信息
+     * @param userId
+     * @return
+     */
+    ShopVO getShopVO(Integer userId);
 }
